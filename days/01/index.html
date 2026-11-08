@@ -8,78 +8,118 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@600;800;900&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
-:root{--red:#e60012;--cream:#f7f1e3;--dark:#0b4a35}
+:root{--red:#e60012;--red-d:#b5121b;--cream:#f7f1e3;--ink:#4a1218;--green:#14935a;--gold:#c99a52}
 *{box-sizing:border-box}
 html,body{background:var(--red)}
-body{margin:0;color:#fff;font-family:Inter,-apple-system,sans-serif;padding:clamp(28px,5vw,60px) 16px}
-.wrap{max-width:860px;margin:0 auto}
+body{margin:0;color:#fff;font-family:Inter,-apple-system,sans-serif;padding:clamp(28px,5vw,60px) 16px;position:relative;overflow-x:hidden}
+.wrap{position:relative;z-index:1;max-width:860px;margin:0 auto}
+
+/* pearls, same as the calendar */
+.pearl{position:absolute;border-radius:50%;background:radial-gradient(circle at 35% 30%,#fff,#e8e2d6 55%,#b9b2a6);box-shadow:0 2px 6px #0003;animation:bob 5s ease-in-out infinite alternate;z-index:2;pointer-events:none}
+@keyframes bob{from{transform:translateY(-8px)}to{transform:translateY(8px)}}
+.fall{position:fixed;inset:0;pointer-events:none;overflow:hidden;z-index:0}
+.fall i{position:absolute;top:-20px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#fff,#e8e2d6 55%,#b9b2a6);opacity:.8;animation:drop linear infinite}
+@keyframes drop{50%{transform:translate(20px,55vh)}100%{transform:translate(-8px,110vh)}}
+@media(prefers-reduced-motion:reduce){.pearl,.fall i{animation:none}.fall{display:none}}
+
 .top{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
 .back,.by{display:inline-flex;align-items:center;gap:8px;font-family:Unbounded,sans-serif;font-weight:600;font-size:.75rem;padding:8px 16px;border-radius:99px;text-decoration:none;transition:transform .15s}
 .back{color:#fff;border:2px solid #fff}
 .by{background:#fff;color:var(--red);box-shadow:0 4px 0 #0000002e}
 .back:hover,.by:hover{transform:translateY(-2px)}
-.eyebrow{margin:clamp(36px,6vw,60px) 0 8px;font-family:Unbounded,sans-serif;font-weight:600;font-size:.8rem;letter-spacing:.14em;opacity:.85}
-h1{margin:0;font-family:Unbounded,sans-serif;font-weight:900;text-transform:uppercase;font-size:clamp(2.4rem,8vw,4.6rem);line-height:.95;letter-spacing:-.02em}
-.lead{font-size:clamp(1rem,1.9vw,1.15rem);line-height:1.6;max-width:620px;margin:18px 0 0;opacity:.95}
 
-h2{font-family:Unbounded,sans-serif;font-weight:800;font-size:1.05rem;letter-spacing:.04em;text-transform:uppercase;margin:clamp(40px,6vw,56px) 0 16px}
+.hero{display:grid;grid-template-columns:1fr auto;gap:28px;align-items:center;margin-top:clamp(36px,6vw,60px)}
+.eyebrow{margin:0 0 8px;font-family:Unbounded,sans-serif;font-weight:600;font-size:.8rem;letter-spacing:.14em;opacity:.85}
+h1{margin:0;font-family:Unbounded,sans-serif;font-weight:900;text-transform:uppercase;font-size:clamp(2.4rem,7.4vw,4.4rem);line-height:.95;letter-spacing:-.02em}
+.lead{font-size:clamp(1rem,1.9vw,1.15rem);line-height:1.6;max-width:540px;margin:18px 0 0;opacity:.95}
+/* the Day 1 box itself, as a little keepsake */
+.tile{position:relative;width:clamp(130px,20vw,190px);aspect-ratio:1;border-radius:16px;background:var(--cream);transform:rotate(6deg);box-shadow:0 14px 30px -10px #0006;animation:sway 4s ease-in-out infinite alternate}
+@keyframes sway{to{transform:rotate(2deg) translateY(-6px)}}
+.tile svg{position:absolute;inset:0;width:100%;height:100%}
+.tile .num{position:absolute;left:0;right:0;bottom:8%;text-align:center;font-family:Unbounded,sans-serif;font-weight:800;font-size:clamp(1.4rem,3vw,2.1rem);color:var(--red)}
+.tile .date{position:absolute;top:10px;left:10px;font-family:Unbounded,sans-serif;font-weight:600;font-size:.6rem;padding:3px 8px;border-radius:99px;background:#e600121a;color:var(--red)}
+
+h2{display:flex;align-items:center;gap:10px;font-family:Unbounded,sans-serif;font-weight:800;font-size:1rem;letter-spacing:.06em;text-transform:uppercase;margin:clamp(44px,6vw,60px) 0 16px}
+h2 svg{flex:none}
+
+/* why: three cream cards, each with a little illustration */
 .cards{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
-.card{border-radius:14px;padding:20px;line-height:1.55;font-size:.92rem}
-.card b{display:block;font-family:Unbounded,sans-serif;font-weight:800;font-size:1.6rem;margin-bottom:10px}
-.c1{background:var(--cream);color:var(--red)}
-.c2{background:linear-gradient(165deg,#ecd29b,#c99a52);color:#4a2f0b}
-.c3{background:linear-gradient(175deg,#0c5e3d,#1fb06b)}
+.card{position:relative;background:var(--cream);color:var(--ink);border-radius:16px;padding:20px 20px 22px;line-height:1.55;font-size:.92rem;overflow:hidden}
+.card svg{width:76px;height:76px;display:block;margin:-6px 0 6px -8px}
+.card b{position:absolute;top:16px;right:18px;font-family:Unbounded,sans-serif;font-weight:800;font-size:.8rem;color:var(--red);opacity:.5}
 
+/* rules: white numbers on soft panels */
 .rules{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
-.rule{border:2px solid #ffffff55;border-radius:14px;padding:16px}
+.rule{background:#ffffff17;border-radius:16px;padding:18px}
 .rule b{display:block;font-family:Unbounded,sans-serif;font-weight:900;font-size:clamp(1.6rem,4vw,2.2rem);line-height:1}
-.rule span{display:block;margin-top:6px;font-size:.85rem;opacity:.9}
+.rule span{display:block;margin-top:8px;font-size:.85rem;opacity:.9}
 
-ul.shipped{list-style:none;padding:0;margin:0;display:grid;gap:10px}
-ul.shipped li{background:var(--dark);border-radius:12px;padding:14px 18px;display:flex;gap:14px;align-items:baseline;font-size:.95rem;line-height:1.5}
-ul.shipped li i{font-style:normal;font-family:Unbounded,sans-serif;font-weight:800;font-size:.75rem;color:#ecd29b;flex:none}
+/* shipped: one cream panel, small coloured tags as accents */
+.shipped{list-style:none;margin:0;padding:6px 22px;background:var(--cream);color:var(--ink);border-radius:16px}
+.shipped li{display:grid;grid-template-columns:118px 1fr;gap:14px;align-items:baseline;padding:14px 0;font-size:.95rem;line-height:1.5;border-bottom:2px dotted #e6001233}
+.shipped li:last-child{border-bottom:0}
+.tag{justify-self:start;font-family:Unbounded,sans-serif;font-weight:800;font-size:.62rem;letter-spacing:.06em;padding:5px 10px;border-radius:99px;color:#fff}
+.t-red{background:var(--red)}.t-green{background:var(--green)}.t-gold{background:var(--gold)}
 
-.next{margin-top:clamp(40px,6vw,56px);background:var(--cream);color:var(--red);border-radius:16px;padding:clamp(20px,4vw,32px);display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap}
+.next{margin-top:clamp(44px,6vw,60px);display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;border-top:2px solid #ffffff40;padding-top:28px}
 .next p{margin:0;font-family:Unbounded,sans-serif;font-weight:800;font-size:clamp(1rem,2.4vw,1.3rem)}
-.next small{display:block;font-family:Inter,sans-serif;font-weight:500;font-size:.85rem;margin-top:6px;opacity:.8}
-.next a{background:var(--red);color:#fff;text-decoration:none;font-family:Unbounded,sans-serif;font-weight:600;font-size:.8rem;padding:12px 20px;border-radius:99px}
+.next small{display:block;font-family:Inter,sans-serif;font-weight:500;font-size:.85rem;margin-top:6px;opacity:.85}
+.next a{background:#fff;color:var(--red);text-decoration:none;font-family:Unbounded,sans-serif;font-weight:600;font-size:.8rem;padding:12px 20px;border-radius:99px;box-shadow:0 4px 0 #0000002e;transition:transform .15s}
+.next a:hover{transform:translateY(-2px)}
 
-@media(max-width:720px){.cards{grid-template-columns:1fr}.rules{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:720px){.hero{grid-template-columns:1fr}.tile{justify-self:end;margin-top:-10px}.cards{grid-template-columns:1fr}.rules{grid-template-columns:repeat(2,1fr)}.shipped li{grid-template-columns:1fr;gap:6px}}
 </style>
 </head>
 <body>
+<i class="pearl" style="width:16px;height:16px;top:120px;left:6%"></i>
+<i class="pearl" style="width:10px;height:10px;top:40px;left:44%;animation-duration:6.5s"></i>
+<i class="pearl" style="width:20px;height:20px;top:420px;right:5%;animation-duration:4.2s;animation-delay:-2s"></i>
+<i class="pearl" style="width:12px;height:12px;top:900px;left:3%;animation-duration:6s"></i>
+<div class="fall" aria-hidden="true">
+  <i style="left:8%;width:8px;height:8px;animation-duration:14s"></i>
+  <i style="left:27%;width:6px;height:6px;animation-duration:11s;animation-delay:-4s"></i>
+  <i style="left:52%;width:10px;height:10px;animation-duration:18s;animation-delay:-9s"></i>
+  <i style="left:73%;width:7px;height:7px;animation-duration:13s;animation-delay:-2s"></i>
+  <i style="left:91%;width:9px;height:9px;animation-duration:16s;animation-delay:-11s"></i>
+</div>
+
 <div class="wrap">
   <div class="top">
     <a class="back" href="../../">← Back to calendar</a>
     <a class="by" href="https://www.linkedin.com/in/qing-gu-072167322" target="_blank" rel="noopener">by Lesley Qing Gu ↗</a>
   </div>
 
-  <p class="eyebrow">DAY 01 · NOV 8</p>
-  <h1>The Shipmas<br>Plan</h1>
-  <p class="lead">Day one ships the thing you're looking at: the calendar itself, and the plan behind it. 24 tiny products, one every two days, until Christmas Eve.</p>
-
-  <h2>Why I'm doing this</h2>
-  <div class="cards">
-    <div class="card c1"><b>01</b>Every job search asks for end-to-end, hands-on delivery. Instead of describing it, I'm proving it: idea, design, build, ship. 24 times, in public.</div>
-    <div class="card c2"><b>02</b>Things have felt a bit dull lately. I wanted something fun to look forward to every other day.</div>
-    <div class="card c3"><b>03</b>Inspired by advent calendars: a small surprise behind every door. Here, each door is a working product.</div>
+  <div class="hero">
+    <div>
+      <p class="eyebrow">DAY 01 · NOV 8</p>
+      <h1>The Shipmas<br>Plan</h1>
+      <p class="lead">Day one ships the thing you're looking at: the calendar itself, and the plan behind it. 24 tiny products, one every two days, until Christmas Eve.</p>
+    </div>
+    <div class="tile" aria-hidden="true"><svg viewBox="0 0 100 100" data-icon="0" data-fit></svg><span class="date">NOV 8 · SUN</span><span class="num">01</span></div>
   </div>
 
-  <h2>The rules</h2>
+  <h2><svg width="22" height="22" viewBox="0 0 40 40"><path d="M20 0 L23 15 L36 6 L26 18 L40 20 L26 22 L36 34 L23 25 L20 40 L17 25 L4 34 L14 22 L0 20 L14 18 L4 6 L17 15Z" fill="#fff"/></svg>Why I'm doing this</h2>
+  <div class="cards">
+    <div class="card"><b>01</b><svg viewBox="0 0 100 100" data-icon="15"></svg>Every job search asks for end-to-end, hands-on delivery. Instead of describing it, I'm proving it: idea, design, build, ship. 24 times, in public.</div>
+    <div class="card"><b>02</b><svg viewBox="0 0 100 100" data-icon="8"></svg>Things have felt a bit dull lately. I wanted something fun to look forward to every other day.</div>
+    <div class="card"><b>03</b><svg viewBox="0 0 100 100" data-icon="23"></svg>Inspired by advent calendars: a small surprise behind every door. Here, each door is a working product.</div>
+  </div>
+
+  <h2><svg width="22" height="22" viewBox="0 0 40 40"><path d="M20 0 L23 15 L36 6 L26 18 L40 20 L26 22 L36 34 L23 25 L20 40 L17 25 L4 34 L14 22 L0 20 L14 18 L4 6 L17 15Z" fill="#fff"/></svg>The rules</h2>
   <div class="rules">
     <div class="rule"><b>24</b><span>tiny products</span></div>
     <div class="rule"><b>2</b><span>days per product</span></div>
     <div class="rule"><b>47</b><span>days, Nov 8 → Dec 24</span></div>
-    <div class="rule"><b>100%</b><span>built and shipped in public</span></div>
+    <div class="rule"><b>100%</b><span>built in public</span></div>
   </div>
 
-  <h2>What shipped today</h2>
+  <h2><svg width="22" height="22" viewBox="0 0 40 40"><path d="M20 0 L23 15 L36 6 L26 18 L40 20 L26 22 L36 34 L23 25 L20 40 L17 25 L4 34 L14 22 L0 20 L14 18 L4 6 L17 15Z" fill="#fff"/></svg>What shipped today</h2>
   <ul class="shipped">
-    <li><i>DESIGN</i>A red advent calendar with 24 boxes, each with its own flat Christmas illustration.</li>
-    <li><i>INTERACTION</i>Hover a box and it turns like a book page. Locked days only lift a corner. Tap twice on mobile.</li>
-    <li><i>MOTION</i>Floating pearls that follow your mouse, slow falling snow, and pearls that pop when clicked.</li>
-    <li><i>SYSTEM</i>Boxes unlock on their date automatically, so each release is one line of config and a push.</li>
-    <li><i>STACK</i>Plain HTML, CSS and JavaScript, hosted on GitHub Pages. Source is open.</li>
+    <li><span class="tag t-red">DESIGN</span>A red advent calendar with 24 boxes, each with its own flat Christmas illustration.</li>
+    <li><span class="tag t-green">INTERACTION</span>Hover a box and it turns like a book page. Locked days only lift a corner. Tap twice on mobile.</li>
+    <li><span class="tag t-gold">MOTION</span>Floating pearls that follow your mouse, slow falling snow, and pearls that pop when clicked.</li>
+    <li><span class="tag t-red">SYSTEM</span>Boxes unlock on their date automatically, so each release is one line of config and a push.</li>
+    <li><span class="tag t-green">STACK</span>Plain HTML, CSS and JavaScript, hosted on GitHub Pages. Source is open.</li>
   </ul>
 
   <div class="next">
@@ -87,5 +127,14 @@ ul.shipped li i{font-style:normal;font-family:Unbounded,sans-serif;font-weight:8
     <a href="https://github.com/Lesley-Qing-Gu/ChristmasChallenge" target="_blank" rel="noopener">View source ↗</a>
   </div>
 </div>
+
+<script src="../../icons.js?v=9"></script>
+<script>
+// reuse the calendar's illustrations
+document.querySelectorAll('svg[data-icon]').forEach(svg => {
+  const art = ICONS[+svg.dataset.icon].svg;
+  svg.innerHTML = svg.hasAttribute('data-fit') ? `<g transform="translate(17 14) scale(.66)">${art}</g>` : art;
+});
+</script>
 </body>
 </html>
