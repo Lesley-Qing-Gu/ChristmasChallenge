@@ -1,20 +1,28 @@
 <!doctype html>
-<html lang="zh-CN">
+<html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>圣诞挑战日历 · 24 个小功能</title>
+<title>24 Days of Shipping · Christmas Challenge</title>
+<meta name="description" content="One small feature shipped every 2 days, from Nov 8 to Dec 24.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
 <canvas id="snow"></canvas>
+<div class="lights" aria-hidden="true"></div>
 <header>
-  <h1>🎄 圣诞挑战日历</h1>
-  <p>从 11 月 8 日起，每 2 天解锁一个小功能，12 月 24 日收官，一共 24 个。</p>
+  <p class="eyebrow">Nov 8 → Dec 24 · one feature every 2 days</p>
+  <h1>24 Days of <em>Shipping</em></h1>
+  <p class="sub">An advent calendar where every door is a tiny product, built end to end and shipped in public.</p>
+  <div class="bar"><div id="fill"></div></div>
   <p id="progress"></p>
 </header>
 <main id="grid"></main>
-<footer>Made with ❤️ · 每个格子都是一个独立的小项目</footer>
+<footer>
+  <a href="https://github.com/Lesley-Qing-Gu/ChristmasChallenge">View source on GitHub</a>
+</footer>
 <script src="app.js"></script>
 </body>
 </html>

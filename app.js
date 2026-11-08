@@ -13,13 +13,14 @@ fetch('days.json').then(r => r.json()).then(days => {
     const open = preview || d.date <= t;
     if (open) opened++;
     const el = document.createElement(open ? 'a' : 'div');
-    el.className = 'cell ' + (open ? 'open' : 'locked');
+    el.className = 'cell ' + (open ? 'open' : 'locked') + (d.date === t ? ' today' : '');
     if (open) el.href = d.path;
-    const md = d.date.slice(5).replace('-', '/');
-    el.innerHTML = `<div class="n">${d.day}</div><div class="t">${open ? d.title : '🔒 未解锁'}</div><div class="d">${md}</div>`;
+    const md = new Date(d.date + 'T00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+    el.innerHTML = `<div class="n">${d.day}</div><div class="t">${open ? d.title : '🔒 Locked'}</div><div class="d">${md}</div>`;
     grid.appendChild(el);
   });
-  document.getElementById('progress').textContent = `已解锁 ${opened} / ${days.length}`;
+  document.getElementById('fill').style.width = (opened / days.length * 100) + '%';
+  document.getElementById('progress').textContent = `${opened} of ${days.length} doors open`;
 });
 
 // 下雪

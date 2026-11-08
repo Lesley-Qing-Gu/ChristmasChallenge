@@ -4,7 +4,9 @@
       "Bash(git init *)",
       "Bash(git commit -q -m 'Christmas challenge calendar: home page + day 1 countdown *)",
       "Bash(gh repo *)",
-      "Bash(gh api *)"
+      "Bash(gh api *)",
+      "Bash(sed -i '' 's/h1 em{font-style:italic;/h1 em{font-style:italic;padding:0 .12em 0 0;/' style.css)",
+      "Bash(git commit -q -m 'Redesign calendar in English with polished doors, lights and progress bar *)"
     ]
   }
 }
