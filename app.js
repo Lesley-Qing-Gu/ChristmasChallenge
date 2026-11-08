@@ -20,10 +20,10 @@ const wd = s => dt(s).toLocaleDateString('en-US', { weekday: 'short' }).toUpperC
     const day = dt(d.date).getDate();
     el.innerHTML = `
       ${open
-        ? `<a class="under" href="${d.path}"><span class="ic">${d.icon}</span><b>${d.title}</b><small>Open →</small></a>`
-        : `<div class="under"><span class="ic">🔒</span><b>Opens ${mon(d.date)} ${day}</b></div>`}
+        ? `<a class="under" href="${d.path}"><span class="k">DAY ${pad(d.day)}</span><b>${d.title}</b><small>Open →</small></a>`
+        : `<div class="under"><span class="k">DAY ${pad(d.day)}</span><b>Coming soon</b><small>Opens ${mon(d.date)} ${day}</small></div>`}
       <div class="page">
-        <div class="f bg-${art.bg}"><svg viewBox="0 0 100 100" preserveAspectRatio="xMidYMid slice" aria-hidden="true">${art.full ? art.svg : `<g transform="translate(14 4) scale(.72)">${art.svg}</g>`}</svg><span class="date">${mon(d.date)} ${day} · ${wd(d.date)}</span><span class="num">${pad(d.day)}</span></div>
+        <div class="f bg-${art.bg}"><svg viewBox="0 0 100 100" preserveAspectRatio="xMidYMid slice" aria-hidden="true">${art.full ? art.svg : `<g transform="translate(17 14) scale(.66)">${art.svg}</g>`}</svg><span class="date">${mon(d.date)} ${day} · ${wd(d.date)}</span><span class="num">${pad(d.day)}</span></div>
         <div class="b"></div>
       </div>`;
     // touch screens have no hover: first tap turns the page, second tap opens the feature
