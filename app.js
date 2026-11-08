@@ -1,12 +1,11 @@
-const preview = new URLSearchParams(location.search).has('preview'); // 加 ?preview 可预览全部
+const preview = new URLSearchParams(location.search).has('preview'); // add ?preview to see every door unlocked
 
-function today() {
-  const n = new Date();
-  return `${n.getFullYear()}-${String(n.getMonth() + 1).padStart(2, '0')}-${String(n.getDate()).padStart(2, '0')}`;
-}
+const pad = n => String(n).padStart(2, '0');
+const now = new Date();
+const t = `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}`;
+const fmt = s => new Date(s + 'T00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
 
 fetch('days.json').then(r => r.json()).then(days => {
-  const t = today();
   const grid = document.getElementById('grid');
   let opened = 0;
   days.forEach(d => {
@@ -15,27 +14,24 @@ fetch('days.json').then(r => r.json()).then(days => {
     const el = document.createElement(open ? 'a' : 'div');
     el.className = 'cell ' + (open ? 'open' : 'locked') + (d.date === t ? ' today' : '');
     if (open) el.href = d.path;
-    const md = new Date(d.date + 'T00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-    el.innerHTML = `<div class="n">${d.day}</div><div class="t">${open ? d.title : '🔒 Locked'}</div><div class="d">${md}</div>`;
+    el.innerHTML = `
+      <div class="back">
+        <span class="ic">${open ? d.icon : '🔒'}</span>
+        <b>${open ? d.title : 'Opens ' + fmt(d.date)}</b>
+        ${open ? '<small>Open →</small>' : ''}
+      </div>
+      <div class="door">
+        <div class="f"><span class="dt">${fmt(d.date)}</span><span class="n">${d.day}</span></div>
+        <div class="b"></div>
+      </div>`;
+    // touch screens have no hover: first tap opens the door, second tap follows the link
+    el.addEventListener('click', e => {
+      if (!matchMedia('(hover:none)').matches || el.classList.contains('flipped')) return;
+      e.preventDefault();
+      document.querySelectorAll('.flipped').forEach(x => x.classList.remove('flipped'));
+      el.classList.add('flipped');
+    });
     grid.appendChild(el);
   });
-  document.getElementById('fill').style.width = (opened / days.length * 100) + '%';
   document.getElementById('progress').textContent = `${opened} of ${days.length} doors open`;
 });
-
-// 下雪
-const c = document.getElementById('snow'), x = c.getContext('2d');
-let flakes = [];
-function resize() { c.width = innerWidth; c.height = innerHeight; }
-addEventListener('resize', resize); resize();
-for (let i = 0; i < 80; i++) flakes.push({ x: Math.random() * c.width, y: Math.random() * c.height, r: Math.random() * 3 + 1, s: Math.random() + .5 });
-(function tick() {
-  x.clearRect(0, 0, c.width, c.height);
-  x.fillStyle = 'rgba(255,255,255,.8)';
-  flakes.forEach(f => {
-    f.y += f.s; f.x += Math.sin(f.y / 40) * .4;
-    if (f.y > c.height) { f.y = -5; f.x = Math.random() * c.width; }
-    x.beginPath(); x.arc(f.x, f.y, f.r, 0, 7); x.fill();
-  });
-  requestAnimationFrame(tick);
-})();

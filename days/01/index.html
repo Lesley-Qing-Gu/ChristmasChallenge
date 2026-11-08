@@ -4,24 +4,22 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Day 1 · Christmas Countdown</title>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
-body{margin:0;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;color:#f6efe0;font-family:Inter,sans-serif;
- background:radial-gradient(1000px 500px at 50% -10%,#1c4a3b,transparent 60%),linear-gradient(180deg,#0a1f1a,#06110e)}
-.eyebrow{font-size:.8rem;letter-spacing:.18em;text-transform:uppercase;color:#e9c46a;margin:0}
-h1{font-family:Fraunces,serif;font-weight:800;font-size:clamp(2rem,6vw,3.4rem);margin:12px 0 32px}
-#boxes{display:flex;gap:14px;flex-wrap:wrap;justify-content:center;padding:0 16px}
-.box{width:110px;padding:20px 0;border-radius:16px;background:linear-gradient(155deg,#d62839,#8f1424);border:1px solid #ffd9a055;box-shadow:0 10px 30px -8px #d6283980}
-.box b{display:block;font-family:Fraunces,serif;font-size:3rem;color:#e9c46a;font-variant-numeric:tabular-nums}
-.box span{font-size:.75rem;letter-spacing:.14em;text-transform:uppercase;opacity:.85}
-#msg{margin-top:28px;color:#a9b8ae}
-a{margin-top:36px;color:#a9b8ae;text-decoration:none;border-bottom:1px solid #ffffff30}
-a:hover{color:#e9c46a}
+body{margin:0;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;background:#f3b9c3;color:#8a1226;font-family:Inter,sans-serif;padding:16px}
+.eyebrow{font-size:.8rem;letter-spacing:.14em;text-transform:uppercase;font-weight:600;margin:0}
+h1{font-family:"Barlow Condensed",sans-serif;font-weight:700;font-size:clamp(2.6rem,8vw,4.6rem);line-height:.95;margin:8px 0 32px;color:#c8102e}
+#boxes{display:flex;gap:14px;flex-wrap:wrap;justify-content:center}
+.box{width:110px;padding:18px 0 14px;border-radius:10px;background:#c8102e;box-shadow:4px 5px 0 #0002;color:#fff}
+.box b{display:block;font-family:"Barlow Condensed",sans-serif;font-size:3.6rem;line-height:1;font-variant-numeric:tabular-nums}
+.box span{font-size:.7rem;letter-spacing:.14em;text-transform:uppercase;opacity:.85}
+#msg{margin-top:28px}
+a{margin-top:30px;color:inherit}
 </style>
 </head>
 <body>
 <p class="eyebrow">Day 1</p>
-<h1>Until Christmas morning</h1>
+<h1>Until Christmas<br>morning</h1>
 <div id="boxes">
   <div class="box"><b id="d">0</b><span>Days</span></div>
   <div class="box"><b id="h">00</b><span>Hours</span></div>

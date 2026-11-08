@@ -6,23 +6,35 @@
 <title>24 Days of Shipping · Christmas Challenge</title>
 <meta name="description" content="One small feature shipped every 2 days, from Nov 8 to Dec 24.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Caveat:wght@600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
-<canvas id="snow"></canvas>
-<div class="lights" aria-hidden="true"></div>
-<header>
-  <p class="eyebrow">Nov 8 → Dec 24 · one feature every 2 days</p>
-  <h1>24 Days of <em>Shipping</em></h1>
-  <p class="sub">An advent calendar where every door is a tiny product, built end to end and shipped in public.</p>
-  <div class="bar"><div id="fill"></div></div>
-  <p id="progress"></p>
-</header>
-<main id="grid"></main>
-<footer>
-  <a href="https://github.com/Lesley-Qing-Gu/ChristmasChallenge">View source on GitHub</a>
-</footer>
+<div class="poster">
+  <div class="dots" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+  <header>
+    <div>
+      <p class="kicker">Christmas Challenge Calendar</p>
+      <h1>24 Days of<br>Shipping</h1>
+    </div>
+    <div class="year">
+      <b>2026</b>
+      <span>Nov 8 → Dec 24<br>one feature every 2 days</span>
+    </div>
+  </header>
+
+  <div class="house">
+    <div class="chimney"></div>
+    <div class="roof"><span>Merry Christmas</span></div>
+    <main id="grid"></main>
+  </div>
+
+  <div class="foot">
+    <span id="progress"></span>
+    <span>Hover a door to open it</span>
+    <a href="https://github.com/Lesley-Qing-Gu/ChristmasChallenge">Source on GitHub ↗</a>
+  </div>
+</div>
 <script src="app.js"></script>
 </body>
 </html>
