@@ -3,8 +3,8 @@ const DAYS = [
   {
     "day": 1,
     "date": "2026-11-08",
-    "title": "The Advent Calendar",
-    "path": "https://github.com/Lesley-Qing-Gu/ChristmasChallenge"
+    "title": "The Shipmas Plan",
+    "path": "days/01/"
   },
   {
     "day": 2,
