@@ -14,6 +14,7 @@ fetch('days.json').then(r => r.json()).then(days => {
   days.forEach(d => {
     const open = preview || d.date <= today;
     if (open) opened++;
+    const art = ICONS[d.day - 1];
     const el = document.createElement('div');
     el.className = `cell ${open ? 'open' : 'locked'}${d.date === today ? ' today' : ''}`;
     const day = dt(d.date).getDate();
@@ -22,7 +23,7 @@ fetch('days.json').then(r => r.json()).then(days => {
         ? `<a class="under" href="${d.path}"><span class="ic">${d.icon}</span><b>${d.title}</b><small>Open →</small></a>`
         : `<div class="under"><span class="ic">🔒</span><b>Opens ${mon(d.date)} ${day}</b></div>`}
       <div class="page">
-        <div class="f"><span class="num">${pad(d.day)}</span><span class="date">${mon(d.date)} ${day}<small>${wd(d.date)}</small></span></div>
+        <div class="f bg-${art.bg}"><svg viewBox="0 0 100 100" preserveAspectRatio="xMidYMid slice" aria-hidden="true">${art.full ? art.svg : `<g transform="translate(14 4) scale(.72)">${art.svg}</g>`}</svg><span class="date">${mon(d.date)} ${day} · ${wd(d.date)}</span><span class="num">${pad(d.day)}</span></div>
         <div class="b"></div>
       </div>`;
     // touch screens have no hover: first tap turns the page, second tap opens the feature
