@@ -2,10 +2,38 @@
 *{box-sizing:border-box}
 html,body{background:var(--red)}
 body{margin:0;min-height:100vh;color:#fff;font-family:Inter,-apple-system,sans-serif;padding:clamp(28px,5vw,60px) 16px;position:relative;overflow-x:hidden}
-.wrap{position:relative;max-width:1000px;margin:0 auto}
+.wrap{position:relative;z-index:1;max-width:1000px;margin:0 auto}
 
 /* pearl snowballs */
-.balls i{position:absolute;border-radius:50%;background:radial-gradient(circle at 35% 30%,#fff,#e8e2d6 55%,#b9b2a6);box-shadow:0 2px 6px #0003}
+.balls i,.fall i{position:absolute;border-radius:50%;background:radial-gradient(circle at 35% 30%,#fff,#e8e2d6 55%,#b9b2a6);box-shadow:0 2px 6px #0003}
+.balls{position:absolute;inset:0;z-index:2;pointer-events:none}
+/* floating pearls: bob up and down, and drift with the mouse (translate is set from JS) */
+.balls i{--d:1;animation:bob 5s ease-in-out infinite alternate;translate:calc(var(--mx,0) * var(--d) * 1px) calc(var(--my,0) * var(--d) * 1px);transition:translate .6s ease-out}
+.balls i:nth-child(odd){--d:2.2;animation-duration:6.5s}
+.balls i:nth-child(3n){--d:3.4;animation-duration:4.2s;animation-delay:-2s}
+.balls i:nth-child(4n){animation-delay:-3.5s}
+@keyframes bob{from{transform:translateY(-10px)}to{transform:translateY(10px) scale(1.08)}}
+/* slow falling pearls in the background */
+.fall{position:fixed;inset:0;pointer-events:none;overflow:hidden;z-index:0}
+.fall i{top:-30px;opacity:.85;animation:drop linear infinite}
+.fall i:nth-child(1){left:6%;width:8px;height:8px;animation-duration:14s}
+.fall i:nth-child(2){left:18%;width:12px;height:12px;animation-duration:19s;animation-delay:-6s}
+.fall i:nth-child(3){left:29%;width:6px;height:6px;animation-duration:11s;animation-delay:-3s}
+.fall i:nth-child(4){left:41%;width:10px;height:10px;animation-duration:17s;animation-delay:-11s}
+.fall i:nth-child(5){left:53%;width:7px;height:7px;animation-duration:13s;animation-delay:-8s}
+.fall i:nth-child(6){left:64%;width:14px;height:14px;animation-duration:22s;animation-delay:-2s}
+.fall i:nth-child(7){left:75%;width:8px;height:8px;animation-duration:15s;animation-delay:-12s}
+.fall i:nth-child(8){left:86%;width:11px;height:11px;animation-duration:18s;animation-delay:-5s}
+.fall i:nth-child(9){left:94%;width:6px;height:6px;animation-duration:12s;animation-delay:-9s}
+.fall i:nth-child(10){left:12%;width:9px;height:9px;animation-duration:16s;animation-delay:-14s}
+.fall i:nth-child(11){left:47%;width:5px;height:5px;animation-duration:10s;animation-delay:-4s}
+.fall i:nth-child(12){left:70%;width:9px;height:9px;animation-duration:20s;animation-delay:-16s}
+@keyframes drop{0%{transform:translate(0,0)}50%{transform:translate(24px,55vh)}100%{transform:translate(-8px,110vh)}}
+/* pop a pearl when clicked */
+.balls i{pointer-events:auto;cursor:pointer}
+.balls i.pop{animation:pop .5s ease-out forwards}
+@keyframes pop{to{transform:scale(2.4);opacity:0}}
+@media(prefers-reduced-motion:reduce){.balls i,.fall i{animation:none}.fall{display:none}}
 .balls i:nth-child(1){width:16px;height:16px;top:40px;left:8%}
 .balls i:nth-child(2){width:10px;height:10px;top:12px;left:30%}
 .balls i:nth-child(3){width:22px;height:22px;top:170px;right:4%}
@@ -23,10 +51,8 @@ header{text-align:center}
 .by .in{display:grid;place-items:center;width:24px;height:24px;border-radius:50%;background:var(--red);color:#fff;font-family:Inter,sans-serif;font-weight:700;font-size:.78rem;letter-spacing:0}
 .by .arr{transition:transform .15s}.by:hover .arr{transform:translate(2px,-2px)}
 @media(max-width:1000px){body{padding-top:76px}}
-.kicker{margin:0 0 6px;font-family:Unbounded,sans-serif;font-weight:600;font-size:clamp(.6rem,1.4vw,.85rem);letter-spacing:.14em;text-transform:uppercase;opacity:.9}
 h1{margin:0;font-family:Unbounded,sans-serif;font-weight:900;text-transform:uppercase;font-size:clamp(3.4rem,13vw,8.6rem);line-height:.95;letter-spacing:-.02em}
-.tag{margin:18px 0 0;font-family:Unbounded,sans-serif;font-weight:600;font-size:clamp(.95rem,2vw,1.2rem)}
-.sub{margin:10px auto 0;font-family:Fraunces,Georgia,serif;font-style:italic;font-weight:400;font-size:clamp(1.05rem,2.2vw,1.35rem);line-height:1.4;opacity:.95}
+.sub{margin:14px auto 0;font-size:clamp(.95rem,1.8vw,1.1rem);line-height:1.5;opacity:.92}
 
 .prog{display:flex;align-items:center;gap:14px;margin:clamp(24px,4vw,40px) 0 clamp(18px,3vw,28px);font-family:Unbounded,sans-serif;font-weight:600;font-size:.75rem;letter-spacing:.04em;white-space:nowrap}
 .bar{flex:1;height:4px;background:#ffffff40;border-radius:9px;overflow:hidden}

@@ -48,3 +48,13 @@ const wd = s => dt(s).toLocaleDateString('en-US', { weekday: 'short' }).toUpperC
   document.getElementById('fill').style.width = (opened / days.length * 100) + '%';
   document.getElementById('progress').textContent = `${opened} / ${days.length} SHIPPED`;
 })(DAYS);
+
+// pearls drift with the mouse, and pop when clicked (they come back a moment later)
+addEventListener('mousemove', e => {
+  document.documentElement.style.setProperty('--mx', ((e.clientX / innerWidth) - .5) * 16);
+  document.documentElement.style.setProperty('--my', ((e.clientY / innerHeight) - .5) * 16);
+});
+document.querySelectorAll('.balls i').forEach(b => b.addEventListener('click', () => {
+  b.classList.add('pop');
+  setTimeout(() => b.classList.remove('pop'), 2500);
+}));
