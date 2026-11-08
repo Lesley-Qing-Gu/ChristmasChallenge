@@ -1,4 +1,5 @@
-[
+// Edit this list to publish a new day: change the title and icon when the feature is ready.
+const DAYS = [
   {
     "day": 1,
     "date": "2026-11-08",
@@ -167,4 +168,4 @@
     "path": "days/24/",
     "icon": "🎁"
   }
-]
+];

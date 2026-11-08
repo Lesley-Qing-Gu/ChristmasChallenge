@@ -8,7 +8,7 @@ body{margin:0;min-height:100vh;color:#fff;font-family:Inter,-apple-system,sans-s
 .balls i{position:absolute;border-radius:50%;background:radial-gradient(circle at 35% 30%,#fff,#e8e2d6 55%,#b9b2a6);box-shadow:0 2px 6px #0003}
 .balls i:nth-child(1){width:16px;height:16px;top:40px;left:8%}
 .balls i:nth-child(2){width:10px;height:10px;top:12px;left:30%}
-.balls i:nth-child(3){width:22px;height:22px;top:70px;right:9%}
+.balls i:nth-child(3){width:22px;height:22px;top:170px;right:4%}
 .balls i:nth-child(4){width:12px;height:12px;top:230px;right:22%}
 .balls i:nth-child(5){width:14px;height:14px;top:300px;left:3%}
 .balls i:nth-child(6){width:9px;height:9px;top:20px;left:62%}
@@ -16,6 +16,9 @@ body{margin:0;min-height:100vh;color:#fff;font-family:Inter,-apple-system,sans-s
 .balls i:nth-child(8){width:16px;height:16px;bottom:140px;left:2%}
 
 header{text-align:center}
+.by{position:absolute;top:-8px;right:0;z-index:2;font-family:Unbounded,sans-serif;font-weight:600;font-size:clamp(.6rem,1.3vw,.8rem);letter-spacing:.04em;padding:7px 14px;border:2px solid #fff;border-radius:99px}
+.by b{font-weight:800}
+@media(max-width:600px){.by{position:static;display:table;margin:0 0 18px auto}}
 h1{margin:0;font-family:Unbounded,sans-serif;font-weight:900;text-transform:uppercase;font-size:clamp(2.2rem,7.4vw,5rem);line-height:.98;letter-spacing:-.01em}
 .sub{max-width:520px;margin:16px auto 0;font-size:.95rem;line-height:1.55;opacity:.92}
 

@@ -12,7 +12,11 @@
       "Bash(python3 -c \"import datetime;print\\(datetime.date\\(2026,11,1\\).strftime\\('%a'\\),datetime.date\\(2026,12,1\\).strftime\\('%a'\\)\\)\")",
       "Bash(git commit -q -m 'Red month-sheet calendar with book-style page turn on hover *)",
       "Bash(git commit -q -m 'All-red page with 24 numbered boxes and page-turn hover *)",
-      "Bash(git commit -q -m 'Add 24 flat Christmas illustrations to the boxes *)"
+      "Bash(git commit -q -m 'Add 24 flat Christmas illustrations to the boxes *)",
+      "Bash(curl -s https://lesley-qing-gu.github.io/ChristmasChallenge/)",
+      "Bash(curl -sI https://lesley-qing-gu.github.io/ChristmasChallenge/app.js)",
+      "Bash(sed -i '' 's/.balls i:nth-child\\(3\\){width:22px;height:22px;top:70px;right:9%}/.balls i:nth-child\\(3\\){width:22px;height:22px;top:170px;right:4%}/' style.css)",
+      "Bash(git commit -q -m 'Inline day data so the page works when opened locally, bust caches, add author name *)"
     ]
   }
 }

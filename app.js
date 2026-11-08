@@ -7,7 +7,7 @@ const dt = s => new Date(s + 'T00:00');
 const mon = s => dt(s).toLocaleDateString('en-US', { month: 'short' }).toUpperCase();
 const wd = s => dt(s).toLocaleDateString('en-US', { weekday: 'short' }).toUpperCase();
 
-fetch('days.json').then(r => r.json()).then(days => {
+(days => {
   const grid = document.getElementById('grid');
   let opened = 0;
 
@@ -47,4 +47,4 @@ fetch('days.json').then(r => r.json()).then(days => {
 
   document.getElementById('fill').style.width = (opened / days.length * 100) + '%';
   document.getElementById('progress').textContent = `${opened} / ${days.length} SHIPPED`;
-});
+})(DAYS);
