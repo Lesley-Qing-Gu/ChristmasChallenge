@@ -6,34 +6,55 @@
 <title>24 Days of Shipping · Christmas Challenge</title>
 <meta name="description" content="One small feature shipped every 2 days, from Nov 8 to Dec 24.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Caveat:wght@600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
-<div class="poster">
-  <div class="dots" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
-  <header>
-    <div>
-      <p class="kicker">Christmas Challenge Calendar</p>
-      <h1>24 Days of<br>Shipping</h1>
-    </div>
-    <div class="year">
-      <b>2026</b>
-      <span>Nov 8 → Dec 24<br>one feature every 2 days</span>
-    </div>
-  </header>
+<div class="wrap">
 
-  <div class="house">
-    <div class="chimney"></div>
-    <div class="roof"><span>Merry Christmas</span></div>
-    <main id="grid"></main>
-  </div>
+  <section class="sheet cover">
+    <div class="art">
+      <div class="art-top"><span>Christmas Challenge</span><b>2026</b></div>
+      <svg viewBox="0 0 600 380" aria-hidden="true">
+        <g fill="#fff" stroke="var(--red)" stroke-width="4" stroke-linejoin="round" stroke-linecap="round">
+          <!-- tree -->
+          <polygon points="300,170 175,315 425,315"/>
+          <polygon points="300,105 195,235 405,235"/>
+          <polygon points="300,45 215,160 385,160"/>
+          <path d="M235 140 Q300 165 365 128 M218 215 Q300 245 382 205 M200 292 Q300 325 400 280" fill="none" stroke-dasharray="2 10" stroke-width="6"/>
+          <rect x="284" y="315" width="32" height="30" fill="var(--red)"/>
+          <polygon points="300,14 309,34 330,36 314,50 319,71 300,60 281,71 286,50 270,36 291,34" fill="var(--red)"/>
+          <circle cx="262" cy="190" r="8" fill="var(--red)"/><circle cx="340" cy="262" r="8" fill="var(--red)"/>
+          <circle cx="318" cy="118" r="7" fill="var(--red)"/><circle cx="245" cy="290" r="7" fill="var(--red)"/>
+          <!-- gifts -->
+          <rect x="60" y="262" width="104" height="84" fill="var(--red)"/>
+          <rect x="104" y="262" width="16" height="84" fill="#fff" stroke="none"/>
+          <rect x="60" y="296" width="104" height="14" fill="#fff" stroke="none"/>
+          <path d="M112 262 C80 230 70 250 92 262 M112 262 C144 230 154 250 132 262"/>
+          <rect x="168" y="296" width="62" height="50"/>
+          <path d="M199 296 V346 M168 318 H230" stroke-width="8"/>
+          <!-- laptop -->
+          <rect x="430" y="242" width="124" height="84" rx="6"/>
+          <text x="492" y="296" text-anchor="middle" font-family="Barlow Condensed,sans-serif" font-weight="700" font-size="34" fill="var(--red)" stroke="none">&lt;/&gt;</text>
+          <polygon points="414,328 570,328 582,346 402,346" fill="var(--red)"/>
+          <!-- snow -->
+          <g stroke-width="3"><path d="M90 80 v24 M78 92 h24 M82 84 l16 16 M98 84 l-16 16"/><path d="M500 60 v20 M490 70 h20"/><path d="M470 150 v16 M462 158 h16"/><path d="M130 170 v16 M122 178 h16"/></g>
+          <line x1="30" y1="348" x2="570" y2="348" stroke-width="4"/>
+        </g>
+      </svg>
+    </div>
+    <aside>
+      <div class="big">24</div>
+      <h1>Days of Shipping</h1>
+      <p>An advent calendar where every door is a tiny product, built end to end and shipped in public. One new feature every 2 days, Nov 8 → Dec 24.</p>
+      <div class="prog"><span id="progress"></span><div class="bar"><i id="fill"></i></div></div>
+      <a class="src" href="https://github.com/Lesley-Qing-Gu/ChristmasChallenge">Source on GitHub ↗</a>
+    </aside>
+  </section>
 
-  <div class="foot">
-    <span id="progress"></span>
-    <span>Hover a door to open it</span>
-    <a href="https://github.com/Lesley-Qing-Gu/ChristmasChallenge">Source on GitHub ↗</a>
-  </div>
+  <div id="months"></div>
+
+  <p class="hint">Hover a numbered day to turn the page · tap on mobile</p>
 </div>
 <script src="app.js"></script>
 </body>

@@ -8,7 +8,9 @@
       "Bash(sed -i '' 's/h1 em{font-style:italic;/h1 em{font-style:italic;padding:0 .12em 0 0;/' style.css)",
       "Bash(git commit -q -m 'Redesign calendar in English with polished doors, lights and progress bar *)",
       "Bash(sed -i '' 's/.cell.locked .f{background:#b8909a}/.cell.locked .f{background:#d4697a}/' style.css)",
-      "Bash(git commit -q -m 'Flat paper-style calendar with hover flip-open doors *)"
+      "Bash(git commit -q -m 'Flat paper-style calendar with hover flip-open doors *)",
+      "Bash(python3 -c \"import datetime;print\\(datetime.date\\(2026,11,1\\).strftime\\('%a'\\),datetime.date\\(2026,12,1\\).strftime\\('%a'\\)\\)\")",
+      "Bash(git commit -q -m 'Red month-sheet calendar with book-style page turn on hover *)"
     ]
   }
 }
