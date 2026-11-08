@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>第 1 天 · 圣诞倒计时</title>
+<style>
+body{margin:0;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;background:radial-gradient(ellipse at top,#134e3a,#0b2a1f);color:#fdf6e3;font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;text-align:center}
+h1{margin:0 0 24px}
+#boxes{display:flex;gap:12px;flex-wrap:wrap;justify-content:center}
+.box{background:#c8102e;border:2px solid #f5c542;border-radius:14px;padding:16px 20px;min-width:84px}
+.box b{display:block;font-size:2.6rem;font-variant-numeric:tabular-nums}
+.box span{font-size:.85rem;opacity:.85}
+#msg{margin-top:24px;font-size:1.2rem;color:#f5c542}
+a{margin-top:32px;color:#fdf6e3;opacity:.7}
+</style>
+</head>
+<body>
+<h1>🎅 距离圣诞节还有</h1>
+<div id="boxes">
+  <div class="box"><b id="d">0</b><span>天</span></div>
+  <div class="box"><b id="h">0</b><span>小时</span></div>
+  <div class="box"><b id="m">0</b><span>分钟</span></div>
+  <div class="box"><b id="s">0</b><span>秒</span></div>
+</div>
+<div id="msg"></div>
+<a href="../../">← 返回日历</a>
+<script>
+const now = new Date();
+let target = new Date(now.getFullYear(), 11, 25);
+if (now > target) target = new Date(now.getFullYear() + 1, 11, 25);
+function tick() {
+  const diff = target - new Date();
+  const p = (id, v) => document.getElementById(id).textContent = String(v).padStart(2, '0');
+  document.getElementById('d').textContent = Math.floor(diff / 864e5);
+  p('h', Math.floor(diff / 36e5) % 24);
+  p('m', Math.floor(diff / 6e4) % 60);
+  p('s', Math.floor(diff / 1e3) % 60);
+  document.getElementById('msg').textContent = '🎁 还有 ' + Math.ceil(diff / 864e5) + ' 天，快去许愿吧！';
+}
+tick(); setInterval(tick, 1000);
+</script>
+</body>
+</html>
