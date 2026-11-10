@@ -1,0 +1,947 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Day 02 · Neck-Skiing Adventure</title>
+<meta name="description" content="A pixel-art Christmas ski game you steer with your head. Tilt to carve, look up to jump, and give your neck a break from the desk.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Pixelify+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--red:#e60012;--red-d:#b5121b;--cream:#f7f1e3;--ink:#4a1218;--green:#14935a;--dark:#0b4a35;--gold:#d9b36c;--px:4px}
+*{box-sizing:border-box}
+html{background:#0d1b2a}
+body{margin:0;background:transparent;color:#fff;font-family:"Pixelify Sans",monospace;font-size:17px;padding:clamp(20px,3vw,40px) 16px;overflow-x:hidden}
+/* pixel winter landscape behind everything */
+#scenery{position:fixed;inset:0;width:100%;height:100%;z-index:-1;image-rendering:pixelated;image-rendering:crisp-edges}
+/* the page is exactly as wide as the game + sidebar, and the game is sized to fit the window height */
+.wrap{position:relative;margin:0 auto;max-width:min(1160px,max(820px,calc((100vh - 270px) * 800 / 560 + 280px)))}
+.pixel{font-family:"Press Start 2P",monospace}
+/* notched pixel corners */
+.notch{clip-path:polygon(0 var(--px),var(--px) var(--px),var(--px) 0,calc(100% - var(--px)) 0,calc(100% - var(--px)) var(--px),100% var(--px),100% calc(100% - var(--px)),calc(100% - var(--px)) calc(100% - var(--px)),calc(100% - var(--px)) 100%,var(--px) 100%,var(--px) calc(100% - var(--px)),0 calc(100% - var(--px)))}
+
+.top{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+.back,.by{font-family:"Press Start 2P",monospace;font-size:.6rem;line-height:1;padding:12px 14px;text-decoration:none;transition:transform .1s}
+.back{color:var(--red);background:#fff}
+.by{color:#fff;background:var(--red)}
+.back:hover,.by:hover{transform:translateY(-3px)}
+
+.head{margin:clamp(22px,3vw,32px) 0 clamp(16px,2.4vw,22px)}
+.eyebrow{margin:0 0 12px;font-family:"Press Start 2P",monospace;font-size:.62rem;color:#ffd9a0}
+h1{margin:0;font-family:"Press Start 2P",monospace;font-weight:400;font-size:clamp(1.1rem,3.3vw,2.1rem);line-height:1.25;text-shadow:4px 4px 0 var(--red-d)}
+.lead{margin:12px 0 0;max-width:680px;font-size:1.05rem;line-height:1.45;
+  text-shadow:2px 0 0 #0d1b2a,-2px 0 0 #0d1b2a,0 2px 0 #0d1b2a,0 -2px 0 #0d1b2a,2px 2px 0 #0d1b2a,-2px 2px 0 #0d1b2a,2px -2px 0 #0d1b2a,-2px -2px 0 #0d1b2a}
+.eyebrow,.lead{position:relative}
+
+.layout{display:flex;gap:clamp(14px,2vw,20px);align-items:flex-start}
+.play{flex:1 1 auto;min-width:0}
+.panel{flex:0 0 260px;display:grid;gap:12px}
+
+/* game */
+.stage{position:relative;border:var(--px) solid var(--dark);box-shadow:8px 8px 0 #00000040;background:#fbf8f2}
+#game{display:block;width:100%;height:auto;aspect-ratio:200/140;image-rendering:pixelated;image-rendering:crisp-edges}
+.overlay{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:24px;background:#0b4a35eb;color:#fff;gap:12px}
+.overlay[hidden]{display:none}
+.overlay h2{margin:0;font-family:"Press Start 2P",monospace;font-weight:400;font-size:clamp(.9rem,2.4vw,1.4rem);line-height:1.4;color:#fff;text-shadow:3px 3px 0 var(--red)}
+.overlay p{margin:0;max-width:400px;line-height:1.4;font-size:1rem}
+.overlay .small{font-size:.85rem;opacity:.75}
+.btn{appearance:none;border:0;cursor:pointer;font-family:"Press Start 2P",monospace;font-size:.62rem;line-height:1;padding:14px 18px;background:#fff;color:var(--red);transition:transform .1s}
+.btn:hover{transform:translateY(-3px)}
+.btn:active{transform:translateY(2px)}
+.btn.ghost{background:var(--red);color:#fff}
+.btns{display:flex;flex-wrap:wrap;gap:10px;margin-top:6px;justify-content:center}
+.howto{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;width:100%;max-width:420px}
+.howto div{background:#ffffff1f;padding:12px 6px 10px}
+.howto b{display:block;font-family:"Press Start 2P",monospace;font-weight:400;font-size:.6rem;color:#ffd9a0;margin-bottom:8px}
+.howto span{font-size:.95rem}
+.big-num{font-family:"Press Start 2P",monospace;font-size:3.6rem;line-height:1;text-shadow:5px 5px 0 var(--red)}
+.pbar{width:200px;height:12px;background:#ffffff33;padding:2px}
+.pbar i{display:block;height:100%;width:0;background:#fff}
+.result{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;width:100%;max-width:380px}
+.result div{background:#ffffff1f;padding:12px 6px}
+.result b{display:block;font-family:"Press Start 2P",monospace;font-weight:400;font-size:.95rem;margin-bottom:8px}
+.result span{font-size:.85rem;opacity:.85}
+.touch{display:none;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-top:14px}
+.touch button{appearance:none;border:0;background:var(--dark);color:#fff;font-family:"Press Start 2P",monospace;font-size:1rem;padding:16px 0;touch-action:none}
+@media(hover:none){.touch.show{display:grid}}
+
+/* side panel */
+.card{background:var(--cream);color:var(--ink);padding:16px}
+.card h3,details.card summary{margin:0 0 12px;font-family:"Press Start 2P",monospace;font-weight:400;font-size:.55rem;line-height:1.4;color:var(--red)}
+details.card summary{cursor:pointer;list-style:none;margin:0}
+details.card summary::-webkit-details-marker{display:none}
+details.card summary::after{content:"+";float:right}
+details.card[open] summary::after{content:"-"}
+details.card[open] summary{margin-bottom:14px}
+.cam{position:relative;overflow:hidden;background:var(--dark);aspect-ratio:16/11}
+.cam video,.cam canvas{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transform:scaleX(-1)}
+.cam video{filter:contrast(1.1) saturate(.9)}
+.cam .empty{position:absolute;inset:0;display:grid;place-items:center;color:#ffffffc0;font-size:.9rem;text-align:center;padding:12px;line-height:1.3}
+.cam .empty[hidden]{display:none}
+.cam .status{position:absolute;left:0;right:0;bottom:0;margin:0;padding:14px 8px 6px;background:linear-gradient(transparent,#0d1b2acc);color:#fff;font-size:.82rem;line-height:1.25}
+.cam .status:empty{display:none}
+.card h3.sub{margin-top:16px}
+.meter{position:relative;height:12px;background:#e600121f;margin:14px 0 4px}
+.meter::before{content:"";position:absolute;left:50%;top:-4px;bottom:-4px;width:4px;margin-left:-2px;background:#e6001255}
+.meter i{position:absolute;top:50%;left:50%;width:16px;height:16px;margin:-8px 0 0 -8px;background:var(--red);transition:left .08s}
+.lamp{display:inline-flex;align-items:center;gap:8px;margin-top:8px;font-size:.95rem}
+.lamp i{width:12px;height:12px;background:#e6001230}
+.lamp.on i{background:var(--green);box-shadow:0 0 0 3px #14935a44}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.stats div{background:#fff;padding:10px 4px 8px;text-align:center}
+.stats b{display:block;font-family:"Press Start 2P",monospace;font-weight:400;font-size:.9rem;color:var(--red);margin-bottom:6px}
+.stats span{font-size:.85rem;opacity:.7}
+.set label{display:grid;grid-template-columns:1fr auto;gap:4px 10px;font-size:.95rem;margin-bottom:12px}
+.set input[type=range]{grid-column:1/-1;width:100%;accent-color:var(--red)}
+.set .row{display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+.set .chk{display:flex;align-items:center;gap:8px;margin:0;font-size:.95rem}
+.set .chk input{accent-color:var(--red)}
+/* leaderboard */
+.board{list-style:none;margin:0;padding:0;display:grid;gap:4px;max-height:190px;overflow-y:auto}
+.board li{display:grid;grid-template-columns:22px 1fr auto;gap:6px;align-items:center;background:#fff;padding:6px 8px;font-size:.92rem;line-height:1.2}
+.board li i{font-style:normal;font-family:"Press Start 2P",monospace;font-size:.5rem;color:#4a121880}
+.board li:nth-child(1) i{color:var(--gold)}.board li:nth-child(2) i{color:#9aa6b2}.board li:nth-child(3) i{color:#b8893a}
+.board li span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.board li b{font-family:"Press Start 2P",monospace;font-weight:400;font-size:.55rem;color:var(--red)}
+.board li.me{background:#14935a1f;box-shadow:inset 3px 0 0 var(--green)}
+.board .empty-row{display:block;background:none;padding:4px 0;opacity:.7}
+.submit{display:grid;gap:8px;justify-items:center;margin:4px 0 0}
+.name-row{display:flex;gap:8px}
+.name-row input{width:190px;border:0;padding:12px;font-family:"Pixelify Sans",monospace;font-size:1rem;background:#fff;color:var(--ink);outline:none}
+.name-row input:focus{box-shadow:inset 0 0 0 3px var(--gold)}
+.submit[hidden]{display:none}
+.mini{appearance:none;border:0;background:var(--red);color:#fff;padding:8px 10px;font-family:"Press Start 2P",monospace;font-size:.45rem;cursor:pointer}
+.mini:disabled{opacity:.35;cursor:default}
+
+@media(max-width:820px){.layout{flex-direction:column;align-items:stretch}.play{max-width:none}.panel{flex:none;grid-template-columns:repeat(auto-fit,minmax(230px,1fr))}}
+</style>
+</head>
+<body>
+<canvas id="scenery" aria-hidden="true"></canvas>
+<div class="wrap">
+  <div class="top">
+    <a class="back notch" href="../../">&lt; BACK TO CALENDAR</a>
+    <a class="by notch" href="https://www.linkedin.com/in/qing-gu-072167322" target="_blank" rel="noopener">BY LESLEY QING GU &gt;</a>
+  </div>
+
+  <div class="head">
+    <p class="eyebrow">DAY 02 · NOV 10</p>
+    <h1>NECK-SKIING ADVENTURE</h1>
+    <p class="lead">Steer with your head. Stretch your neck.</p>
+  </div>
+
+  <div class="layout">
+    <div class="play">
+      <div class="stage">
+        <canvas id="game" width="200" height="140" aria-label="Ski game"></canvas>
+
+        <div class="overlay" id="ovMenu">
+          <h2>READY?</h2>
+          <div class="howto">
+            <div class="notch"><b>TILT</b><span>to steer</span></div>
+            <div class="notch"><b>LOOK UP</b><span>to jump</span></div>
+            <div class="notch"><b>GIFTS</b><span>+50 each</span></div>
+          </div>
+          <div class="btns">
+            <button class="btn notch" id="btnHead">PLAY WITH MY HEAD</button>
+          </div>
+          <p class="small">Camera stays on your device.</p>
+        </div>
+
+        <div class="overlay" id="ovCalib" hidden>
+          <h2 id="calibTitle">LOOK STRAIGHT<br>AT THE SCREEN</h2>
+          <p id="calibText">Sit comfortably and keep your head level. Calibrating…</p>
+          <div class="pbar"><i id="calibBar"></i></div>
+          <div class="btns"><button class="btn ghost notch" id="btnCalibKeys" hidden>USE KEYBOARD</button></div>
+        </div>
+
+        <div class="overlay" id="ovCount" hidden>
+          <div class="big-num" id="countNum">3</div>
+          <p id="countHint">Tilt to steer · look up to jump</p>
+        </div>
+
+        <div class="overlay" id="ovPause" hidden>
+          <h2>PAUSED</h2>
+          <div class="btns"><button class="btn notch" id="btnResume">RESUME</button></div>
+        </div>
+
+        <div class="overlay" id="ovOver" hidden>
+          <h2 id="overTitle">WIPEOUT!</h2>
+          <div class="result">
+            <div class="notch"><b id="rScore">0</b><span>score</span></div>
+            <div class="notch"><b id="rGifts">0</b><span>gifts</span></div>
+            <div class="notch"><b id="rDist">0m</b><span>distance</span></div>
+          </div>
+          <p id="overNeck"></p>
+          <form class="submit" id="submitBox" hidden>
+            <div class="name-row">
+              <input class="notch" id="nameInput" maxlength="16" placeholder="Your name" autocomplete="nickname" aria-label="Your name for the leaderboard">
+              <button class="btn notch" id="btnSubmit" type="submit">SUBMIT</button>
+            </div>
+            <p class="small" id="submitMsg">Only your name and score are saved. No sign-in needed.</p>
+          </form>
+          <div class="btns">
+            <button class="btn notch" id="btnAgain">SKI AGAIN</button>
+            <button class="btn ghost notch" id="btnMenu">RECALIBRATE</button>
+          </div>
+        </div>
+      </div>
+      <div class="touch" id="touch">
+        <button class="notch" data-k="left" aria-label="Left">&lt;</button>
+        <button class="notch" data-k="jump" aria-label="Jump">^</button>
+        <button class="notch" data-k="right" aria-label="Right">&gt;</button>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="card notch">
+        <h3>HEAD TRACKER</h3>
+        <div class="cam">
+          <video id="cam" playsinline muted></video>
+          <canvas id="camOverlay" width="320" height="240"></canvas>
+          <div class="empty" id="camEmpty">Camera is off.<br>Press “Play with my head”.</div>
+          <p class="status" id="status"></p>
+        </div>
+        <div class="meter" aria-label="Tilt left or right"><i id="meterDot"></i></div>
+        <div class="lamp" id="lamp"><i></i>Look up to jump</div>
+        <h3 class="sub">NECK STRETCHES</h3>
+        <div class="stats">
+          <div class="notch"><b id="sLeft">0</b><span>left</span></div>
+          <div class="notch"><b id="sRight">0</b><span>right</span></div>
+          <div class="notch"><b id="sUp">0</b><span>up</span></div>
+        </div>
+      </div>
+
+      <div class="card notch">
+        <h3>TOP SKIERS</h3>
+        <ol class="board" id="board"><li class="empty-row">Leaderboard opens soon.</li></ol>
+      </div>
+
+      <details class="card notch set">
+        <summary>SETTINGS</summary>
+        <label>Tilt sensitivity <span id="vTilt">medium</span><input type="range" id="tilt" min="8" max="28" step="1" value="16"></label>
+        <label>Jump sensitivity <span id="vJump">medium</span><input type="range" id="jump" min="6" max="30" step="1" value="14"></label>
+        <div class="row">
+          <label class="chk"><input type="checkbox" id="invert"> Flip left / right</label>
+          <button class="mini notch" id="btnRecal" disabled>RECALIBRATE</button>
+        </div>
+      </details>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+// =====================================================================
+//  Pixel renderer: the game runs at 200x140 and the canvas is scaled up
+//  with image-rendering: pixelated, so every sprite is real pixels.
+// =====================================================================
+const W = 200, H = 140, FEET = 44;          // player's feet sit near the top; the slope scrolls up
+const SIDE = 105;                           // max sideways speed (px/s)
+const cvs = document.getElementById('game'), ctx = cvs.getContext('2d');
+ctx.imageSmoothingEnabled = false;
+const $ = id => document.getElementById(id);
+const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+const rand = (a, b) => a + Math.random() * (b - a);
+
+const PAL = {
+  R: '#e60012', r: '#b5121b', W: '#ffffff', C: '#f7f1e3', G: '#14935a', g: '#0b4a35', l: '#1fb06b',
+  Y: '#d9b36c', y: '#b8893a', B: '#7a4a25', S: '#f2c9a0', K: '#2b1a1a', O: '#f08a24', L: '#cfd9e6', s: '#e4ebf2'
+};
+const SNOW = '#fbf8f2';
+
+// sprite maps: each character is one pixel, '.' is transparent
+const SPR = {
+  skier: [
+    '......WW..',
+    '....RRRW..',
+    '...RRRR...',
+    '..WWWWWW..',
+    '..SSSSSS..',
+    '..SKSSKS..',
+    '..SSSSSS..',
+    '.GGGGGGGG.',
+    'BRRRRRRRRB',
+    'B.RRWWRR.B',
+    'B.RRRRRR.B',
+    'B.RR..RR.B',
+    '..gg..gg..',
+    '..gg..gg..',
+    '..gg..gg..',
+    '..gg..gg..',
+  ],
+  tree: [
+    '......W......',
+    '.....WlW.....',
+    '....GlGGG....',
+    '...WGGGGGW...',
+    '.....GGG.....',
+    '....GlGGG....',
+    '...GGGGgGG...',
+    '..WGGGGGGgW..',
+    '....GlGGG....',
+    '...GGGGGgGG..',
+    '..GGlGGGGGGG.',
+    '.GgGGGGGGGgG.',
+    'WGGGGGGGGGGGW',
+    '.ggggggggggg.',
+    '.....BBB.....',
+    '.....BBB.....',
+  ],
+  snowman: [
+    '...ggg...',
+    '...ggg...',
+    '..ggggg..',
+    '...WWW...',
+    '..WKWKW..',
+    '..WWOOW..',
+    '...WWW...',
+    '.RRRRRRR.',
+    '..WWWRW..',
+    '.WWWKWRW.',
+    'WWWWWWWWW',
+    'WWWWKWWWW',
+    'WWWWWWWWs',
+    '.WWWWWWs.',
+    '..sssss..',
+  ],
+  giftR: [
+    '.Y....Y.',
+    '..Y..Y..',
+    '...YY...',
+    'RRRYYRRR',
+    'RRRYYRRR',
+    'YYYYYYYY',
+    'rRRYYRRr',
+    'rRRYYRRr',
+    'rrrYYrrr',
+  ],
+  heart: [
+    '.RR.RR.',
+    'RWRRRRR',
+    'RRRRRRR',
+    '.RRRRR.',
+    '..RRR..',
+    '...R...',
+  ],
+  heartOff: [
+    '.ss.ss.',
+    'sssssss',
+    'sssssss',
+    '.sssss.',
+    '..sss..',
+    '...s...',
+  ],
+};
+SPR.giftG = SPR.giftR.map(r => r.replace(/R/g, 'G').replace(/r/g, 'g'));
+
+// pre-render every sprite once into its own little canvas
+const IMG = {};
+for (const [k, rows] of Object.entries(SPR)) {
+  const c = document.createElement('canvas');
+  c.width = rows[0].length; c.height = rows.length;
+  const x = c.getContext('2d');
+  rows.forEach((row, j) => [...row].forEach((ch, i) => { if (PAL[ch]) { x.fillStyle = PAL[ch]; x.fillRect(i, j, 1, 1); } }));
+  IMG[k] = c;
+}
+// draw a sprite anchored at its bottom-centre
+const put = (k, x, y) => ctx.drawImage(IMG[k], Math.round(x - IMG[k].width / 2), Math.round(y - IMG[k].height));
+const px = (x, y, w, h, c) => { ctx.fillStyle = c; ctx.fillRect(Math.round(x), Math.round(y), w, h); };
+
+// 3x5 bitmap digits for the HUD
+const DIG = {
+  0: '111101101101111', 1: '010110010010111', 2: '111001111100111', 3: '111001111001111', 4: '101101111001001',
+  5: '111100111001111', 6: '111100111101111', 7: '111001010010010', 8: '111101111101111', 9: '111101111001111',
+  '+': '000010111010000', m: '000000111111101'
+};
+function text(str, x, y, c, s = 1) {
+  ctx.fillStyle = c;
+  [...String(str)].forEach((ch, n) => {
+    const d = DIG[ch]; if (!d) return;
+    for (let i = 0; i < 15; i++) if (d[i] === '1') ctx.fillRect(x + n * 4 * s + (i % 3) * s, y + Math.floor(i / 3) * s, s, s);
+  });
+}
+
+// =====================================================================
+//  Game state
+// =====================================================================
+let state = 'menu';      // menu | calib | count | play | pause | over
+let mode = 'keys';       // keys | head
+const JUMP_T = 0.75;
+const g = {};
+const session = { left: 0, right: 0, up: 0 };
+function reset() {
+  Object.assign(g, { x: W / 2, vx: 0, speed: 52, dist: 0, gifts: 0, lives: 3, inv: 0, air: 0, objs: [], trail: [], pops: [], parts: [], speck: [], acc: 0, time: 0, flash: 0, shake: 0 });
+  for (let i = 0; i < 70; i++) g.speck.push({ x: Math.floor(rand(0, W)), y: Math.floor(rand(0, H)) });
+}
+reset();
+const flakes = Array.from({ length: 34 }, () => ({ x: rand(0, W), y: rand(0, H), s: rand(6, 16), big: Math.random() < .25 }));
+
+// ---------- keyboard & touch ----------
+const keys = { left: false, right: false };
+let jumpQueued = false;
+// The keyboard only steers in the fallback mode (no camera / no face). With head control, keys do nothing but pause.
+addEventListener('keydown', e => {
+  if (e.key === 'p' || e.key === 'P') togglePause();
+  if ([' ', 'ArrowUp', 'ArrowLeft', 'ArrowRight'].includes(e.key) && state === 'play') e.preventDefault();
+  if (mode !== 'keys') return;
+  if (['ArrowLeft', 'a', 'A'].includes(e.key)) keys.left = true;
+  if (['ArrowRight', 'd', 'D'].includes(e.key)) keys.right = true;
+  if ([' ', 'ArrowUp', 'w', 'W'].includes(e.key)) jumpQueued = true;
+});
+addEventListener('keyup', e => {
+  if (['ArrowLeft', 'a', 'A'].includes(e.key)) keys.left = false;
+  if (['ArrowRight', 'd', 'D'].includes(e.key)) keys.right = false;
+});
+document.querySelectorAll('#touch button').forEach(b => {
+  const k = b.dataset.k;
+  b.addEventListener('pointerdown', e => { e.preventDefault(); if (mode !== 'keys') return; if (k === 'jump') jumpQueued = true; else keys[k] = true; });
+  ['pointerup', 'pointerleave', 'pointercancel'].forEach(t => b.addEventListener(t, () => { if (k !== 'jump') keys[k] = false; }));
+});
+
+// =====================================================================
+//  Head tracking (MediaPipe Face Landmarker, runs locally in the browser)
+// =====================================================================
+const video = $('cam'), mini = $('camOverlay'), mctx = mini.getContext('2d');
+const head = { on: false, seen: false, roll: 0, pitch: 0, base: null, samples: [], upOn: false, tilt: 0, pts: null };
+let landmarker = null, lastVideoTime = -1;
+
+async function startHead() {
+  setStatus('Asking for the camera…');
+  const camP = navigator.mediaDevices.getUserMedia({ video: { width: 640, height: 480, facingMode: 'user' }, audio: false });
+  const modelP = (async () => {
+    const { FaceLandmarker, FilesetResolver } = await import('https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.14');
+    const files = await FilesetResolver.forVisionTasks('https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.14/wasm');
+    return FaceLandmarker.createFromOptions(files, {
+      baseOptions: { modelAssetPath: 'https://storage.googleapis.com/mediapipe-models/face_landmarker/face_landmarker/float16/1/face_landmarker.task', delegate: 'GPU' },
+      runningMode: 'VIDEO', numFaces: 1
+    });
+  })();
+  const stream = await camP;
+  video.srcObject = stream;
+  await video.play();
+  $('camEmpty').hidden = true;
+  setStatus('Loading face tracking…');
+  landmarker = await modelP;
+  head.on = true;
+  $('btnRecal').disabled = false;
+  setStatus('Tracking your head.');
+}
+
+function track(now) {
+  if (!head.on || video.readyState < 2 || video.currentTime === lastVideoTime) return;
+  lastVideoTime = video.currentTime;
+  const res = landmarker.detectForVideo(video, now);
+  const lm = res.faceLandmarks && res.faceLandmarks[0];
+  head.seen = !!lm;
+  if (!lm) { head.pts = null; return; }
+  const ar = video.videoWidth / video.videoHeight;
+  const a = lm[33], b = lm[263], nose = lm[1];          // outer eye corners and nose tip
+  const ex = (b.x - a.x) * ar, ey = b.y - a.y, eLen = Math.hypot(ex, ey);
+  const roll = Math.atan2(ey, ex) * 180 / Math.PI;      // head tilt toward a shoulder
+  const mx = (a.x + b.x) / 2, my = (a.y + b.y) / 2;
+  const nx = (nose.x - mx) * ar, ny = nose.y - my;
+  const pitch = (ny * ex - nx * ey) / eLen / eLen;      // nose distance below the eye line; shrinks when you look up
+  head.roll += (roll - head.roll) * 0.5;
+  head.pitch += (pitch - head.pitch) * 0.5;
+  head.pts = { a, b, nose };
+}
+
+function headSteer() {
+  if (!head.base || !head.seen) return 0;
+  const full = +$('tilt').value, dead = 3;
+  const d = head.roll - head.base.roll;
+  const s = Math.sign(d) * Math.max(0, Math.abs(d) - dead) / (full - dead);
+  return clamp(-s, -1, 1) * ($('invert').checked ? -1 : 1);
+}
+
+function headUpdate() {
+  if (!head.base || !head.seen) { head.upOn = false; return; }
+  const k = +$('jump').value / 100;
+  const upNow = head.pitch < head.base.pitch * (1 - k);
+  const release = head.pitch > head.base.pitch * (1 - k / 2);
+  if (upNow && !head.upOn) {
+    head.upOn = true;
+    if (state === 'play') { jumpQueued = true; session.up++; }
+  } else if (head.upOn && release) head.upOn = false;
+  const s = headSteer();
+  if (state === 'play') {
+    if (s < -0.7 && head.tilt !== -1) { head.tilt = -1; session.left++; }
+    else if (s > 0.7 && head.tilt !== 1) { head.tilt = 1; session.right++; }
+    else if (Math.abs(s) < 0.3) head.tilt = 0;
+  }
+}
+
+function drawMini() {
+  mctx.clearRect(0, 0, mini.width, mini.height);
+  if (!head.pts) return;
+  const p = q => [Math.round(q.x * mini.width), Math.round(q.y * mini.height)];
+  const [ax, ay] = p(head.pts.a), [bx, by] = p(head.pts.b), [nx, ny] = p(head.pts.nose);
+  mctx.fillStyle = '#fff';
+  for (let t = 0; t <= 1; t += 0.08) mctx.fillRect(Math.round(ax + (bx - ax) * t) - 2, Math.round(ay + (by - ay) * t) - 2, 4, 4);
+  mctx.fillStyle = head.upOn ? PAL.G : PAL.R;
+  mctx.fillRect(nx - 5, ny - 5, 10, 10);
+}
+
+// ---------- calibration ----------
+let calibStart = 0;
+function beginCalib() {
+  head.base = null; head.samples = []; calibStart = performance.now();
+  $('calibTitle').innerHTML = 'LOOK STRAIGHT<br>AT THE SCREEN';
+  $('calibText').textContent = 'Sit comfortably and keep your head level. Calibrating…';
+  $('btnCalibKeys').hidden = true;
+  show('ovCalib'); state = 'calib';
+}
+function calibStep(now) {
+  if (head.seen) head.samples.push({ roll: head.roll, pitch: head.pitch });
+  const need = 45;
+  $('calibBar').style.width = Math.min(100, head.samples.length / need * 100) + '%';
+  if (head.samples.length >= need) {
+    const avg = k => head.samples.slice(10).reduce((s, v) => s + v[k], 0) / (head.samples.length - 10);
+    head.base = { roll: avg('roll'), pitch: avg('pitch') };
+    startCountdown();
+  } else if (now - calibStart > 5000 && head.samples.length < 5) {
+    $('calibTitle').innerHTML = "CAN'T SEE<br>YOUR FACE";
+    $('calibText').textContent = 'Try facing the camera with a bit more light.';
+    $('btnCalibKeys').hidden = false;
+  }
+}
+
+// ---------- flow ----------
+const overlays = ['ovMenu', 'ovCalib', 'ovCount', 'ovPause', 'ovOver'];
+function show(id) { overlays.forEach(o => $(o).hidden = o !== id); }
+function setStatus(t) { $('status').textContent = t; }
+
+let countEnd = 0;
+function startCountdown() {
+  reset(); state = 'count'; countEnd = performance.now() + 3000;
+  keys.left = keys.right = false;
+  $('countHint').textContent = mode === 'head' ? 'Tilt to steer · look up to jump' : 'No camera, so: ← → to steer · Space to jump';
+  $('touch').classList.toggle('show', mode === 'keys' && matchMedia('(hover:none)').matches);
+  show('ovCount');
+}
+function togglePause() {
+  if (state === 'play') { state = 'pause'; show('ovPause'); }
+  else if (state === 'pause') { state = 'play'; show(null); }
+}
+const meters = () => Math.floor(g.dist / 4);
+const score = () => meters() + g.gifts * 50;
+let lastRun = null;
+function gameOver() {
+  state = 'over';
+  lastRun = { score: score(), gifts: g.gifts, meters: meters(), secs: Math.max(1, Math.round(g.time)) };
+  prepareSubmit();
+  $('rScore').textContent = score();
+  $('rGifts').textContent = g.gifts;
+  $('rDist').textContent = meters() + 'm';
+  const moves = session.left + session.right + session.up;
+  $('overTitle').textContent = g.gifts >= 10 ? 'GIFT HAULER!' : 'WIPEOUT!';
+  $('overNeck').textContent = mode === 'head'
+    ? `Your neck did ${moves} stretch${moves === 1 ? '' : 'es'} so far this session. Nice work.`
+    : 'Keyboard runs don’t go on the leaderboard. Turn on your camera to compete.';
+  show('ovOver');
+}
+
+$('btnHead').onclick = async () => {
+  mode = 'head';
+  $('btnHead').disabled = true; $('btnHead').textContent = 'STARTING…';
+  try {
+    if (!head.on) await startHead();
+    beginCalib();
+  } catch (err) {
+    console.error(err);
+    setStatus('Camera or face tracking is unavailable, so the keyboard takes over. These runs don’t go on the leaderboard.');
+    mode = 'keys'; startCountdown();
+  } finally { $('btnHead').disabled = false; $('btnHead').textContent = 'PLAY WITH MY HEAD'; }
+};
+$('btnCalibKeys').onclick = () => { mode = 'keys'; startCountdown(); };
+$('btnAgain').onclick = () => { mode === 'head' && !head.base ? beginCalib() : startCountdown(); };
+$('btnMenu').onclick = () => { if (head.on) { mode = 'head'; beginCalib(); } else { state = 'menu'; show('ovMenu'); } };
+$('btnResume').onclick = togglePause;
+$('btnRecal').onclick = () => { if (head.on && state !== 'calib') { mode = 'head'; beginCalib(); } };
+const word = (v, lo, hi) => v <= lo ? 'high' : v >= hi ? 'low' : 'medium';
+$('tilt').oninput = e => $('vTilt').textContent = word(+e.target.value, 12, 22);
+$('jump').oninput = e => $('vJump').textContent = word(+e.target.value, 10, 22);
+document.addEventListener('visibilitychange', () => { if (document.hidden && state === 'play') togglePause(); });
+
+// =====================================================================
+//  Update
+// =====================================================================
+function spawn() {
+  const r = Math.random();
+  let o;
+  if (r < 0.42) o = { t: 'tree' };
+  else if (r < 0.66) o = { t: 'gift', k: Math.random() < .5 ? 'giftR' : 'giftG' };
+  else if (r < 0.86) o = { t: 'fence', w: Math.round(rand(40, 72)) };
+  else o = { t: 'snowman' };
+  o.x = o.t === 'fence' ? rand(o.w / 2 + 14, W - o.w / 2 - 14) : rand(18, W - 18);
+  o.y = H + 20;
+  g.objs.push(o);
+}
+// hitboxes in game pixels, objects anchored at their bottom-centre
+function hitbox(o) {
+  if (o.t === 'tree') return [o.x - 4, o.y - 6, o.x + 4, o.y];
+  if (o.t === 'snowman') return [o.x - 4, o.y - 9, o.x + 4, o.y];
+  if (o.t === 'gift') return [o.x - 5, o.y - 9, o.x + 5, o.y];
+  return [o.x - o.w / 2, o.y - 5, o.x + o.w / 2, o.y];
+}
+function update(dt) {
+  const steer = mode === 'head' ? headSteer() : (keys.right ? 1 : 0) - (keys.left ? 1 : 0);
+  g.time += dt;
+  g.speed = Math.min(135, 52 + g.time * 1.8);
+  g.vx += (steer * SIDE - g.vx) * Math.min(1, dt * 7);
+  g.x = clamp(g.x + g.vx * dt, 14, W - 14);                // the forest lines both edges
+  if (jumpQueued && g.air <= 0) g.air = JUMP_T;
+  jumpQueued = false;
+  if (g.air > 0) {
+    g.air = Math.max(0, g.air - dt);
+    if (g.air === 0) fx.land(g.x, FEET);                    // touchdown puff
+  }
+  if (g.inv > 0) g.inv -= dt;
+  if (g.flash > 0) g.flash -= dt;
+  if (g.shake > 0) g.shake -= dt;
+
+  const dy = g.speed * dt;
+  g.dist += dy;
+  g.objs.forEach(o => o.y -= dy);
+  g.objs = g.objs.filter(o => o.y > -24);
+  g.speck.forEach(p => { p.y -= dy; if (p.y < 0) { p.y += H; p.x = Math.floor(rand(0, W)); } });
+  g.trail.push({ x: g.x, y: FEET, air: g.air > 0 });
+  g.trail.forEach(p => p.y -= dy);
+  g.trail = g.trail.filter(p => p.y > -2);
+  g.pops.forEach(p => { p.y -= 12 * dt; p.life -= dt; });
+  g.pops = g.pops.filter(p => p.life > 0);
+
+  g.acc += dy;
+  const gap = Math.max(18, 31 - g.time * 0.33);
+  while (g.acc > gap) { g.acc -= gap; spawn(); if (Math.random() < 0.67) spawn(); }
+
+  const pb = [g.x - 4, FEET - 10, g.x + 4, FEET];
+  for (const o of g.objs) {
+    const h = hitbox(o);
+    if (pb[0] > h[2] || pb[2] < h[0] || pb[1] > h[3] || pb[3] < h[1]) continue;
+    if (o.t === 'gift') { o.dead = true; g.gifts++; g.pops.push({ x: o.x, y: o.y - 12, life: .8 }); fx.gift(o.x, o.y - 5); continue; }
+    if (o.t === 'fence' && g.air > 0) continue;
+    if (g.inv > 0) continue;
+    g.lives--; g.inv = 1.5; g.flash = .18; g.shake = .3;
+    if (o.t === 'tree') fx.tree(o);
+    else if (o.t === 'snowman') fx.snowman(o);
+    else fx.fence(o, g.x);
+    if (g.lives <= 0) { gameOver(); break; }
+  }
+  g.objs = g.objs.filter(o => !o.dead);
+  g.objs.forEach(o => { if (o.wob > 0) o.wob -= dt; });
+  updateParts(dt, dy);
+}
+
+// =====================================================================
+//  Draw
+// =====================================================================
+function shadow(x, y, w) { px(x - w / 2, y - 1, w, 2, PAL.s); }
+function drawFence(o) {
+  const x0 = Math.round(o.x - o.w / 2), y0 = Math.round(o.y - 5);
+  px(x0 + 1, y0 + 5, o.w, 2, PAL.s);
+  for (let x = 0; x < o.w; x++) for (let y = 0; y < 5; y++) {
+    const end = x === 0 || x === o.w - 1;
+    if (end && (y === 0 || y === 4)) continue;                                  // rounded ends
+    const edge = end || y === 0 || y === 4;                                     // dark outline so it reads on snow
+    ctx.fillStyle = edge ? PAL.r : Math.floor((x + y) / 3) % 2 ? PAL.R : PAL.W;
+    ctx.fillRect(x0 + x, y0 + y, 1, 1);
+  }
+}
+// =====================================================================
+//  Effects: pixel particles for crashes, gifts and landings
+// =====================================================================
+function burst(x, y, n, colors, o = {}) {
+  const { spd = 35, up = 25, grav = 70, life = 1, big = 0, flutter = 0 } = o;
+  for (let i = 0; i < n; i++) g.parts.push({
+    x: x + rand(-2, 2), y: y + rand(-2, 2), vx: rand(-spd, spd), vy: rand(-spd, spd * .4) - up, grav, flutter,
+    life: rand(life * .6, life), max: life, c: colors[i % colors.length], s: Math.random() < big ? 2 : 1, ph: rand(0, 6)
+  });
+}
+const fx = {
+  tree(o) {                                   // shake the tree, drop leaves and a puff of snow
+    o.wob = .45;
+    burst(o.x, o.y - 10, 24, [PAL.G, PAL.l, PAL.g, PAL.G], { spd: 32, up: 20, grav: 24, life: 1.7, flutter: 20, big: .4 });
+    burst(o.x, o.y - 14, 12, [PAL.W, PAL.s], { spd: 26, up: 22, grav: 50, life: .9, big: .6 });
+  },
+  snowman(o) {                                // snow chunks, the hat and the carrot nose go flying
+    o.wob = .45;
+    burst(o.x, o.y - 6, 20, [PAL.W, PAL.W, PAL.s, PAL.L], { spd: 42, up: 30, grav: 80, life: 1.1, big: .7 });
+    burst(o.x, o.y - 14, 3, [PAL.g], { spd: 15, up: 55, grav: 90, life: 1.1, big: 1 });
+    burst(o.x + 2, o.y - 10, 2, [PAL.O], { spd: 30, up: 30, grav: 80, life: 1 });
+  },
+  fence(o, x) {                               // candy-cane shards from where you hit it
+    burst(clamp(x, o.x - o.w / 2, o.x + o.w / 2), o.y - 3, 20, [PAL.R, PAL.W, PAL.r], { spd: 44, up: 24, grav: 90, life: 1, big: .5 });
+  },
+  gift(x, y) {                                // golden ring, sparkles and a little confetti
+    g.parts.push({ ring: true, x, y, life: .4, max: .4, c: PAL.Y });
+    burst(x, y, 14, [PAL.Y, PAL.W, PAL.y], { spd: 50, up: 0, grav: 0, life: .55, big: .4 });
+    burst(x, y, 12, [PAL.R, PAL.G, PAL.Y], { spd: 28, up: 34, grav: 60, life: 1.1, flutter: 12, big: .5 });
+  },
+  land(x, y) { burst(x, y, 8, [PAL.W, PAL.s], { spd: 22, up: 4, grav: 30, life: .45 }); },
+};
+function updateParts(dt, dy) {
+  for (const p of g.parts) {
+    p.life -= dt;
+    if (p.ring) { p.y -= dy; continue; }
+    p.vy += p.grav * dt;
+    p.vx *= 1 - dt * 1.5;
+    p.x += p.vx * dt + (p.flutter ? Math.sin(p.life * 9 + p.ph) * p.flutter * dt : 0);
+    p.y += p.vy * dt - dy;                    // pieces left on the snow scroll away with the slope
+  }
+  g.parts = g.parts.filter(p => p.life > 0 && p.y > -10);
+}
+function drawParts() {
+  for (const p of g.parts) {
+    if (p.ring) {
+      const r = 2 + (1 - p.life / p.max) * 13;
+      for (let a = 0; a < 16; a++) px(p.x + Math.cos(a / 16 * 6.283) * r, p.y + Math.sin(a / 16 * 6.283) * r, 1, 1, p.c);
+      continue;
+    }
+    if (p.life < p.max * .3 && Math.floor(p.life * 20) % 2) continue;   // pixel-style fade: blink out
+    px(p.x, p.y, p.s, p.s, p.c);
+  }
+}
+
+function drawObj(o, t) {
+  const wx = o.wob > 0 ? Math.round(Math.sin(o.wob * 45) * 1.5) : 0;    // wobble after a hit
+  if (o.t === 'tree') { shadow(o.x + 1, o.y + 1, 12); put('tree', o.x + wx, o.y); }
+  else if (o.t === 'snowman') { shadow(o.x + 1, o.y + 1, 10); put('snowman', o.x + wx, o.y); }
+  else if (o.t === 'gift') { const bob = Math.round(Math.sin(t * 5 + o.x) * 1); shadow(o.x, o.y + 1, 7); put(o.k, o.x, o.y - 1 + bob); }
+  else drawFence(o);
+}
+function drawPlayer() {
+  const lift = g.air > 0 ? Math.round(Math.sin(Math.PI * (1 - g.air / JUMP_T)) * 9) : 0;
+  shadow(g.x, FEET + 1, lift ? 6 : 9);
+  const img = IMG.skier, x0 = Math.round(g.x - img.width / 2), y0 = FEET - img.height - lift;
+  if (g.inv > .5 && state === 'play') {                     // dizzy stars circling the head after a crash
+    const t = performance.now() / 1000;
+    for (let i = 0; i < 3; i++) {
+      const a = t * 7 + i * 2.1;
+      const sx = Math.round(x0 + 5 + Math.cos(a) * 8), sy = Math.round(y0 - 1 + Math.sin(a) * 3);
+      px(sx, sy - 1, 1, 3, PAL.Y); px(sx - 1, sy, 3, 1, PAL.Y);          // little plus-shaped star
+    }
+  }
+  if (g.inv > 0 && Math.floor(g.inv * 12) % 2) return;
+  const lean = clamp(g.vx / SIDE, -1, 1);
+  // upper body as one piece, skis shear sideways when carving
+  ctx.drawImage(img, 0, 0, img.width, 12, x0, y0, img.width, 12);
+  for (let r = 12; r < img.height; r++) {
+    const shift = Math.round(lean * (r - 11) * 0.7);
+    ctx.drawImage(img, 0, r, img.width, 1, x0 + shift, y0 + r, img.width, 1);
+  }
+}
+function draw(t, dt) {
+  ctx.save();
+  if (g.shake > 0) ctx.translate(Math.round(rand(-2, 2)), Math.round(rand(-2, 2)));
+  px(-4, -4, W + 8, H + 8, SNOW);
+  g.speck.forEach(p => px(p.x, p.y, 1, 1, PAL.s));                       // snow texture
+  g.trail.forEach(p => { if (!p.air) { px(p.x - 3, p.y, 1, 1, PAL.L); px(p.x + 2, p.y, 1, 1, PAL.L); } });
+
+  // forest along both edges of the run, scrolling with the slope
+  const step = 13, off = g.dist % step, base = Math.floor(g.dist / step);
+  const hash = n => { n = Math.imul(n ^ (n >>> 15), 0x2c1b3c6d); n = Math.imul(n ^ (n >>> 12), 0x297a2d39); return (n ^ (n >>> 15)) >>> 0; };
+  px(0, 0, 8, H, PAL.s); px(W - 8, 0, 8, H, PAL.s);
+  for (let k = -1; k < H / step + 3; k++) {
+    const i = base + k, y = k * step - off + 16;
+    put('tree', 2 + (hash(i) % 5) - 2, y);
+    put('tree', W - 3 + (hash(i * 7 + 3) % 5) - 2, y + 6);
+  }
+
+  const sorted = [...g.objs].sort((a, b) => a.y - b.y);
+  let drawn = false;
+  for (const o of sorted) { if (!drawn && o.y > FEET) { drawPlayer(); drawn = true; } drawObj(o, t); }
+  if (!drawn) drawPlayer();
+
+  drawParts();
+  g.pops.forEach(p => text('+50', Math.round(p.x - 6), Math.round(p.y), p.life > .3 ? PAL.G : PAL.l));
+
+  flakes.forEach(f => {                                                // falling snow
+    f.y += f.s * dt; f.x += Math.sin(f.y / 9) * .15;
+    if (f.y > H) { f.y = -2; f.x = rand(0, W); }
+    px(f.x, f.y, f.big ? 2 : 1, f.big ? 2 : 1, PAL.W);
+  });
+  ctx.restore();
+
+  if (g.flash > 0) { ctx.fillStyle = `rgba(230,0,18,${g.flash * 1.6})`; ctx.fillRect(0, 0, W, H); }
+
+  // HUD: score box and hearts
+  const pill = (x, y, w, h) => { px(x + 1, y, w - 2, h, PAL.C); px(x, y + 1, w, h - 2, PAL.C); };   // cream box, notched corners, no border
+  pill(3, 3, 44, 11);
+  put('giftR', 10, 13);
+  text(score(), 17, 6, PAL.R);
+  pill(W - 30, 3, 27, 11);
+  for (let i = 0; i < 3; i++) ctx.drawImage(IMG[i < g.lives ? 'heart' : 'heartOff'], W - 28 + i * 8, 6);
+}
+
+// ---------- side panel readouts ----------
+function updatePanel() {
+  const s = mode === 'head' ? headSteer() : (keys.right ? 1 : 0) - (keys.left ? 1 : 0);
+  $('meterDot').style.left = (50 + s * 46) + '%';
+  $('lamp').classList.toggle('on', head.upOn || (mode === 'keys' && g.air > 0));
+  $('sLeft').textContent = session.left; $('sRight').textContent = session.right; $('sUp').textContent = session.up;
+  if (head.on) {
+    if (!head.seen) setStatus("Can't see your face right now.");
+    else if (!head.base) setStatus('Face found. Calibrating when you start.');
+    else setStatus('Tracking your head. Move slowly and comfortably.');
+  }
+}
+
+// =====================================================================
+//  Leaderboard (optional: switched on once firebase-config.js is filled in)
+// =====================================================================
+const GAME = 'neck-ski';
+let LB = null, user = null;
+const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+
+function renderBoard(rows, err) {
+  const el = $('board');
+  if (err) { el.innerHTML = '<li class="empty-row">Leaderboard is taking a nap. Try again later.</li>'; return; }
+  if (!rows.length) { el.innerHTML = '<li class="empty-row">No runs yet. Be the first!</li>'; return; }
+  el.innerHTML = rows.map((r, i) =>
+    `<li class="${user && r.id === user.uid ? 'me' : ''}"><i>${i + 1}</i><span>${esc(r.name)}</span><b>${r.score}</b></li>`).join('');
+}
+function prepareSubmit() {
+  if (!LB || !LB.enabled || mode !== 'head') { $('submitBox').hidden = true; return; }   // only head-controlled runs count
+  $('submitBox').hidden = false;
+  $('btnSubmit').disabled = false;
+  if (!$('nameInput').value) $('nameInput').value = LB.savedName();
+  $('submitMsg').textContent = 'Only your name and score are saved. No sign-in needed.';
+}
+$('submitBox').onsubmit = async e => {
+  e.preventDefault();
+  if (!lastRun || !LB) return;
+  const check = LB.checkName($('nameInput').value);
+  if (check.error) { $('submitMsg').textContent = check.error; return; }
+  $('btnSubmit').disabled = true;
+  $('submitMsg').textContent = 'Saving…';
+  try {
+    const r = await LB.submit(GAME, check.name, lastRun);
+    $('submitMsg').textContent = r.saved ? 'Saved! You’re on the board.' : `Not a new best. Your best is still ${r.best}.`;
+  } catch (err) {
+    console.error(err);
+    $('submitMsg').textContent = 'Could not save this run. Try again in a moment.';
+    $('btnSubmit').disabled = false;
+  }
+};
+// keep game keys (space, arrows) from firing while typing a name
+$('nameInput').addEventListener('keydown', e => e.stopPropagation());
+
+import('../../lib/leaderboard.js').then(mod => {
+  LB = mod;
+  if (!LB.enabled) return;
+  $('board').innerHTML = '<li class="empty-row">Loading…</li>';
+  let rows = [], loaded = false;
+  LB.watchTop(GAME, 10, (r, err) => { if (r) rows = r; loaded = true; renderBoard(rows, err); });
+  LB.onUser(u => { user = u; if (loaded) renderBoard(rows); if (state === 'over') prepareSubmit(); });
+}).catch(err => console.warn('Leaderboard unavailable', err));
+
+// =====================================================================
+//  Page scenery: pixel night sky, moon, three mountain ranges, pines, snow
+// =====================================================================
+const scen = $('scenery'), sctx = scen.getContext('2d');
+const SW = 320;                        // scenery is 320 pixels wide, height follows the window
+let SH = 200, skyImg, landImg, stars = [], sflakes = [];
+function rng(seed) { return () => { seed |= 0; seed = seed + 0x6D2B79F5 | 0; let t = Math.imul(seed ^ seed >>> 15, 1 | seed); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+function noise1d(seed, n) { const r = rng(seed), pts = Array.from({ length: n + 2 }, r); return x => { const i = Math.floor(x), f = x - i, s = f * f * (3 - 2 * f); return pts[i % pts.length] * (1 - s) + pts[(i + 1) % pts.length] * s; }; }
+function buildScenery() {
+  SH = Math.max(140, Math.round(SW * innerHeight / innerWidth));
+  scen.width = SW; scen.height = SH;
+  // sky: dithered bands from deep night to a soft glow at the horizon
+  skyImg = document.createElement('canvas'); skyImg.width = SW; skyImg.height = SH;
+  const k = skyImg.getContext('2d'), bands = ['#0b1626', '#0f1f33', '#142a42', '#1b3753', '#244665', '#2f5677'];
+  const bh = SH * 0.62 / bands.length;
+  for (let y = 0; y < SH; y++) {
+    const b = Math.min(bands.length - 1, Math.floor(y / bh)), next = Math.min(bands.length - 1, b + 1), t = (y / bh) - b;
+    for (let x = 0; x < SW; x++) { k.fillStyle = (t > 0.7 && (x + y) % 2) ? bands[next] : bands[b]; k.fillRect(x, y, 1, 1); }
+  }
+  // moon with craters
+  const mx = Math.round(SW * 0.8), my = Math.round(SH * 0.14), mr = 9;
+  for (let y = -mr; y <= mr; y++) for (let x = -mr; x <= mr; x++) if (x * x + y * y <= mr * mr) { k.fillStyle = x * x + y * y > (mr - 1.5) ** 2 ? '#e8dcc0' : '#fbf3dc'; k.fillRect(mx + x, my + y, 1, 1); }
+  k.fillStyle = '#e8dcc0'; [[-3, -2, 2], [3, 2, 2], [-1, 4, 1], [4, -4, 1]].forEach(([x, y, s]) => k.fillRect(mx + x, my + y, s, s));
+  stars = Array.from({ length: 70 }, (_, i) => { const r = rng(i * 97 + 3); return { x: Math.floor(r() * SW), y: Math.floor(r() * SH * 0.5), p: r() * 6, big: r() < .12 }; });
+
+  // land: three ridged ranges (far to near), then pines and snowy ground
+  landImg = document.createElement('canvas'); landImg.width = SW; landImg.height = SH;
+  const L = landImg.getContext('2d');
+  const ranges = [
+    { base: .50, amp: .34, scale: 70, seed: 11, rock: ['#5d7a99', '#4c6886'], snow: ['#e3ecf5', '#bfcfe0'] },
+    { base: .62, amp: .28, scale: 46, seed: 23, rock: ['#3f5873', '#324a63'], snow: ['#f4f8fc', '#c9d7e6'] },
+    { base: .74, amp: .20, scale: 30, seed: 37, rock: ['#2b3f55', '#223447'], snow: ['#ffffff', '#d4e0ec'] },
+  ];
+  for (const R of ranges) {
+    const n1 = noise1d(R.seed, 64), n2 = noise1d(R.seed + 1, 64), n3 = noise1d(R.seed + 2, 64);
+    const ridge = v => 1 - Math.abs(2 * v - 1);
+    const h = x => Math.round(SH * (R.base - R.amp * (0.6 * ridge(n1(x / R.scale)) + 0.3 * ridge(n2(x / (R.scale / 2.6))) + 0.1 * n3(x / 6))));
+    const snowline = SH * (R.base - R.amp * 0.45);
+    for (let x = 0; x < SW; x++) {
+      const top = h(x), lit = h(x + 3) <= h(x - 3);                    // light from the left: faces climbing to the right are lit
+      const depth = top < snowline ? Math.round((snowline - top) * 0.7) + 2 : 1;
+      for (let y = top; y < SH; y++) {
+        const isSnow = y < top + depth;
+        L.fillStyle = (isSnow ? R.snow : R.rock)[lit ? 0 : 1];
+        L.fillRect(x, y, 1, 1);
+      }
+    }
+  }
+  // pine forest along a low hill
+  const hill = noise1d(51, 64), groundY = x => Math.round(SH * 0.82 + hill(x / 25) * 6);
+  for (let x = 0; x < SW; x++) { L.fillStyle = '#eef3f8'; L.fillRect(x, groundY(x), 1, SH); }
+  const tr = rng(77);
+  for (let x = -4; x < SW + 4; x += 3 + Math.floor(tr() * 4)) {
+    const th = 7 + Math.floor(tr() * 9), gy = groundY(Math.max(0, x));
+    for (let r = 0; r < th; r++) {
+      const half = Math.floor(r / 2.2);
+      L.fillStyle = r % 3 === 0 && r > 1 ? '#0b4a35' : '#0e5a40';
+      L.fillRect(x - half, gy - th + r, half * 2 + 1, 1);
+    }
+    if (tr() < .7) { L.fillStyle = '#ffffff'; L.fillRect(x, gy - th, 1, 1); L.fillRect(x - 1, gy - th + 3, 1, 1); }
+  }
+  // soft snow drifts on the ground
+  for (let x = 0; x < SW; x += 1) if ((x * 7) % 11 < 3) { L.fillStyle = '#d9e3ee'; L.fillRect(x, groundY(x) + 3 + (x % 5), 2, 1); }
+  sflakes = Array.from({ length: 90 }, () => ({ x: rand(0, SW), y: rand(0, SH), s: rand(5, 14), big: Math.random() < .2 }));
+}
+function drawScenery(t, dt) {
+  sctx.drawImage(skyImg, 0, 0);
+  stars.forEach(s => {                                                  // twinkle
+    const on = Math.sin(t * 2 + s.p * 3) > -0.3;
+    if (!on) return;
+    sctx.fillStyle = Math.sin(t * 2 + s.p * 3) > 0.7 ? '#ffffff' : '#9fb4cc';
+    sctx.fillRect(s.x, s.y, 1, 1);
+    if (s.big && Math.sin(t * 2 + s.p * 3) > 0.7) { sctx.fillRect(s.x - 1, s.y, 3, 1); sctx.fillRect(s.x, s.y - 1, 1, 3); }
+  });
+  sctx.drawImage(landImg, 0, 0);
+  sctx.fillStyle = '#ffffff';
+  sflakes.forEach(f => {
+    f.y += f.s * dt; f.x += Math.sin(f.y / 12 + f.s) * .12;
+    if (f.y > SH) { f.y = -2; f.x = rand(0, SW); }
+    sctx.fillRect(Math.round(f.x), Math.round(f.y), f.big ? 2 : 1, f.big ? 2 : 1);
+  });
+}
+buildScenery();
+addEventListener('resize', buildScenery);
+
+// ---------- main loop ----------
+let last = performance.now();
+function frame(now) {
+  const dt = Math.min(0.05, (now - last) / 1000); last = now;
+  track(now);
+  headUpdate();
+  drawMini();
+  if (state === 'calib') calibStep(now);
+  if (state === 'count') {
+    const left = Math.min(3, Math.ceil((countEnd - now) / 1000));
+    $('countNum').textContent = left > 0 ? left : 'GO';
+    if (now >= countEnd) { state = 'play'; show(null); jumpQueued = false; }
+  }
+  if (state === 'play') update(dt);
+  else if (state === 'over') updateParts(dt, 0);            // let the last crash settle
+  draw(now / 1000, state === 'pause' ? 0 : dt);
+  drawScenery(now / 1000, dt);
+  updatePanel();
+  requestAnimationFrame(frame);
+}
+requestAnimationFrame(frame);
+</script>
+</body>
+</html>
