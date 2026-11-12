@@ -15,7 +15,7 @@ const DAYS = [
   {
     "day": 3,
     "date": "2026-11-12",
-    "title": "Mystery gift",
+    "title": "Cloud Climbing Gym",
     "path": "days/03/"
   },
   {

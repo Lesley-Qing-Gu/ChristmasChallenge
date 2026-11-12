@@ -6,4 +6,6 @@ export const firebaseConfig = {
   authDomain: 'shipmas.firebaseapp.com',
   projectId: 'shipmas',
   appId: '1:851305769437:web:f5f9a89abfe427fadfee34',
+  // Realtime Database: live positions for multiplayer rooms (rules in database.rules.json)
+  databaseURL: 'https://shipmas-default-rtdb.europe-west1.firebasedatabase.app',
 };

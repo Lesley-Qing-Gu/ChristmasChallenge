@@ -1,0 +1,26 @@
+{
+  "rules": {
+    ".read": false,
+    ".write": false,
+    "presence": {
+      "$room": {
+        ".read": "auth != null && ($room === 'blx')",
+        "$uid": {
+          ".write": "auth != null && auth.uid === $uid && $room === 'blx'",
+          ".validate": "newData.hasChildren(['x', 'y', 'z', 'yaw', 'n', 't', 'p', 's', 'c', 'ts'])",
+          "x":   { ".validate": "newData.isNumber() && newData.val() >= -40 && newData.val() <= 60" },
+          "y":   { ".validate": "newData.isNumber() && newData.val() >= -1 && newData.val() <= 8" },
+          "z":   { ".validate": "newData.isNumber() && newData.val() >= -40 && newData.val() <= 90" },
+          "yaw": { ".validate": "newData.isNumber() && newData.val() >= -10000 && newData.val() <= 10000" },
+          "n":   { ".validate": "newData.isString() && newData.val().length <= 18" },
+          "t":   { ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() <= 7" },
+          "p":   { ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() <= 7" },
+          "s":   { ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() <= 7" },
+          "c":   { ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() <= 7" },
+          "ts":  { ".validate": "newData.val() === now" },
+          "$other": { ".validate": false }
+        }
+      }
+    }
+  }
+}
