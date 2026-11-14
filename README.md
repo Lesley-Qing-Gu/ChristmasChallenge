@@ -22,7 +22,7 @@ I've always loved advent calendars, with a tiny surprise behind every door. Ship
 | 01 | Nov 8 | [The Shipmas Plan](#day-01--the-shipmas-plan) | ✅ Shipped |
 | 02 | Nov 10 | [Neck-Skiing Adventure](#day-02--neck-skiing-adventure) | ✅ Shipped |
 | 03 | Nov 12 | [Cloud Climbing Gym](#day-03--cloud-climbing-gym) | ✅ Shipped |
-| 04 | Nov 14 | — | 🔒 |
+| 04 | Nov 14 | [Lätt svenska 2026 in Review](#day-04--lätt-svenska-2026-in-review) | ✅ Shipped |
 | 05 | Nov 16 | — | 🔒 |
 | 06 | Nov 18 | — | 🔒 |
 | 07 | Nov 20 | — | 🔒 |
@@ -85,3 +85,16 @@ Gyms close over Christmas, so here is a cloud climbing gym to walk around instea
 - **Stack:** Three.js 0.160 (WebGL, loaded with an import map) with bloom, ACES tone mapping and soft shadows. Everything is modelled in code, with posters and signs drawn on canvas textures. Firebase (anonymous Auth + Realtime Database with security rules) for live multiplayer. Plain HTML, CSS and JavaScript on GitHub Pages, no build step.
 
 ![Day 03](docs/screenshots/day-03.png)
+
+## Day 04 · Lätt svenska 2026 in Review
+
+**Shipped Nov 14** · [Explore the year](https://lesley-qing-gu.github.io/ChristmasChallenge/days/04/) · Source: [`days/04/`](days/04)
+
+I've listened to Radio Sweden på lätt svenska for a year while learning Swedish, and it felt like they talked about students all the time. So I analysed every 2026 episode to find out what they actually talked about most. An unofficial fan project, not affiliated with Sveriges Radio.
+
+- **What it does:** a year-in-review page for 219 episodes (about 36 hours of audio): key findings, topics ranked by attention, topics by month, the top 100 words with search, frequent phrases and the most mentioned names. Plus a free Anki deck of the 1000 most frequent words (English or Chinese), each card with a real sentence from the show.
+- **How it's built:** episode audio comes from the Sveriges Radio open API and was transcribed locally with Whisper large-v3-turbo on MLX. The transcripts were analysed in Python: topics are tagged sentence by sentence with keywords, and words are counted by lemma with simplemma plus manual fixes. The word list became Anki decks. The page itself is plain HTML, CSS and JavaScript, styled as a Swedish Christmas (julröd, an advent candle arch, dala horses and straw goats). The full transcripts stay offline, since they are Sveriges Radio content.
+- **What I learned:** my hunch was half right. The election was by far the biggest topic, but school, children and young people came second, in 189 of 219 episodes. Whisper is good enough for word counts, but it still misspells names and needs a filter for hallucinated lines.
+- **Stack:** Sveriges Radio open API, Whisper large-v3-turbo (MLX), Python with simplemma, Anki decks, and a plain HTML/CSS/JS page on GitHub Pages.
+
+![Day 04](docs/screenshots/day-04.png)

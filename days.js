@@ -21,7 +21,7 @@ const DAYS = [
   {
     "day": 4,
     "date": "2026-11-14",
-    "title": "Mystery gift",
+    "title": "Lätt svenska 2026 in Review",
     "path": "days/04/"
   },
   {

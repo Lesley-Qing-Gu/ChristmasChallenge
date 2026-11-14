@@ -1,2 +1,7 @@
 .claude/
 NOTES.md
+# Day 4 source data: kept local (full transcripts are Sveriges Radio content)
+days/04/all_transcripts_2026.txt
+days/04/*.csv
+days/04/latt_svenska_2026*.html
+days/04/*top500*.apkg
