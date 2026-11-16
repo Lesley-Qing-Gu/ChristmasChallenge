@@ -27,7 +27,7 @@ const DAYS = [
   {
     "day": 5,
     "date": "2026-11-16",
-    "title": "Mystery gift",
+    "title": "MöleMe",
     "path": "days/05/"
   },
   {

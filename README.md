@@ -23,7 +23,7 @@ I've always loved advent calendars, with a tiny surprise behind every door. Ship
 | 02 | Nov 10 | [Neck-Skiing Adventure](#day-02--neck-skiing-adventure) | ✅ Shipped |
 | 03 | Nov 12 | [Cloud Climbing Gym](#day-03--cloud-climbing-gym) | ✅ Shipped |
 | 04 | Nov 14 | [Lätt svenska 2026 in Review](#day-04--lätt-svenska-2026-in-review) | ✅ Shipped |
-| 05 | Nov 16 | — | 🔒 |
+| 05 | Nov 16 | [MöleMe](#day-05--möleme) | ✅ Shipped |
 | 06 | Nov 18 | — | 🔒 |
 | 07 | Nov 20 | — | 🔒 |
 | 08 | Nov 22 | — | 🔒 |
@@ -98,3 +98,16 @@ I've listened to Radio Sweden på lätt svenska for a year while learning Swedis
 - **Stack:** Sveriges Radio open API, Whisper large-v3-turbo (MLX), Python with simplemma, Anki decks, and a plain HTML/CSS/JS page on GitHub Pages.
 
 ![Day 04](docs/screenshots/day-04.png)
+
+## Day 05 · MöleMe
+
+**Shipped Nov 16** · [Sit at the desk](https://lesley-qing-gu.github.io/ChristmasChallenge/days/05/) · Source: [`days/05/`](days/05)
+
+Work hard, slack harder. A 3D desk by a window at blue hour, full of things to slack with, and behind the screen an English remake of my earlier Windows 98 "slacking terminal", [MoLeMe](https://github.com/Lesley-Qing-Gu/MoLeMe).
+
+- **What it does:** play with the desk (tissues, bubble wrap, a snow globe, cinnamon buns, advent candles, drawers, a Dala horse, a julbock, readable books and a wordless flat-pack manual), then click the monitor to clock in: paid-slacking timer, wooden fish, rant bin, boss-panic report and a fake update stuck at 99%. A hidden four-letter puzzle across the desk unlocks a drawer and a certificate with your solve time.
+- **How it's built:** Three.js with bloom, ACES tone mapping and soft shadows. Every object is modelled in code and every texture (sky, city, posters, book spines) is drawn on canvas, so there are no image or 3D files. Clicks use raycasting with per-object hotspots. The Win98 app was ported from React + Vite to plain JavaScript modules. Sounds are synthesised with the Web Audio API, and progress is kept in localStorage.
+- **What I learned:** point clouds have a huge default pick radius in three.js, so the snow globe was quietly eating every click on the desk. And a puzzle is only fun if nothing on screen gives the answer away.
+- **Stack:** Three.js 0.160 (import map, no build step), Web Audio API, plain HTML/CSS/JS on GitHub Pages.
+
+![Day 05](docs/screenshots/day-05.png)
