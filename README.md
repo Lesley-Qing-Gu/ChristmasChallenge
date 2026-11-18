@@ -24,7 +24,7 @@ I've always loved advent calendars, with a tiny surprise behind every door. Ship
 | 03 | Nov 12 | [Cloud Climbing Gym](#day-03--cloud-climbing-gym) | ✅ Shipped |
 | 04 | Nov 14 | [Lätt svenska 2026 in Review](#day-04--lätt-svenska-2026-in-review) | ✅ Shipped |
 | 05 | Nov 16 | [MöleMe](#day-05--möleme) | ✅ Shipped |
-| 06 | Nov 18 | — | 🔒 |
+| 06 | Nov 18 | [Read & Learn](#day-06--read--learn) | ✅ Shipped |
 | 07 | Nov 20 | — | 🔒 |
 | 08 | Nov 22 | — | 🔒 |
 | 09 | Nov 24 | — | 🔒 |
@@ -111,3 +111,16 @@ Work hard, slack harder. A 3D desk by a window at blue hour, full of things to s
 - **Stack:** Three.js 0.160 (import map, no build step), Web Audio API, plain HTML/CSS/JS on GitHub Pages.
 
 ![Day 05](docs/screenshots/day-05.png)
+
+## Day 06 · Read & Learn
+
+**Shipped Nov 18** · [Start reading](https://lesley-qing-gu.github.io/ChristmasChallenge/days/06/) · Source: [`days/06/`](days/06)
+
+I learn Swedish by reading novels, but I kept looking up the same words and forgetting them. This is a reading tool that looks words up in context, explains them properly and brings them back until they stick.
+
+- **What it does:** paste or upload a text, or take a photo of a page. Tap a word or drag across a phrase to see its base form, part of speech, inflected forms, meaning in context, a usage note and an example, and hear it pronounced. Meanings come in your own language plus up to two more of your choice (English by default). Save words to word books; saved words are underlined wherever they appear again. Review with spaced-repetition flashcards, delete the ones you know, and export to Anki. Translate the whole text sentence by sentence. Works for most languages that separate words with spaces, with the interface and explanations in your own language.
+- **How it's built:** one HTML file with plain JavaScript and no server. The browser calls the Claude API directly with the visitor's own key, which is stored only in that browser. Sentence splitting handles abbreviations, and pasted text with hard line breaks is rejoined automatically. Interface languages other than English and Chinese are translated once by Claude and cached. Pronunciation uses the browser's built-in speech synthesis. Words and texts live in localStorage, with JSON backup and restore.
+- **What I learned:** looking a word up is easy; remembering it is the hard part. Seeing a saved word underlined in the next chapter is a much better reminder than any review schedule.
+- **Stack:** plain HTML/CSS/JS, Claude API (Haiku 5.5 by default, Sonnet for reading photos), localStorage, GitHub Pages.
+
+![Day 06](docs/screenshots/day-06.png)

@@ -1,0 +1,1307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>边读边学 · Read &amp; Learn</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Crect%20width%3D%2264%22%20height%3D%2264%22%20rx%3D%2216%22%20fill%3D%22%23f7d83b%22/%3E%3Cellipse%20cx%3D%2212%22%20cy%3D%2244%22%20rx%3D%224.6%22%20ry%3D%222.7%22%20fill%3D%22%23ffa48e%22/%3E%3Cellipse%20cx%3D%2252%22%20cy%3D%2244%22%20rx%3D%224.6%22%20ry%3D%222.7%22%20fill%3D%22%23ffa48e%22/%3E%3Cg%20class%3D%22eyes%22%3E%3Ccircle%20cx%3D%2221%22%20cy%3D%2230%22%20r%3D%2210%22%20fill%3D%22%23fff%22/%3E%3Ccircle%20cx%3D%2243%22%20cy%3D%2230%22%20r%3D%2210%22%20fill%3D%22%23fff%22/%3E%3Ccircle%20cx%3D%2222.5%22%20cy%3D%2231%22%20r%3D%226.4%22%20fill%3D%22%233fae4a%22/%3E%3Ccircle%20cx%3D%2241.5%22%20cy%3D%2231%22%20r%3D%226.4%22%20fill%3D%22%233fae4a%22/%3E%3Ccircle%20cx%3D%2222.5%22%20cy%3D%2231.5%22%20r%3D%223.6%22%20fill%3D%22%2313261a%22/%3E%3Ccircle%20cx%3D%2241.5%22%20cy%3D%2231.5%22%20r%3D%223.6%22%20fill%3D%22%2313261a%22/%3E%3Ccircle%20cx%3D%2220.4%22%20cy%3D%2228.6%22%20r%3D%222%22%20fill%3D%22%23fff%22/%3E%3Ccircle%20cx%3D%2239.4%22%20cy%3D%2228.6%22%20r%3D%222%22%20fill%3D%22%23fff%22/%3E%3C/g%3E%3Cpath%20d%3D%22M28%2045q4%204%208%200%22%20stroke%3D%22%235a3218%22%20stroke-width%3D%222.6%22%20stroke-linecap%3D%22round%22%20fill%3D%22none%22/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@500;600;700;800;900&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&display=swap" rel="stylesheet">
+<style>
+/* Look: black header fading into a yellow glow, white rounded cards, chunky pill buttons (Duolingo-style press). */
+:root{
+  --y:#f7d83b; --y-d:#cfae16; --y-soft:#fbf0b3;
+  --bg:#f6f5f0; --surface:#ffffff; --field:#f3f2ec; --ink:#151515; --muted:#6b6a64; --line:#e6e4dc;
+  --accent:#f7d83b; --accent-ink:#151515; --saved:#e9bf1f; --saved-soft:#fbf0b3;
+  --good:#58cc02; --good-d:#46a302; --bad:#ff4b4b; --bad-d:#d93636; --bad-ink:#d63a3a;
+  --glow2:#f9eaa0;
+  --shadow:0 10px 30px rgba(30,25,0,.08),0 2px 6px rgba(30,25,0,.05);
+  --f-ui:"Nunito",system-ui,-apple-system,"Segoe UI","PingFang SC","Noto Sans SC","Microsoft YaHei",sans-serif;
+  --f-read:"Newsreader",Georgia,"Songti SC","Noto Serif SC",serif;
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#121211; --surface:#1d1d1b; --field:#262623; --ink:#f3f3ef; --muted:#a4a39b; --line:#33322d;
+    --saved-soft:#3d3511; --y-soft:#3d3511; --glow2:#2a2510; --bad-ink:#ff7b7b;
+    --shadow:0 10px 30px rgba(0,0,0,.35); color-scheme:dark;
+  }
+}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%}
+body{background:linear-gradient(180deg,var(--glow2) 0,var(--bg) 480px) no-repeat,var(--bg);color:var(--ink);font:500 16px/1.5 var(--f-ui);-webkit-text-size-adjust:100%}
+button,input,textarea,select{font:inherit;color:inherit}
+button,label.btn{cursor:pointer}
+a{color:inherit;font-weight:800;text-decoration-color:var(--y);text-decoration-thickness:3px;text-underline-offset:2px}
+:focus-visible{outline:3px solid color-mix(in srgb,var(--ink) 65%,transparent);outline-offset:2px}
+.wrap{max-width:780px;margin:0 auto;padding:0 16px}
+/* header */
+header{position:sticky;top:0;z-index:5;background:color-mix(in srgb,var(--glow2) 80%,transparent);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);color:var(--ink)}
+.bar{display:flex;align-items:center;gap:12px;padding:14px 0 12px;flex-wrap:wrap}
+.sync{font-size:12px;color:var(--muted);margin-right:auto;font-weight:600}
+nav{display:flex;gap:4px;padding:4px;margin-bottom:12px;background:var(--surface);border-radius:999px}
+nav button{flex:1;border:0;background:transparent;padding:9px 8px;border-radius:999px;color:var(--muted);font-weight:800;font-size:15px}
+nav button[aria-selected="true"]{background:var(--y);color:#151515}
+nav .n{display:inline-block;min-width:22px;margin-left:6px;padding:0 7px;border-radius:999px;background:var(--field);color:var(--ink);font-size:12px;line-height:20px;font-weight:800}
+nav button[aria-selected="true"] .n{background:rgba(0,0,0,.12);color:#151515}
+nav .n.due{background:var(--bad);color:#fff}
+main{padding:24px 0 40vh}
+/* building blocks */
+.card{background:var(--surface);border-radius:24px;padding:20px;box-shadow:var(--shadow)}
+.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.spread{justify-content:space-between}
+.stack{display:flex;flex-direction:column;gap:14px}
+.btn{display:inline-block;border:2px solid var(--line);background:var(--surface);padding:10px 18px;border-radius:999px;font-weight:800;line-height:1.2;box-shadow:0 3px 0 var(--line);transition:transform .06s,box-shadow .06s}
+.btn:active:not([disabled]){transform:translateY(2px);box-shadow:0 1px 0 var(--line)}
+.btn.primary{background:var(--y);color:#151515;border-color:var(--y);box-shadow:0 4px 0 var(--y-d)}
+.btn.primary:active:not([disabled]){box-shadow:0 2px 0 var(--y-d)}
+.btn.danger{color:var(--bad-ink)}
+.btn.small{padding:6px 14px;font-size:14px;box-shadow:0 2px 0 var(--line)}
+.btn[aria-pressed="true"]{background:var(--y-soft);border-color:var(--y)}
+.btn[disabled]{opacity:.45;cursor:default;box-shadow:none}
+.muted{color:var(--muted)}
+.hint{font-size:14px;color:var(--muted)}
+.notice{padding:12px 16px;border-radius:16px;background:var(--surface);border:2px solid var(--y);font-size:14px;font-weight:700;margin-bottom:16px;box-shadow:var(--shadow)}
+textarea.src{width:100%;min-height:280px;resize:vertical;padding:16px;border:2px solid var(--line);border-radius:18px;background:var(--field);font:17px/1.6 var(--f-read)}
+textarea:focus,input:focus,select:focus{border-color:var(--y)!important;outline:none}
+/* reader */
+.legend{display:flex;gap:16px;flex-wrap:wrap;font-size:13px;font-weight:700;color:color-mix(in srgb,var(--ink) 70%,transparent)}
+.legend i{display:inline-block;width:18px;height:12px;background:var(--y-soft);border-bottom:2px solid var(--saved);border-radius:3px;vertical-align:-1px;margin-right:6px}
+.reader{background:var(--surface);border-radius:28px;padding:30px 32px 14px;box-shadow:var(--shadow);font:var(--fs,21px)/1.75 var(--f-read)}
+.reader p{max-width:62ch;margin:0 auto 1.1em}
+.reader .w{border-radius:4px;cursor:pointer;transition:background .12s}
+.reader .w:hover{background:color-mix(in srgb,var(--y) 30%,transparent)}
+.reader .w.saved{background:var(--y-soft);box-shadow:inset 0 -2px 0 var(--saved)}
+.reader .w.active{background:var(--y);color:#151515;box-shadow:none}
+.reader ::selection{background:color-mix(in srgb,var(--y) 55%,transparent)}
+.reader .tr{display:block;margin:.3em 0 .9em;padding:2px 0 2px 12px;border-left:3px solid var(--y);font:600 calc(var(--fs,21px)*.72)/1.55 var(--f-ui);color:var(--muted)}
+/* lookup sheet */
+.sheet{position:fixed;left:0;right:0;bottom:0;z-index:20;display:none}
+.sheet.open{display:block}
+.sheet .panel{max-width:780px;margin:0 auto;background:var(--surface);border-radius:28px 28px 0 0;box-shadow:0 -10px 40px rgba(0,0,0,.2);padding:20px;max-height:72vh;overflow:auto}
+.term{font:900 30px/1.15 var(--f-ui);margin:0}
+.chips{display:flex;gap:6px;flex-wrap:wrap}
+.chip{font-size:13px;font-weight:800;padding:4px 12px;border-radius:999px;background:var(--y);color:#151515}
+.chip+.chip{background:var(--field);color:var(--muted)}
+.field{display:flex;flex-direction:column;gap:6px}
+.field label{font-size:13px;color:var(--muted);font-weight:800;letter-spacing:.02em}
+.field input,.field textarea{padding:10px 12px;border:2px solid var(--line);border-radius:14px;background:var(--field);width:100%}
+.field textarea{resize:vertical;min-height:48px}
+.ctx{font:17px/1.55 var(--f-read);color:var(--ink);background:var(--field);padding:12px 14px;border-radius:16px}
+.ctx b{background:var(--y);color:#151515;font-weight:600;border-radius:4px;padding:0 3px}
+.spin{display:inline-block;width:14px;height:14px;border:3px solid var(--line);border-top-color:var(--y-d);border-radius:50%;animation:sp .8s linear infinite;vertical-align:-2px;margin-right:8px}
+@keyframes sp{to{transform:rotate(360deg)}}
+@media (prefers-reduced-motion:reduce){.spin{animation:none}.reader .w,.btn{transition:none}}
+select.bsel{border:2px solid var(--line);background:var(--surface);border-radius:999px;padding:6px 12px;font-size:14px;font-weight:700;max-width:100%;box-shadow:0 2px 0 var(--line)}
+.field select.bsel{border-radius:14px;padding:10px 12px;font-size:16px;background:var(--field);box-shadow:none}
+@media (min-width:900px){
+  .sheet{left:auto;right:0;top:0;bottom:0;width:404px}
+  .sheet .panel{max-width:none;height:calc(100% - 24px);max-height:none;margin:12px;border-radius:28px;box-shadow:0 12px 40px rgba(0,0,0,.18);padding:24px}
+  body.has-sheet header .wrap,body.has-sheet main.wrap{margin-right:404px}
+  body.has-sheet main.wrap{max-width:none;padding-left:32px;padding-right:20px}
+  main{padding-bottom:80px}
+}
+@media (max-width:560px){.reader{padding:22px 20px 8px;border-radius:24px}.term{font-size:26px}}
+/* word list */
+.list{display:flex;flex-direction:column;gap:10px;margin-top:4px}
+.item{display:grid;grid-template-columns:1fr auto;gap:4px 12px;padding:16px 18px;background:var(--surface);border:2px solid transparent;border-radius:20px;box-shadow:var(--shadow);cursor:pointer;text-align:left;width:100%}
+.item:hover{border-color:var(--y)}
+.item .t{font:800 20px/1.3 var(--f-ui)}
+.item .m{color:var(--ink);font-size:15px;font-weight:600}
+.item .c{grid-column:1/-1;color:var(--muted);font-size:14px;font-family:var(--f-read)}
+.item .b{font-size:12px;font-weight:800;color:#151515;background:var(--y-soft);padding:3px 10px;border-radius:999px;align-self:start;white-space:nowrap}
+input.search{width:100%;padding:12px 18px;border:2px solid var(--line);border-radius:999px;background:var(--surface)}
+.export textarea{width:100%;min-height:120px;font:13px/1.4 ui-monospace,Menlo,Consolas,monospace;padding:10px;border:2px solid var(--line);border-radius:14px;background:var(--field)}
+/* review */
+.flash{min-height:300px;display:flex;flex-direction:column;justify-content:center;gap:16px;text-align:center;padding:32px 20px;border-radius:28px}
+.flash .big{font:900 44px/1.1 var(--f-ui);overflow-wrap:anywhere}
+.flash .ctx{max-width:48ch;margin:0 auto}
+.flash .back{text-align:left;max-width:48ch;margin:0 auto;width:100%}
+.prog{height:14px;background:var(--line);border-radius:999px;overflow:hidden}
+.prog i{display:block;height:100%;background:var(--good);border-radius:999px;position:relative;transition:width .3s}
+.prog i::after{content:"";position:absolute;left:8px;right:8px;top:3px;height:4px;border-radius:2px;background:rgba(255,255,255,.35)}
+.grade{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.grade .btn{padding:14px 6px;font-size:16px}
+.grade .no{background:var(--bad);border-color:var(--bad);color:#fff;box-shadow:0 4px 0 var(--bad-d)}
+.grade .ok{background:var(--good);border-color:var(--good);color:#fff;box-shadow:0 4px 0 var(--good-d)}
+.grade .no:active,.grade .ok:active{box-shadow:0 2px 0 rgba(0,0,0,.2)}
+.empty{padding:40px 20px;text-align:center;color:var(--muted);background:var(--surface);border-radius:24px;box-shadow:var(--shadow);font-weight:600}
+.sr{position:absolute;left:-9999px}
+body.welcome nav,body.welcome #btn-settings{display:none}
+.hero{text-align:center;padding:8px 0 4px}
+.hero b{font:900 32px/1.2 var(--f-ui);display:block}
+.hero b mark{background:var(--y);color:#151515;padding:0 8px;border-radius:8px}
+
+.logo{width:38px;height:38px;flex:0 0 auto}
+.logo.big{width:104px;height:104px}
+.logo .eyes{transform-box:fill-box;transform-origin:center;animation:blink 5s infinite}
+@keyframes blink{0%,94%,100%{transform:scaleY(1)}97%{transform:scaleY(.08)}}
+@media (prefers-reduced-motion:reduce){.logo .eyes{animation:none}}
+h1{font:900 21px/1 var(--f-ui);margin:0;color:var(--ink);letter-spacing:.01em}
+.bar{gap:10px}
+.hero{text-align:center;padding:4px 0 6px}
+
+.ic{width:20px;height:20px;flex:0 0 auto;vertical-align:middle}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px}
+.btn.small .ic{width:17px;height:17px}
+.ibtn{width:42px;height:42px;padding:0}
+.btn.small.ibtn{width:36px;height:36px;padding:0}
+.btn.ghost{border-color:transparent;box-shadow:none;background:transparent}
+.btn.wide{width:100%;padding:14px 18px;font-size:17px}
+nav button{display:inline-flex;align-items:center;justify-content:center;gap:6px}
+nav i{display:inline-flex}nav .ic{width:18px;height:18px}
+#btn-settings .ic{width:20px;height:20px}
+.toolbar{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.seg{display:inline-flex}.seg .btn{border-radius:0;padding:6px 12px;font-weight:900}
+.seg .btn:first-child{border-radius:999px 0 0 999px;border-right-width:1px;font-size:12px}
+.seg .btn:last-child{border-radius:0 999px 999px 0;border-left-width:1px;font-size:17px}
+.coach{display:flex;align-items:center;gap:12px;background:var(--surface);border:2px solid var(--y);border-radius:18px;padding:10px 16px;font-weight:800;animation:pop .35s ease-out}
+@keyframes pop{from{transform:translateY(6px);opacity:0}to{transform:none;opacity:1}}
+.logo.tiny{width:34px;height:34px}.logo.mid{width:84px;height:84px}
+.editor{gap:16px}
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:10px}
+.tile{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;padding:14px 8px;border:2px solid var(--line);border-radius:18px;background:var(--surface);font-weight:800;font-size:14px;box-shadow:0 3px 0 var(--line);cursor:pointer;color:var(--ink)}
+.tile .ic{width:26px;height:26px}
+.tile:active{transform:translateY(2px);box-shadow:0 1px 0 var(--line)}
+.welcome-box{display:flex;flex-direction:column;align-items:center;gap:18px;text-align:center;padding:24px 0}
+.w-title{font:900 30px/1.2 var(--f-ui);margin:0}
+.pair{display:flex;align-items:flex-end;gap:12px;width:100%;max-width:560px}
+.pair .field{flex:1;text-align:left}
+.pair-arrow{padding-bottom:12px;color:var(--muted)}
+select.bsel.big{width:100%;font-size:18px;font-weight:800;padding:12px 14px;border-radius:16px;background:var(--surface);box-shadow:0 3px 0 var(--line)}
+.welcome-box .btn.wide{max-width:560px}
+@media (max-width:520px){.pair{flex-direction:column;align-items:stretch}.pair-arrow{display:none}}
+.lk-head{display:flex;align-items:center;gap:10px}
+.meaning{font:900 26px/1.25 var(--f-ui)}
+.gloss{color:var(--muted);font-weight:700;font-size:17px;margin-top:-8px}
+.forms{font:16px/1.4 var(--f-read);color:var(--muted)}
+.note{font-size:15px;padding-left:12px;border-left:3px solid var(--y);font-weight:600}
+.ex{background:var(--field);border-radius:16px;padding:12px 14px;font-size:15px}.ex div[lang]{font:17px/1.45 var(--f-read)}
+.ctx{background:transparent;padding:0;color:var(--muted)}
+.lk-actions{display:flex;gap:8px;align-items:center;padding-top:4px}
+.lk-actions .btn.wide{flex:1;width:auto}
+.saved-tag{display:inline-flex;align-items:center;gap:6px;color:var(--good-d);font-weight:800}
+.sk{height:14px;border-radius:8px;background:linear-gradient(90deg,var(--field) 0,var(--line) 50%,var(--field) 100%);background-size:200% 100%;animation:shim 1.2s linear infinite}
+@keyframes shim{to{background-position:-200% 0}}
+.empty{display:flex;flex-direction:column;align-items:center;gap:10px;padding:36px 20px}
+.empty b{font:900 22px/1.3 var(--f-ui);color:var(--ink)}
+.empty .btn{margin-top:8px}
+.search-wrap{position:relative;display:block}.search-wrap .ic{position:absolute;left:16px;top:50%;transform:translateY(-50%);color:var(--muted)}
+.search-wrap input.search{padding-left:44px}
+.item .b.due{background:var(--y)}
+.flash.tap{cursor:pointer}.flash.tap:hover{box-shadow:var(--shadow),0 0 0 3px var(--y)}
+.flip-hint{font-size:13px;color:var(--muted);font-weight:700}
+.flash .back{padding-top:14px;border-top:2px dashed var(--line)}
+.flash .ctx{color:var(--ink)}
+.grade .btn{flex-direction:column;gap:4px}
+@media (prefers-reduced-motion:reduce){.sk,.coach{animation:none}}
+.editor{position:relative}.ed-x{position:absolute;top:10px;right:10px;z-index:1}
+.editor textarea.src{padding-right:48px}
+nav button{white-space:nowrap}
+@media (max-width:480px){nav button{font-size:14px;gap:4px;padding:9px 4px}nav .n{margin-left:2px;min-width:18px;padding:0 5px}.sync{display:none}}
+#btn-settings{margin-left:auto}
+@media (max-width:480px){.toolbar{flex-wrap:nowrap;gap:6px}.toolbar select.bsel{flex:1 1 auto;min-width:0;max-width:150px}.toolbar>span[style]{display:none}}
+.toolbar .btn{white-space:nowrap;flex:0 0 auto}
+
+/* one look for every dropdown: same pill as the buttons, own chevron */
+select.bsel,select.bsel.big,.field select.bsel{-webkit-appearance:none;-moz-appearance:none;appearance:none;
+  background:var(--surface) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23151515' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E") no-repeat right 12px center/16px;
+  border:2px solid var(--line);border-radius:999px;box-shadow:0 3px 0 var(--line);
+  font-weight:800;color:var(--ink);padding:8px 38px 8px 16px;font-size:14px;line-height:1.2;cursor:pointer;
+  text-overflow:ellipsis;white-space:nowrap;overflow:hidden}
+select.bsel:hover{border-color:var(--y)}
+select.bsel:active{transform:translateY(2px);box-shadow:0 1px 0 var(--line)}
+select.bsel.big,.field select.bsel{width:100%;font-size:17px;padding:13px 44px 13px 20px;background-position:right 16px center;background-size:18px}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) select.bsel{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23f3f3ef' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E")}}
+.home{display:inline-flex;align-items:center;gap:10px;border:0;background:none;padding:4px 8px 4px 0;border-radius:14px;color:inherit}
+.home:hover h1{text-decoration:underline;text-decoration-color:var(--y);text-decoration-thickness:3px;text-underline-offset:4px}
+.home:active .logo{transform:scale(.94)}
+
+.pick{display:inline-flex;align-items:center;justify-content:space-between;gap:8px;max-width:100%;min-width:0;
+  background:var(--surface);border:2px solid var(--line);border-radius:999px;box-shadow:0 3px 0 var(--line);
+  font-weight:800;font-size:14px;line-height:1.2;color:var(--ink);padding:8px 12px 8px 16px;text-align:left}
+.pick .lbl{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pick .ic{width:18px;height:18px;transition:transform .15s}
+.pick[aria-expanded="true"]{border-color:var(--y)}
+.pick[aria-expanded="true"] .ic{transform:rotate(180deg)}
+.pick:hover{border-color:var(--y)}
+.pick:active{transform:translateY(2px);box-shadow:0 1px 0 var(--line)}
+.pick.big{width:100%;font-size:17px;padding:13px 16px 13px 20px;border-radius:18px}
+.toolbar .pick{flex:0 1 auto}
+.pick-bd{position:fixed;inset:0;z-index:49}
+.pick-menu{position:fixed;z-index:50;background:var(--surface);border-radius:20px;box-shadow:0 18px 50px rgba(30,25,0,.18),0 0 0 1px var(--line);padding:6px;overflow:auto;overscroll-behavior:contain;animation:pickin .14s ease-out;outline:none}
+@keyframes pickin{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:none}}
+.pick-opt{display:flex;align-items:center;gap:10px;padding:11px 14px;border-radius:14px;font-weight:800;font-size:16px;cursor:pointer;outline:none}
+.pick-opt .lbl{flex:0 1 auto;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pick-opt .sub{color:var(--muted);font-weight:600;font-size:13px;white-space:nowrap}
+.pick-opt .ic{margin-left:auto;width:18px;height:18px;color:#151515}
+.pick-opt.focus{background:var(--field)}
+.pick-opt[aria-selected="true"]{background:var(--y);color:#151515}
+.pick-opt[aria-selected="true"] .sub{color:rgba(0,0,0,.55)}
+.pick-opt.new{margin-top:6px;border-top:2px solid var(--line);border-radius:0 0 14px 14px;color:var(--muted)}
+@media (max-width:560px){
+  .pick-bd{background:rgba(0,0,0,.28)}
+  .pick-menu{left:8px;right:8px;bottom:8px;max-height:70vh;border-radius:24px;padding:8px;animation:pickup .2s ease-out}
+  @keyframes pickup{from{transform:translateY(30px);opacity:0}to{transform:none;opacity:1}}
+}
+@media (prefers-reduced-motion:reduce){.pick-menu{animation:none}}
+
+/* one radius system: cards 24, controls inside them 16, small controls 14, icon buttons round, only badges stay pill-shaped */
+.ed-actions{display:flex;gap:10px}.ed-actions .btn.primary{flex:2}.ed-actions .btn:not(.primary){flex:1}
+.editor textarea.src{padding-right:16px}
+.card,.reader,.flash,.empty{border-radius:24px}
+.sheet .panel{border-radius:24px 24px 0 0}
+@media (min-width:900px){.sheet .panel{border-radius:24px}}
+.btn{border-radius:14px}
+.btn.wide{border-radius:16px}
+.btn.small{border-radius:12px}
+.ibtn,.btn.small.ibtn{border-radius:50%}
+.seg .btn:first-child{border-radius:12px 0 0 12px}.seg .btn:last-child{border-radius:0 12px 12px 0}
+textarea.src,.tile,.notice,.coach,.ex,.field input,.field textarea,.export textarea{border-radius:16px}
+input.search{border-radius:16px}
+.item{border-radius:18px}
+.pick{border-radius:12px}.pick.big{border-radius:16px}
+.pick-menu{border-radius:18px}.pick-opt{border-radius:12px}
+nav{border-radius:20px}nav button{border-radius:14px}
+.grade .btn{border-radius:16px}
+@media (max-width:560px){.pick-menu{border-radius:22px}}
+@media (max-width:420px){.hide-xs{position:absolute;left:-9999px}}
+.keybar{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.key-field{width:100%;max-width:560px;text-align:left}
+.key-field input{background:var(--surface)}
+#settings label.row input[type=checkbox]{width:20px;height:20px;accent-color:#e9bf1f}
+
+/* Wide screens: the lookup panel has a permanent column on the right, so opening it never reflows the text. */
+@media (min-width:900px) and (max-width:1099px){
+  .sheet{left:0;right:0;top:auto;width:auto}
+  .sheet .panel{max-width:780px;margin:0 auto;height:auto;max-height:72vh;border-radius:24px 24px 0 0}
+  body.has-sheet header .wrap,body.has-sheet main.wrap{margin-right:auto}
+  body.has-sheet main.wrap{max-width:780px;padding-left:16px;padding-right:16px}
+}
+@media (min-width:1100px){
+  body.gutter header,body.has-sheet header{padding-right:424px}
+  body.gutter main.wrap,body.has-sheet main.wrap{margin-left:max(16px,calc((100vw - 424px - 780px)/2));margin-right:auto}
+  body.has-sheet header .wrap{margin-right:auto}
+  body.has-sheet main.wrap{max-width:780px;padding-left:16px;padding-right:16px}
+  .sheet{width:424px}
+  body.gutter .sheet{display:block}
+  .lk-empty{height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;text-align:center;color:var(--muted);font-weight:800;padding:0 30px}
+  .lk-empty .logo{opacity:.9}
+}
+.lk-empty{display:none}
+@media (min-width:1100px){.sheet:not(.open) .lk-empty{display:flex}}
+.coach{transition:opacity .3s}.coach.gone{opacity:0;pointer-events:none}
+
+.sec{display:flex;flex-direction:column;gap:4px}
+.sec-l{font-size:13px;font-weight:800;color:var(--muted);letter-spacing:.02em}
+.sec .meaning{font:900 22px/1.3 var(--f-ui)}
+.sec .gloss{margin:0;color:var(--ink);font-size:17px;font-weight:700}
+.sec .forms{font:17px/1.4 var(--f-read);color:var(--ink)}
+.sec .note{border:0;padding:0;font-size:15px;font-weight:600;line-height:1.55}
+.panel .ctx{font:18px/1.55 var(--f-read);color:var(--ink);background:var(--field);padding:12px 14px;border-radius:16px}
+.panel .ex{background:transparent;padding:4px 0 0;border-top:2px dashed var(--line);border-radius:0;padding-top:12px}
+.gl-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap">
+    <div class="bar">
+      <button class="home" data-act="home" data-ia="nav.read"><svg class="logo" viewBox="0 0 64 64" aria-hidden="true"><rect width="64" height="64" rx="16" fill="#f7d83b"/><ellipse cx="12" cy="44" rx="4.6" ry="2.7" fill="#ffa48e"/><ellipse cx="52" cy="44" rx="4.6" ry="2.7" fill="#ffa48e"/><g class="eyes"><circle cx="21" cy="30" r="10" fill="#fff"/><circle cx="43" cy="30" r="10" fill="#fff"/><circle cx="22.5" cy="31" r="6.4" fill="#3fae4a"/><circle cx="41.5" cy="31" r="6.4" fill="#3fae4a"/><circle cx="22.5" cy="31.5" r="3.6" fill="#13261a"/><circle cx="41.5" cy="31.5" r="3.6" fill="#13261a"/><circle cx="20.4" cy="28.6" r="2" fill="#fff"/><circle cx="39.4" cy="28.6" r="2" fill="#fff"/></g><path d="M28 45q4 4 8 0" stroke="#5a3218" stroke-width="2.6" stroke-linecap="round" fill="none"/></svg><h1 data-i="app.title"></h1></button>
+      <span class="sync" id="sync" aria-live="polite"></span>
+      <button class="btn ibtn" data-act="settings" id="btn-settings" data-ia="btn.settings" data-ic="gear"></button>
+    </div>
+    <nav role="tablist" data-ia="nav.aria">
+      <button role="tab" id="tab-read" data-tab="read" aria-selected="true"><i data-ic="read"></i><span data-i="nav.read"></span></button>
+      <button role="tab" id="tab-book" data-tab="book" aria-selected="false"><i data-ic="book"></i><span data-i="nav.book"></span><span class="n" id="n-book">0</span></button>
+      <button role="tab" id="tab-rev" data-tab="rev" aria-selected="false"><i data-ic="rev"></i><span data-i="nav.review"></span><span class="n" id="n-rev">0</span></button>
+    </nav>
+  </div>
+</header>
+<main class="wrap" id="main"></main>
+
+<div class="sheet" id="sheet" role="dialog" data-ia="lookup.aria"><div class="panel" id="panel"></div></div>
+
+<script>
+"use strict";
+(function(){
+/* ---------- helpers ---------- */
+var $=function(s,r){return (r||document).querySelector(s)};
+function esc(s){return String(s==null?"":s).replace(/[&<>"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]})}
+function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2,7)}
+
+/* ---------- i18n ---------- */
+var LANGS=[{"c": "zh", "n": "简体中文", "en": "Chinese (Simplified)", "z": "中文", "learn": false}, {"c": "zhtw", "n": "繁體中文", "en": "Chinese (Traditional, Taiwan)", "z": "繁体中文", "learn": false}, {"c": "en", "n": "English", "en": "English", "z": "英语", "learn": true}, {"c": "es", "n": "Español", "en": "Spanish", "z": "西班牙语", "learn": true}, {"c": "fr", "n": "Français", "en": "French", "z": "法语", "learn": true}, {"c": "de", "n": "Deutsch", "en": "German", "z": "德语", "learn": true}, {"c": "sv", "n": "Svenska", "en": "Swedish", "z": "瑞典语", "learn": true}, {"c": "it", "n": "Italiano", "en": "Italian", "z": "意大利语", "learn": true}, {"c": "pt", "n": "Português", "en": "Portuguese", "z": "葡萄牙语", "learn": true}, {"c": "nl", "n": "Nederlands", "en": "Dutch", "z": "荷兰语", "learn": true}, {"c": "da", "n": "Dansk", "en": "Danish", "z": "丹麦语", "learn": true}, {"c": "nb", "n": "Norsk", "en": "Norwegian (Bokmål)", "z": "挪威语", "learn": true}, {"c": "fi", "n": "Suomi", "en": "Finnish", "z": "芬兰语", "learn": true}, {"c": "pl", "n": "Polski", "en": "Polish", "z": "波兰语", "learn": true}, {"c": "cs", "n": "Čeština", "en": "Czech", "z": "捷克语", "learn": true}, {"c": "el", "n": "Ελληνικά", "en": "Greek", "z": "希腊语", "learn": true}, {"c": "ru", "n": "Русский", "en": "Russian", "z": "俄语", "learn": true}, {"c": "uk", "n": "Українська", "en": "Ukrainian", "z": "乌克兰语", "learn": true}, {"c": "tr", "n": "Türkçe", "en": "Turkish", "z": "土耳其语", "learn": true}, {"c": "id", "n": "Bahasa Indonesia", "en": "Indonesian", "z": "印度尼西亚语", "learn": true}, {"c": "vi", "n": "Tiếng Việt", "en": "Vietnamese", "z": "越南语", "learn": true}, {"c": "ko", "n": "한국어", "en": "Korean", "z": "韩语", "learn": true}, {"c": "ar", "n": "العربية", "en": "Arabic", "z": "阿拉伯语", "learn": false}, {"c": "fa", "n": "فارسی", "en": "Persian", "z": "波斯语", "learn": false}, {"c": "he", "n": "עברית", "en": "Hebrew", "z": "希伯来语", "learn": false}, {"c": "hi", "n": "हिन्दी", "en": "Hindi", "z": "印地语", "learn": false}, {"c": "ja", "n": "日本語", "en": "Japanese", "z": "日语", "learn": false}, {"c": "th", "n": "ไทย", "en": "Thai", "z": "泰语", "learn": false}];
+var DICT={"en": {"app.title": "Read & Learn", "nav.aria": "Features", "nav.read": "Read", "nav.book": "Word book", "nav.review": "Review", "btn.settings": "Settings", "btn.collapse": "Collapse", "sync.local": "Data is stored only in this browser", "default.book": "My words", "lookup.aria": "Look up a word", "chip.lemma": "Base form: {x}", "chip.saved": "In “{b}”", "chip.saveTo": "Save to “{b}”", "btn.close": "Close", "lookup.loading": "Looking it up…", "field.forms": "Forms", "field.note": "Notes", "btn.update": "Update", "btn.add": "Add to word book", "btn.retry": "Look up again", "btn.removeWord": "Remove from word book", "err.lookup": "Lookup failed. You can retry or fill in the meaning yourself.", "err.rate": "Too many requests, or you have reached your usage limit. Try again in a moment.", "err.nokey": "No API key yet. Enter your own Claude API key at the top of the page, then try again.", "err.badkey": "The API key is invalid, expired or lacks permission. Check it in Settings.", "err.credit": "Your API account has no credit left. Add credit on the Billing page at platform.claude.com, then try again.", "err.network": "Can't reach api.anthropic.com. Check your network, proxy or browser privacy extensions.", "tr.busy": "Translating…", "tr.label.busy": "Translating… {p}", "tr.label.all": "Translate all", "tr.label.show": "Show translation", "tr.label.hide": "Hide translation", "tr.more": "Finished parts are kept. Click “{btn}” again to continue. (error code: {code})", "tr.err.trunc": "This batch was too long and got cut off.", "tr.err.incomplete": "Claude's translation had missing lines or the wrong format.", "tr.err.upstream": "There was a temporary problem connecting to Claude.", "tr.err.generic": "Translation failed.", "ocr.btn": "Take photo / read text from an image", "ocr.busy": "Reading {n} image(s). This takes about half a minute…", "ocr.max": "At most {n} at a time, so only the first {n} were read.", "ocr.done": "Done. The text was added to the box above. Please check it; [?] marks words that were unclear.", "ocr.trunc": "The text was too long and got cut off. Try fewer images.", "ocr.err": "Reading the image failed. Please retry. (error code: {code})", "ocr.badimg": "This image can't be used. JPG, PNG, WebP and GIF are supported, up to 20 MB each.", "ocr.none": "No text was found. Try a clearer, closer photo.", "notice.key": "Looking up words, translating and reading images need your own Claude API key.", "btn.gosettings": "Go to settings", "editor.label": "Paste text in {learn}, or upload a file", "editor.placeholder": "Paste an article, lyrics or a chat here", "btn.upload": "Upload .txt / .md file", "btn.sample": "Use sample text", "btn.clean": "Tidy line breaks", "btn.cancel": "Cancel", "btn.start": "Start reading", "editor.hint": "“Start reading” automatically rejoins sentences broken by hard line wraps. You can also try “Tidy line breaks” first. Keep a single paste under about 100,000 characters.", "clean.done": "Tidied: {a} lines became {b} paragraphs.", "read.legend": "Click a word, or drag to select a phrase", "legend.saved": "In word book", "fs.dec": "Smaller text", "fs.inc": "Larger text", "btn.changeText": "Change text", "notice.sample": "This is sample text. Use “Change text” at the top right to paste or upload your own.", "book.new": "New", "book.rename": "Rename", "book.delete": "Delete", "book.count": "{n} words", "btn.exportAnki": "Export to Anki", "search.placeholder": "Search words or meanings", "search.aria": "Search the word book", "book.empty": "“{b}” is empty. Go to Read, click a word, then choose “Add to word book”.", "item.due": "Due", "item.next": "Next: {d}", "no.match": "No matching words.", "book.delConfirm": "Delete “{b}”{extra}? This cannot be undone.", "book.delExtra": " and its {n} words", "btn.confirmDelete": "Delete", "book.nameNew": "Name of the new word book", "book.nameRename": "New name", "book.namePlaceholder": "For example: my novel", "btn.create": "Create", "btn.save": "Save", "book.sel.aria": "Current word book", "book.sel.new": "+ New word book…", "due.tomorrow": "tomorrow", "due.days": "in {d} days", "export.title": "Export to Anki", "export.help": "In Anki choose File → Import and pick this .txt file. Card type Basic: the front is the word; the back has the meaning and the original sentence.", "export.download": "Download .txt file", "export.copy": "Copy text", "export.aria": "Export content", "export.saved": "Saved.", "export.cancelled": "Cancelled.", "export.cantDownload": "Downloads aren't available here. Use “Copy text” and paste it into a .txt file.", "export.copied": "Copied. Paste it into a text editor, save as .txt, then import it in Anki.", "export.selected": "The text is selected. Press Ctrl/⌘+C to copy.", "anki.lemma": "Base form: {x}", "review.empty": "“{b}” is empty. Save a few words while reading first.", "review.done": "You're done for today.", "review.next": "Next batch: {d}", "review.all": "Go through all {n} words again", "review.left": "{n} left", "review.show": "Show answer", "review.no": "Don't know", "review.maybe": "Unsure", "review.yes": "Know it", "settings.title": "Settings", "settings.my": "My language (interface, meanings, translations)", "settings.learn": "Language I'm learning", "lang.translating": "Translating the interface…", "lang.needKey": "Enter your API key to translate the interface into this language. English is shown until then.", "lang.fail": "Couldn't translate the interface yet, so English is shown. {m}", "settings.key": "Claude API key", "settings.keySaved": "Saved ({p}…). Leave empty to keep it.", "settings.model": "Model", "model.haiku": "Haiku 5.5: cheapest, fine for lookups and translation", "model.sonnet": "Sonnet 5.5: more accurate, costs more", "model.opus": "Opus 5.5: strongest, costs the most", "settings.modelHint": "When reading images, Haiku is replaced by Sonnet automatically.", "settings.remember": "Remember the key on this device (not on a shared computer; otherwise it is forgotten when you close the page)", "btn.test": "Test", "btn.clearKey": "Delete saved key", "settings.privacy": "The key is stored only in this browser and sent only to api.anthropic.com. This page has no server, so nobody else can see it. Usage is billed to your own Anthropic account. No key? You can create one here:", "settings.backup": "Backup", "settings.backupHint": "Your words and text live only in this browser. Export a backup before switching devices or clearing browser data.", "btn.backup": "Export backup (.json)", "btn.restore": "Import backup", "key.saved": "Saved.", "key.none": "No key entered.", "key.testing": "Testing…", "key.ok": "Connected. The key works.", "key.testFail": "The test failed. {m}", "bk.exported": "Exported.", "bk.fail": "Export failed.", "bk.restored": "Restored {n} words.", "bk.invalid": "This is not a valid backup file.", "welcome.title": "Welcome", "welcome.sub": "Pick your own language and the language you are learning. You can change both later in Settings.", "welcome.my": "My language", "welcome.learn": "I'm learning", "welcome.go": "Continue", "welcome.keyHint": "Needed for lookups, translation and reading images, and to translate this interface into languages other than English and Chinese. You can also add it later in Settings.", "welcome.same": "Pick two different languages."}, "zh": {"app.title": "边读边学", "nav.aria": "功能", "nav.read": "阅读", "nav.book": "生词本", "nav.review": "复习", "btn.settings": "设置", "btn.collapse": "收起", "sync.local": "数据只存在此浏览器", "default.book": "我的生词本", "lookup.aria": "查词", "chip.lemma": "原形 {x}", "chip.saved": "已在“{b}”", "chip.saveTo": "存入“{b}”", "btn.close": "关闭", "lookup.loading": "正在查词…", "field.forms": "变形", "field.note": "备注", "btn.update": "更新", "btn.add": "加入生词本", "btn.retry": "重新查询", "btn.removeWord": "从生词本删除", "err.lookup": "查词没有成功，可以重试或手动填写。", "err.rate": "请求太频繁，或者用量到了上限。稍等一会儿再试。", "err.nokey": "还没有设置 API Key。在页面上方填入你自己的 Claude API Key 后再试。", "err.badkey": "API Key 无效、已过期或没有权限。请在“设置”里检查。", "err.credit": "API 账户余额不足。请到 platform.claude.com 的 Billing 页面充值后再试。", "err.network": "连不上 api.anthropic.com。请检查网络、代理或浏览器的隐私扩展。", "tr.busy": "翻译中…", "tr.label.busy": "翻译中… {p}", "tr.label.all": "翻译全文", "tr.label.show": "显示翻译", "tr.label.hide": "隐藏翻译", "tr.more": "已翻好的部分会保留，再点一次“{btn}”会接着翻。（错误代码：{code}）", "tr.err.trunc": "这一批译文太长，被截断了。", "tr.err.incomplete": "Claude 返回的译文有缺句或格式不对。", "tr.err.upstream": "连接 Claude 时出了临时问题。", "tr.err.generic": "翻译没有成功。", "ocr.btn": "拍照 / 识别图片文字", "ocr.busy": "正在识别 {n} 张图片，大约需要几十秒…", "ocr.max": "一次最多 {n} 张，只识别了前 {n} 张。", "ocr.done": "识别完成，文字已放进上面的文本框。请检查一下，[?] 是看不清的词。", "ocr.trunc": "内容太长被截断了，请分批识别。", "ocr.err": "识别没有成功，请重试。（错误代码：{code}）", "ocr.badimg": "这张图片不能用：支持 JPG、PNG、WebP、GIF，单张不超过 20MB。", "ocr.none": "没有识别出文字，换一张更清晰、更近的照片试试。", "notice.key": "查词、翻译和识别图片需要你自己的 Claude API Key。", "btn.gosettings": "去设置", "editor.label": "粘贴{learn}文本，或上传文件", "editor.placeholder": "把文章、歌词、聊天记录粘贴到这里", "btn.upload": "上传 .txt / .md 文件", "btn.sample": "用示例文本", "btn.clean": "整理格式", "btn.cancel": "取消", "btn.start": "开始阅读", "editor.hint": "点“开始阅读”时会自动把被硬换行打断的句子接回去，也可以先点“整理格式”看结果。单次粘贴建议不超过 10 万字。", "clean.done": "已整理：原来 {a} 行，现在 {b} 段。", "read.legend": "点词或拖选短语查词", "legend.saved": "已在生词本", "fs.dec": "缩小字号", "fs.inc": "放大字号", "btn.changeText": "换文本", "notice.sample": "这是示例文本。点右上角“换文本”粘贴或上传你自己的。", "book.new": "新建", "book.rename": "重命名", "book.delete": "删除", "book.count": "共 {n} 个词", "btn.exportAnki": "导出到 Anki", "search.placeholder": "搜索单词或释义", "search.aria": "搜索生词", "book.empty": "“{b}”是空的。回到“阅读”，点一个词再点“加入生词本”。", "item.due": "待复习", "item.next": "下次 {d}", "no.match": "没有匹配的词。", "book.delConfirm": "删除“{b}”{extra}？删除后不能恢复。", "book.delExtra": "和里面的 {n} 个词", "btn.confirmDelete": "确认删除", "book.nameNew": "新生词本的名字", "book.nameRename": "新名字", "book.namePlaceholder": "比如：我的小说", "btn.create": "创建", "btn.save": "保存", "book.sel.aria": "当前生词本", "book.sel.new": "＋ 新建生词本…", "due.tomorrow": "明天", "due.days": "{d} 天后", "export.title": "导出到 Anki", "export.help": "在 Anki 里选 文件 → 导入，选这个 .txt。卡片类型 Basic，正面是单词，背面是释义和原句。", "export.download": "下载 .txt 文件", "export.copy": "复制内容", "export.aria": "导出内容", "export.saved": "已保存。", "export.cancelled": "已取消。", "export.cantDownload": "这里不能直接下载，请用“复制内容”，再粘贴到一个 .txt 文件。", "export.copied": "已复制。粘贴到记事本，存为 .txt 后在 Anki 导入。", "export.selected": "已选中文字，请按 Ctrl/⌘+C 复制。", "anki.lemma": "原形：{x}", "review.empty": "“{b}”是空的，先去阅读里存几个词。", "review.done": "今天的复习做完了。", "review.next": "下一批：{d}", "review.all": "再过一遍全部 {n} 个词", "review.left": "剩 {n}", "review.show": "显示答案", "review.no": "不认识", "review.maybe": "模糊", "review.yes": "认识", "settings.title": "设置", "settings.my": "我的语言（界面、释义和翻译）", "settings.learn": "我在学的语言", "lang.translating": "正在翻译界面…", "lang.needKey": "填入 API Key 后会把界面翻译成这个语言，在此之前显示英文。", "lang.fail": "暂时没能翻译界面，先显示英文。{m}", "settings.key": "Claude API Key", "settings.keySaved": "已保存（{p}…），留空则保持不变", "settings.model": "模型", "model.haiku": "Haiku 5.5：最便宜，查词和翻译够用", "model.sonnet": "Sonnet 5.5：更准，费用更高", "model.opus": "Opus 5.5：最强，费用最高", "settings.modelHint": "识别图片文字时，如果选了 Haiku，会自动改用 Sonnet。", "settings.remember": "在这台设备上记住 Key（公用电脑请不要勾选，关闭页面后就会忘记）", "btn.test": "测试", "btn.clearKey": "删除已保存的 Key", "settings.privacy": "Key 只保存在你这个浏览器里，只会发送给 api.anthropic.com，本页面没有服务器，别人看不到。费用由你的 Anthropic 账户按用量支付。没有 Key？在这里创建：", "settings.backup": "备份", "settings.backupHint": "生词和文本只存在这个浏览器里。换设备或清除浏览器数据前，请先导出备份。", "btn.backup": "导出备份 (.json)", "btn.restore": "导入备份", "key.saved": "已保存。", "key.none": "没有填写 Key。", "key.testing": "测试中…", "key.ok": "连接正常，Key 可用。", "key.testFail": "测试没有成功。{m}", "bk.exported": "已导出。", "bk.fail": "导出没有成功。", "bk.restored": "已恢复 {n} 个词。", "bk.invalid": "这不是有效的备份文件。", "welcome.title": "欢迎", "welcome.sub": "选择你自己的语言和你在学的语言，之后可以在“设置”里修改。", "welcome.my": "我的语言", "welcome.learn": "我在学", "welcome.go": "继续", "welcome.keyHint": "查词、翻译和识别图片需要它；界面语言不是中文或英文时，也用它来翻译界面。也可以之后在“设置”里再填。", "welcome.same": "请选两个不同的语言。"}};
+
+Object.assign(DICT.en,{"err.notGranted":"Claude access wasn't allowed on this page. Reload and choose Allow when asked.","err.session":"Your claude.ai session has expired. Sign in again and reload the page.","err.noClaude":"Claude isn't available here. Open this page on claude.ai while signed in.","sync.saving":"Saving…","sync.synced":"Synced","sync.offline":"Can't reach the cloud; saved in this browser","welcome.claudeHint":"Lookups, translations and reading images use your own claude.ai usage. The first time, claude.ai asks whether this page may use Claude: choose Allow."});
+Object.assign(DICT.zh,{"err.notGranted":"你没有允许这个页面使用 Claude。刷新页面，在弹出的提示里选“允许”。","err.session":"claude.ai 登录已过期，请重新登录后刷新页面。","err.noClaude":"这里用不了 Claude。请在登录 claude.ai 后打开这个页面。","sync.saving":"保存中…","sync.synced":"已同步","sync.offline":"无法连接云端，暂存在此浏览器","welcome.claudeHint":"查词、翻译和识别图片会用你自己的 claude.ai 额度。第一次使用时 claude.ai 会问是否允许这个页面调用 Claude，选“允许”即可。"});
+
+Object.assign(DICT.en,{"settings.gloss":"Also show meanings in (up to two)","opt.none":"None","lookup.empty":"Tap a word and its meaning shows up here","btn.newText":"New text","coach": "Tap any word to see what it means. Drag across words for a phrase.", "editor.placeholder": "Paste text here…", "btn.file": "File", "btn.photo": "Photo", "btn.sample": "Try a sample", "lookup.speak": "Listen", "btn.edit": "Edit", "btn.addTo": "Add to “{b}”", "lookup.savedIn": "Saved in “{b}”", "empty.book": "No words yet", "empty.bookSub": "Tap words while reading and save them here.", "btn.goRead": "Start reading", "review.tapFlip": "Tap the card to see the answer", "btn.export": "Export", "welcome.title": "Hi there!", "welcome.my": "I speak", "welcome.learn": "I'm learning", "welcome.go": "Let's go", "review.doneSub": "Next batch: {d}", "btn.translateOn": "Translation", "fs": "Text size"});Object.assign(DICT.zh,{"settings.gloss":"同时显示释义的语言（最多两种）","opt.none":"不需要","lookup.empty":"点一个词，释义会显示在这里","btn.newText":"新文本","coach": "点任意一个词看意思，拖选几个词可以查短语。", "editor.placeholder": "把文字粘贴到这里…", "btn.file": "上传文件", "btn.photo": "拍照识字", "btn.sample": "用示例试试", "lookup.speak": "朗读", "btn.edit": "编辑", "btn.addTo": "加入「{b}」", "lookup.savedIn": "已在「{b}」", "empty.book": "还没有生词", "empty.bookSub": "阅读时点词，就能存到这里。", "btn.goRead": "去阅读", "review.tapFlip": "点卡片看答案", "btn.export": "导出", "welcome.title": "你好！", "welcome.my": "我说", "welcome.learn": "我在学", "welcome.go": "开始", "review.doneSub": "下一批：{d}", "btn.translateOn": "译文", "fs": "字号"});
+var ICONS={"read": "<path d=\"M4 5.5A2.5 2.5 0 0 1 6.5 3H20v15H6.5A2.5 2.5 0 0 0 4 20.5z\"/><path d=\"M4 20.5A2.5 2.5 0 0 0 6.5 23H20v-5\"/>", "book": "<rect x=\"4\" y=\"3\" width=\"16\" height=\"18\" rx=\"3\"/><path d=\"M8 8h8M8 12h8M8 16h5\"/>", "rev": "<rect x=\"3\" y=\"6\" width=\"14\" height=\"15\" rx=\"3\"/><path d=\"M7 3h11a3 3 0 0 1 3 3v11\"/>", "gear": "<circle cx=\"12\" cy=\"12\" r=\"3.2\"/><path d=\"M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z\"/>", "tr": "<path d=\"M4 5h9M8.5 3v2M6 5c.6 3 2.6 5.6 5.5 7M11 5c-.8 3.4-3 6.4-6.5 8\"/><path d=\"M13 21l4-9 4 9M14.5 18h5\"/>", "edit": "<path d=\"M4 20h4L19 9a2.8 2.8 0 0 0-4-4L4 16z\"/>", "plus": "<path d=\"M12 5v14M5 12h14\"/>", "check": "<path d=\"M5 12.5l4.5 4.5L19 7\"/>", "x": "<path d=\"M6 6l12 12M18 6L6 18\"/>", "cam": "<path d=\"M4 8h3l2-3h6l2 3h3v11H4z\"/><circle cx=\"12\" cy=\"13\" r=\"3.5\"/>", "file": "<path d=\"M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z\"/><path d=\"M14 3v5h5\"/>", "spark": "<path d=\"M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z\"/>", "trash": "<path d=\"M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3\"/>", "down": "<path d=\"M12 4v11M7 10l5 5 5-5M5 20h14\"/>", "vol": "<path d=\"M4 9h4l5-4v14l-5-4H4z\"/><path d=\"M16.5 8.5a5 5 0 0 1 0 7M19 6a8.5 8.5 0 0 1 0 12\"/>", "search": "<circle cx=\"11\" cy=\"11\" r=\"6.5\"/><path d=\"M20 20l-4.2-4.2\"/>", "arrow": "<path d=\"M5 12h14M13 6l6 6-6 6\"/>", "chev":"<path d=\"M6 9l6 6 6-6\"/>","tilde": "<path d=\"M5 13c2-3 4-3 7 0s5 3 7 0\"/>"};
+function ic(n){return '<svg class="ic" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">'+ICONS[n]+'</svg>'}
+var FACE='<svg class="logo big" viewBox="0 0 64 64" aria-hidden="true"><rect width="64" height="64" rx="16" fill="#f7d83b"/><ellipse cx="12" cy="44" rx="4.6" ry="2.7" fill="#ffa48e"/><ellipse cx="52" cy="44" rx="4.6" ry="2.7" fill="#ffa48e"/><g class="eyes"><circle cx="21" cy="30" r="10" fill="#fff"/><circle cx="43" cy="30" r="10" fill="#fff"/><circle cx="22.5" cy="31" r="6.4" fill="#3fae4a"/><circle cx="41.5" cy="31" r="6.4" fill="#3fae4a"/><circle cx="22.5" cy="31.5" r="3.6" fill="#13261a"/><circle cx="41.5" cy="31.5" r="3.6" fill="#13261a"/><circle cx="20.4" cy="28.6" r="2" fill="#fff"/><circle cx="39.4" cy="28.6" r="2" fill="#fff"/></g><path d="M28 45q4 4 8 0" stroke="#5a3218" stroke-width="2.6" stroke-linecap="round" fill="none"/></svg>';
+function face(cls){return FACE.replace('class="logo big"','class="logo '+(cls||'big')+'"')}
+function canSpeak(){return !!(window.speechSynthesis&&window.SpeechSynthesisUtterance)}
+function speak(t){try{speechSynthesis.cancel();var u=new SpeechSynthesisUtterance(t);u.lang=S.learn==="nb"?"nb-NO":S.learn;u.rate=.9;speechSynthesis.speak(u)}catch(e){}}
+
+/* custom dropdown: every select.bsel gets a styled button + list; the hidden select keeps the value and fires "change" as before */
+var PICK=null;
+function closePick(refocus){
+  if(!PICK)return; var p=PICK; PICK=null;
+  p.menu.remove(); p.bd.remove(); p.btn.setAttribute("aria-expanded","false");
+  if(refocus)p.btn.focus();
+}
+function enhanceSelects(){
+  closePick();
+  [].forEach.call(document.querySelectorAll("select.bsel"),function(sel){
+    if(sel.dataset.pick)return; sel.dataset.pick="1";
+    var b=document.createElement("button"); b.type="button";
+    b.className="pick"+(sel.classList.contains("big")||sel.closest(".field")?" big":"");
+    b.id=(sel.id||"sel")+"-pick"; b.setAttribute("aria-haspopup","listbox"); b.setAttribute("aria-expanded","false");
+    var lab=sel.id&&document.querySelector('label[for="'+sel.id+'"]');
+    if(lab)lab.htmlFor=b.id; else if(sel.getAttribute("aria-label"))b.setAttribute("aria-label",sel.getAttribute("aria-label"));
+    var o=sel.options[sel.selectedIndex];
+    b.innerHTML='<span class="lbl">'+esc(o?o.text:"")+'</span>'+ic("chev");
+    sel.classList.add("sr"); sel.tabIndex=-1; sel.setAttribute("aria-hidden","true");
+    sel.parentNode.insertBefore(b,sel.nextSibling);
+    b.addEventListener("click",function(){PICK&&PICK.btn===b?closePick(true):openPick(sel,b)});
+    b.addEventListener("keydown",function(e){if(e.key==="ArrowDown"||e.key==="ArrowUp"){e.preventDefault();openPick(sel,b)}});
+  });
+}
+function openPick(sel,b){
+  closePick();
+  var bd=document.createElement("div"); bd.className="pick-bd";
+  var m=document.createElement("div"); m.className="pick-menu"; m.setAttribute("role","listbox");
+  var lab=document.querySelector('label[for="'+b.id+'"]'); if(lab)m.setAttribute("aria-label",lab.textContent);
+  m.innerHTML=[].map.call(sel.options,function(o,i){
+    var isNew=o.value==="__new";
+    return '<div class="pick-opt'+(isNew?' new':'')+'" role="option" tabindex="-1" data-i="'+i+'" aria-selected="'+(o.selected&&!isNew)+'"><span class="lbl">'+esc(o.text)+'</span>'+(o.dataset.sub?'<span class="sub">'+esc(o.dataset.sub)+'</span>':'')+(o.selected&&!isNew?ic("check"):'')+'</div>';
+  }).join("");
+  document.body.appendChild(bd); document.body.appendChild(m);
+  var r=b.getBoundingClientRect(), w=Math.max(r.width,240), vw=window.innerWidth, vh=window.innerHeight;
+  if(vw>560){
+    m.style.width=w+"px"; m.style.left=Math.max(8,Math.min(r.left,vw-w-8))+"px";
+    var below=vh-r.bottom-12, above=r.top-12;
+    if(below>=260||below>=above){m.style.top=(r.bottom+8)+"px";m.style.maxHeight=Math.min(420,below)+"px"}
+    else{m.style.bottom=(vh-r.top+8)+"px";m.style.maxHeight=Math.min(420,above)+"px"}
+  }
+  PICK={sel:sel,btn:b,menu:m,bd:bd}; b.setAttribute("aria-expanded","true");
+  var cur=m.querySelector('[aria-selected="true"]')||m.firstChild; cur.classList.add("focus"); cur.focus(); cur.scrollIntoView({block:"nearest"});
+  bd.addEventListener("mousedown",function(e){e.preventDefault();closePick(true)});
+  m.addEventListener("click",function(e){var it=e.target.closest(".pick-opt");if(it)choosePick(+it.dataset.i)});
+  m.addEventListener("mousemove",function(e){var it=e.target.closest(".pick-opt");if(it&&!it.classList.contains("focus")){var f=m.querySelector(".focus");if(f)f.classList.remove("focus");it.classList.add("focus")}});
+  m.addEventListener("keydown",function(e){
+    var items=[].slice.call(m.children), f=m.querySelector(".focus"), i=items.indexOf(f);
+    if(e.key==="ArrowDown"||e.key==="ArrowUp"){e.preventDefault();i=Math.max(0,Math.min(items.length-1,i+(e.key==="ArrowDown"?1:-1)));if(f)f.classList.remove("focus");items[i].classList.add("focus");items[i].focus();items[i].scrollIntoView({block:"nearest"})}
+    else if(e.key==="Enter"||e.key===" "){e.preventDefault();if(f)choosePick(+f.dataset.i)}
+    else if(e.key==="Escape"||e.key==="Tab"){e.preventDefault();closePick(true)}
+    else if(e.key.length===1){var k=e.key.toLowerCase();for(var j=1;j<=items.length;j++){var c=items[(i+j)%items.length];if(c.textContent.toLowerCase().indexOf(k)===0){if(f)f.classList.remove("focus");c.classList.add("focus");c.focus();c.scrollIntoView({block:"nearest"});break}}}
+  });
+}
+function choosePick(i){
+  if(!PICK)return; var sel=PICK.sel,b=PICK.btn; closePick(true);
+  if(sel.selectedIndex===i&&sel.value!=="__new")return;
+  sel.selectedIndex=i; b.querySelector(".lbl").textContent=sel.options[i].text;
+  sel.dispatchEvent(new Event("change",{bubbles:true}));
+}
+window.addEventListener("resize",function(){closePick()});
+function coachOn(){try{return !localStorage.getItem("svcoach")}catch(e){return false}}
+function coachDone(){try{localStorage.setItem("svcoach","1")}catch(e){}var c=$("#coach");if(c)c.classList.add("gone")}
+var RTL=["ar","fa","he"], UIC={};
+function langInfo(c){for(var i=0;i<LANGS.length;i++)if(LANGS[i].c===c)return LANGS[i];return null}
+function myEn(){return (langInfo(S.my)||{en:"English"}).en}
+function learnEn(){return (langInfo(S.learn)||{en:"Swedish"}).en}
+function langName(c){var l=langInfo(c);if(!l)return c;return S.my==="zh"?l.z:(S.my==="en"?l.en:l.n)}
+function myLabel(){if(S.my==="zh"||S.my==="zhtw")return "中文";var l=langInfo(S.my);return l?l.n:"Native"}
+function T(k,v){
+  var d=DICT[S.my]||UIC[S.my]||null, s=d&&d[k];
+  if(s==null)s=DICT.en[k]; if(s==null)s=k;
+  return v?s.replace(/\{(\w+)\}/g,function(m,n){return v[n]==null?m:v[n]}):s;
+}
+function setSync(k){S.syncKey=k;var e=$("#sync");if(e)e.textContent=k?T(k):""}
+function applyChrome(){
+  document.body.dataset.tab=S.tab;
+  document.body.classList.toggle("gutter",!!(S.langSet&&S.tab==="read"&&!S.showSettings&&!S.editing&&S.text));
+  var de=document.documentElement,tag=S.my==="zh"?"zh-CN":(S.my==="zhtw"?"zh-TW":S.my);
+  de.lang=tag; de.dir=RTL.indexOf(S.my)>=0?"rtl":"ltr";
+  document.title=T("app.title");
+  [].forEach.call(document.querySelectorAll("[data-i]"),function(el){el.textContent=T(el.getAttribute("data-i"))});
+  [].forEach.call(document.querySelectorAll("[data-ia]"),function(el){el.setAttribute("aria-label",T(el.getAttribute("data-ia")))});
+  [].forEach.call(document.querySelectorAll("[data-ic]"),function(el){if(!el.firstChild)el.innerHTML=ic(el.getAttribute("data-ic"))});
+  document.body.classList.toggle("welcome",!S.langSet);
+  setSync(S.syncKey);
+}
+function guessMy(){
+  var n=(navigator.language||"en").toLowerCase();
+  if(/^zh-(tw|hk|mo)|hant/.test(n))return "zhtw";
+  var p=n.split("-")[0]; return langInfo(p)?p:"en";
+}
+function persistLang(){try{localStorage.setItem("svlang",JSON.stringify({my:S.my,learn:S.learn,gl:S.gl,glCustom:!!S.glCustom}))}catch(e){}}
+function defaultGl(){return S.my==="en"?[]:["en"]}
+function glLangs(){return (S.gl||[]).filter(function(c,i,a){return c&&c!==S.my&&langInfo(c)&&a.indexOf(c)===i}).slice(0,2)}
+function glOf(w){return (w&&w.gl)||((w&&w.en)?{en:w.en}:{})}
+function glName(c){var l=langInfo(c);return l?l.n:c}
+function loadUic(c){
+  if(DICT[c]||UIC[c])return;
+  try{var o=JSON.parse(localStorage.getItem("svui_"+c)||"null");if(o&&o.d)UIC[c]=o.d}catch(e){}
+}
+function readLang(){
+  var d=null;try{d=JSON.parse(localStorage.getItem("svlang")||"null")}catch(e){}
+  if(d&&langInfo(d.my)&&langInfo(d.learn)&&langInfo(d.learn).learn&&d.my!==d.learn)return d;
+  return null;
+}
+function loadLang(){
+  var d=readLang();
+  if(d){S.my=d.my;S.learn=d.learn;S.langSet=true;S.glCustom=!!d.glCustom;S.gl=Array.isArray(d.gl)&&d.glCustom?d.gl:defaultGl()}
+  else{S.my=guessMy();S.learn=S.my==="sv"?"en":"sv";S.langSet=false;S.gl=defaultGl()}
+  loadUic(S.my);
+}
+function phKey(x){return (String(x).match(/\{\w+\}/g)||[]).sort().join()}
+function missingKeys(c){var d=DICT[c]||UIC[c]||{};return Object.keys(DICT.en).filter(function(k){return d[k]==null})}
+async function translateUi(code){
+  loadUic(code);
+  var miss=missingKeys(code); if(!miss.length)return;
+  if(!getCfg().key){S.uiMsg=T("lang.needKey");render();return}
+  S.uiBusy=true;S.uiMsg="";render();
+  var info=langInfo(code); UIC[code]=UIC[code]||{};
+  try{
+    for(var i=0;i<miss.length;i+=60){
+      var ch=miss.slice(i,i+60),lines=ch.map(function(k,j){return (j+1)+". "+DICT.en[k].replace(/\s+/g," ")});
+      var prompt='Translate these user-interface strings of a language-learning reading app from English into '+info.en+'. They are short button labels, field labels and messages, so keep them concise and natural for '+info.en+' speakers. Keep placeholders such as {n}, {b}, {x}, {d}, {p}, {a}, {code}, {btn}, {m}, {learn}, {extra} exactly as written: never translate or change the text inside braces. Keep names such as Anki, Claude, API, Key, .txt, .md and .json unchanged. Output exactly one line per string in the form "number. translation", using the same numbers, with no line breaks inside a translation and nothing else.\n\n'+lines.join("\n");
+      var res=await callClaude(prompt,{max_tokens:8000});
+      var got={},cur=0;
+      String(res.text||"").split("\n").forEach(function(l){
+        var m=l.match(/^\s*(\d+)\s*[.、)）:：]\s*(.*)$/);
+        if(m){cur=+m[1];got[cur]=m[2].trim()}
+        else if(l.trim()&&cur)got[cur]=(got[cur]+" "+l.trim()).trim();
+      });
+      ch.forEach(function(k,j){var v=got[j+1];UIC[code][k]=(v&&phKey(v)===phKey(DICT.en[k]))?v:DICT.en[k]});
+      try{localStorage.setItem("svui_"+code,JSON.stringify({d:UIC[code]}))}catch(e){}
+    }
+  }catch(e){S.uiMsg=T("lang.fail",{m:keyErr(e&&e.code)||(e&&e.code)||""})}
+  S.uiBusy=false;syncDefaultBook();render();
+}
+function ensureUi(){if(S.langSet&&!DICT[S.my])translateUi(S.my)}
+function langOpts(sel,onlyLearn){
+  return LANGS.filter(function(l){return !onlyLearn||l.learn}).map(function(l){var sub=langName(l.c);return '<option value="'+l.c+'"'+(sub!==l.n?' data-sub="'+esc(sub)+'"':'')+(l.c===sel?' selected':'')+'>'+esc(l.n)+'</option>'}).join("");
+}
+function langFields(k1,k2){
+  return '<div class="field"><label for="lang-my">'+esc(T(k1))+'</label><select id="lang-my" class="bsel">'+langOpts(S.my,false)+'</select></div>'+
+  '<div class="field"><label for="lang-learn">'+esc(T(k2))+'</label><select id="lang-learn" class="bsel">'+langOpts(S.learn,true)+'</select></div>';
+}
+function glFields(){
+  var g=glLangs();
+  function sel(i){var v=g[i]||"";return '<select id="gl-'+i+'" class="bsel" aria-label="'+esc(T("settings.gloss"))+' '+(i+1)+'"><option value=""'+(v?'':' selected')+'>'+esc(T("opt.none"))+'</option>'+LANGS.filter(function(l){return l.c!==S.my}).map(function(l){var sub=langName(l.c);return '<option value="'+l.c+'"'+(sub!==l.n?' data-sub="'+esc(sub)+'"':'')+(l.c===v?' selected':'')+'>'+esc(l.n)+'</option>'}).join("")+'</select>'}
+  return '<div class="field"><label for="gl-0">'+esc(T("settings.gloss"))+'</label><div class="gl-row">'+sel(0)+sel(1)+'</div></div>';
+}
+function welcomeHtml(){
+  return '<div class="welcome-box">'+face("big")+'<h2 class="w-title">'+esc(T("welcome.title"))+'</h2>'+
+  '<div class="pair"><div class="field"><label for="lang-my">'+esc(T("welcome.my"))+'</label><select id="lang-my" class="bsel big">'+langOpts(S.my,false)+'</select></div>'+
+  '<span class="pair-arrow">'+ic("arrow")+'</span>'+
+  '<div class="field"><label for="lang-learn">'+esc(T("welcome.learn"))+'</label><select id="lang-learn" class="bsel big">'+langOpts(S.learn,true)+'</select></div></div>'+
+  '<div class="field key-field"><label for="api-key">'+esc(T("settings.key"))+'</label><input id="api-key" type="password" autocomplete="off" spellcheck="false" placeholder="sk-ant-api…" value="'+esc(S.keyDraft||"")+'"><div class="hint">'+esc(T("welcome.keyHint"))+' <a href="https://platform.claude.com/settings/keys" target="_blank" rel="noopener">platform.claude.com/settings/keys</a></div></div>'+
+  '<button class="btn primary wide" data-act="welcome-go">'+esc(T("welcome.go"))+'</button></div>';
+}
+function restoreLang(){var d=readLang();if(d){S.my=d.my;S.learn=d.learn;loadUic(S.my)}}
+function syncDefaultBook(){S.books.forEach(function(b){if(b.auto)b.name=T("default.book")});schedule()}
+function afterLangChange(){
+  syncDefaultBook();
+  if(S.isSample||!S.text){S.text=sampleText();S.isSample=!!S.text}
+  closeSheet(); S.uiMsg=""; S.trErrAll="";
+}
+function ensureBooks(){
+  if(!Array.isArray(S.books)||!S.books.length)S.books=[{id:"default",name:T("default.book"),auto:true}];
+  if(!S.books.some(function(b){return b.id===S.bookId}))S.bookId=S.books[0].id;
+  S.words.forEach(function(w){if(!w.bookId)w.bookId=S.books[0].id});
+}
+function imgBtn(){
+  return S.imgLimits?'<label class="btn" for="imgfile">'+esc(T("ocr.btn"))+'</label><input id="imgfile" class="sr" type="file" accept="image/*" multiple>':'';
+}
+function doOcr(inp){
+  var files=[].slice.call(inp.files||[]); inp.value="";
+  var msg=$("#ocr-msg"),ta=$("#src"); if(!files.length||!sampleFn||!ta)return;
+  var max=(S.imgLimits&&S.imgLimits.maxCount)||4, note="";
+  if(files.length>max){files=files.slice(0,max);note=" "+T("ocr.max",{n:max})}
+  msg.innerHTML='<span class="spin"></span>'+esc(T("ocr.busy",{n:files.length}));
+  var prompt='These images contain text in '+learnEn()+' (book pages, screenshots, posters or handwriting), in page order. Transcribe the text in the images exactly. Requirements: keep the original paragraphs, with a blank line between paragraphs; join sentences that were broken only by line wrapping into one full sentence; for several columns or pages follow reading order; keep the original punctuation and capitalization; do not translate, explain or add anything; write words you cannot read as [?]; do not transcribe page numbers, headers, footers or interface buttons unrelated to the text. Output only the transcribed text.';
+  sampleFn(prompt,{images:files,cache:false}).then(function(res){
+    var tx=String(res.text||"").trim(); if(!tx)throw {code:"empty_completion"};
+    ta.value=(ta.value.trim()?ta.value.replace(/\s+$/,"")+"\n\n":"")+tx;
+    msg.textContent=T("ocr.done")+note+(res.truncated?" "+T("ocr.trunc"):"");
+  }).catch(function(e){
+    var c=e&&e.code,m=T("ocr.err",{code:c||"unknown"});
+    if(c==="rate_limited")m=T("err.rate");
+    else if(c==="image_rejected")m=T("ocr.badimg");
+    else if(c==="empty_completion"||c==="refused")m=T("ocr.none");
+    m=keyErr(c)||m;
+    msg.textContent=m;
+  });
+}
+
+/* ---------- standalone: calls api.anthropic.com directly from this browser with the user's own key ---------- */
+var CFG_KEY="svapi";
+function getCfg(){
+  var raw=null;
+  try{raw=localStorage.getItem(CFG_KEY)||sessionStorage.getItem(CFG_KEY)}catch(e){}
+  var c={key:"",model:"claude-haiku-5-5",remember:true};
+  try{if(raw){var o=JSON.parse(raw);c.key=o.key||"";c.model=o.model||c.model;c.remember=o.remember!==false}}catch(e){}
+  return c;
+}
+function setCfg(c){
+  try{localStorage.removeItem(CFG_KEY);sessionStorage.removeItem(CFG_KEY)}catch(e){}
+  try{(c.remember?localStorage:sessionStorage).setItem(CFG_KEY,JSON.stringify(c))}catch(e){}
+}
+function keyErr(code){
+  if(code==="no_key"){var dt=$("#src");if(dt)S.draft=dt.value;S.showSettings=true;render();return T("err.nokey")}
+  if(code==="bad_key")return T("err.badkey");
+  if(code==="no_credit")return T("err.credit");
+  if(code==="network")return T("err.network");
+  return "";
+}
+async function callClaude(prompt,o){
+  o=o||{};
+  var cfg=getCfg(); if(!cfg.key)throw {code:"no_key"};
+  var model=cfg.model;
+  var content=prompt;
+  if(o.images&&o.images.length){
+    if(model==="claude-haiku-5-5")model="claude-sonnet-5-5";
+    var blocks=[];
+    for(var i=0;i<o.images.length;i++)blocks.push(await imageBlock(o.images[i]));
+    blocks.push({type:"text",text:prompt}); content=blocks;
+  }
+  var res;
+  try{
+    res=await fetch("https://api.anthropic.com/v1/messages",{method:"POST",headers:{
+      "content-type":"application/json","x-api-key":cfg.key,"anthropic-version":"2023-06-01",
+      "anthropic-dangerous-direct-browser-access":"true"},
+      body:JSON.stringify({model:model,max_tokens:o.max_tokens||(o.images?8192:4096),messages:[{role:"user",content:content}]})});
+  }catch(e){throw {code:"network",message:String(e)}}
+  var body=null; try{body=await res.json()}catch(e){}
+  if(!res.ok){
+    var em=(body&&body.error&&body.error.message)||"";
+    var code="upstream_error";
+    if(res.status===401||res.status===403)code="bad_key";
+    else if(res.status===429)code="rate_limited";
+    else if(res.status===413)code="image_rejected";
+    else if(res.status===400&&/credit balance|billing/i.test(em))code="no_credit";
+    else if(res.status===400&&/image/i.test(em))code="image_rejected";
+    throw {code:code,message:em||("HTTP "+res.status)};
+  }
+  var text=((body&&body.content)||[]).filter(function(b){return b.type==="text"}).map(function(b){return b.text}).join("");
+  return {text:text,truncated:!!(body&&body.stop_reason==="max_tokens")};
+}
+function imageBlock(file){
+  return new Promise(function(resolve,reject){
+    var url=URL.createObjectURL(file), img=new Image();
+    img.onload=function(){
+      var max=1800,sc=Math.min(1,max/Math.max(img.width,img.height)),w=Math.round(img.width*sc),h=Math.round(img.height*sc);
+      var cv=document.createElement("canvas");cv.width=w;cv.height=h;
+      var cx=cv.getContext("2d");cx.fillStyle="#fff";cx.fillRect(0,0,w,h);cx.drawImage(img,0,0,w,h);
+      URL.revokeObjectURL(url);
+      resolve({type:"image",source:{type:"base64",media_type:"image/jpeg",data:cv.toDataURL("image/jpeg",0.9).split(",")[1]}});
+    };
+    img.onerror=function(){URL.revokeObjectURL(url);reject({code:"image_rejected"})};
+    img.src=url;
+  });
+}
+function parseJsonLoose(t){
+  t=String(t).trim();
+  try{return JSON.parse(t)}catch(e){}
+  var f=t.match(/```(?:json)?\s*([\s\S]*?)```/); if(f){try{return JSON.parse(f[1])}catch(e){}}
+  var a=t.search(/[\{\[]/),b=Math.max(t.lastIndexOf("}"),t.lastIndexOf("]"));
+  if(a>=0&&b>a){try{return JSON.parse(t.slice(a,b+1))}catch(e){}}
+  throw {code:"invalid_json",text:t};
+}
+function makeSample(){
+  var f=function(prompt,o){return callClaude(prompt,o)};
+  f.json=function(prompt,o){return callClaude(prompt,o).then(function(r){return parseJsonLoose(r.text)})};
+  f.limits=function(){return Promise.resolve({images:{maxCount:5}})};
+  return f;
+}
+function makeDownloads(){
+  return {save:function(x){return new Promise(function(res,rej){
+    try{
+      var blob=new Blob([x.data],{type:/\.json$/i.test(x.filename)?"application/json":"text/plain;charset=utf-8"});
+      var a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=x.filename;
+      document.body.appendChild(a);a.click();setTimeout(function(){URL.revokeObjectURL(a.href);a.remove()},500);res({status:"saved"});
+    }catch(e){rej({code:"unavailable"})}
+  })}};
+}
+function settingsHtml(){
+  var c=getCfg(), has=!!c.key;
+  function opt(v,k){return '<option value="'+v+'"'+(c.model===v?" selected":"")+'>'+esc(T(k))+'</option>'}
+  return '<div class="card stack" style="margin-bottom:16px" id="settings"><div class="row spread"><b>'+esc(T("settings.title"))+'</b><button class="btn small" data-act="settings">'+esc(T("btn.collapse"))+'</button></div>'+
+  langFields("settings.my","settings.learn")+glFields()+
+  '<div class="field"><label for="api-key">'+esc(T("settings.key"))+'</label><input id="api-key" type="password" autocomplete="off" spellcheck="false" placeholder="'+(has?esc(T("settings.keySaved",{p:c.key.slice(0,10)})):'sk-ant-api…')+'"></div>'+
+  '<div class="field"><label for="api-model">'+esc(T("settings.model"))+'</label><select id="api-model" class="bsel">'+opt("claude-haiku-5-5","model.haiku")+opt("claude-sonnet-5-5","model.sonnet")+opt("claude-opus-5-5","model.opus")+'</select><div class="hint">'+esc(T("settings.modelHint"))+'</div></div>'+
+  '<label class="row" style="gap:8px"><input id="api-remember" type="checkbox"'+(c.remember?" checked":"")+'> '+esc(T("settings.remember"))+'</label>'+
+  '<div class="row"><button class="btn primary" data-act="key-save">'+esc(T("btn.save"))+'</button><button class="btn" data-act="key-test">'+esc(T("btn.test"))+'</button>'+(has?'<button class="btn danger" data-act="key-clear">'+esc(T("btn.clearKey"))+'</button>':'')+'</div>'+
+  '<div class="hint" id="key-msg" aria-live="polite">'+esc(T("settings.privacy"))+' <a href="https://platform.claude.com/settings/keys" target="_blank" rel="noopener">platform.claude.com/settings/keys</a></div>'+
+  '<hr style="border:0;border-top:1px solid var(--line);width:100%"><div><b>'+esc(T("settings.backup"))+'</b><div class="hint">'+esc(T("settings.backupHint"))+'</div></div>'+
+  '<div class="row"><button class="btn" data-act="backup">'+esc(T("btn.backup"))+'</button><label class="btn" for="restore-file">'+esc(T("btn.restore"))+'</label><input id="restore-file" class="sr" type="file" accept=".json,application/json"></div><div class="hint" id="bk-msg" aria-live="polite"></div></div>';
+}
+function bw(){return S.words.filter(function(w){return w.bookId===S.bookId})}
+function curBook(){return S.books.filter(function(b){return b.id===S.bookId})[0]||S.books[0]}
+function bookSel(){
+  return '<select id="book-sel" class="bsel" aria-label="'+esc(T("book.sel.aria"))+'">'+S.books.map(function(b){
+    var n=S.words.filter(function(w){return w.bookId===b.id}).length;
+    return '<option value="'+esc(b.id)+'"'+(b.id===S.bookId?' selected':'')+'>'+esc(b.name)+' ('+n+')</option>';
+  }).join("")+'<option value="__new">'+esc(T("book.sel.new"))+'</option></select>';
+}
+var DAY=86400000, STEPS=[0,1,3,7,14,30];
+
+var SAMPLES={"sv": "Det var en grå söndagseftermiddag i november när jag bestämde mig för att gå ut. Regnet hade slutat, men gatorna var fortfarande blöta och luften kändes kall mot ansiktet. Jag tog tunnelbanan till Slussen och gick sedan längs vattnet mot Södermalm.\n\nUte på bryggan satt några män och fiskade, trots att det nästan inte fanns någon fisk kvar så här års. – Det gör inget, sa en av dem. Det är själva stunden som räknas.\n\nJag köpte en kopp varmt kaffe och en kanelbulle och satte mig på en bänk. Det är konstigt hur lugn en stor stad kan bli när alla andra gömmer sig inomhus.", "en": "It was a grey Sunday afternoon in November when I decided to go out. The rain had stopped, but the streets were still wet and the air felt cold against my face. I took the subway to Slussen and then walked along the water towards Södermalm.\n\nOut on the pier a few men sat fishing, even though there was hardly any fish left at this time of year. “It doesn’t matter,” said one of them. “It’s the moment itself that counts.”\n\nI bought a cup of hot coffee and a cinnamon bun and sat down on a bench. It is strange how quiet a big city can become when everyone else is hiding indoors.", "de": "Es war ein grauer Sonntagnachmittag im November, als ich beschloss, nach draußen zu gehen. Der Regen hatte aufgehört, aber die Straßen waren noch nass, und die Luft fühlte sich kalt im Gesicht an. Ich nahm die U-Bahn zum Slussen und ging dann am Wasser entlang in Richtung Södermalm.\n\nAuf dem Steg saßen ein paar Männer und angelten, obwohl um diese Jahreszeit kaum noch Fisch da war. „Das macht nichts“, sagte einer von ihnen. „Es ist der Moment selbst, der zählt.“\n\nIch kaufte mir eine Tasse heißen Kaffee und eine Zimtschnecke und setzte mich auf eine Bank. Es ist seltsam, wie ruhig eine große Stadt werden kann, wenn sich alle anderen drinnen verstecken.", "fr": "C’était un dimanche après-midi gris de novembre quand j’ai décidé de sortir. La pluie s’était arrêtée, mais les rues étaient encore mouillées et l’air était froid sur mon visage. J’ai pris le métro jusqu’à Slussen, puis j’ai marché le long de l’eau en direction de Södermalm.\n\nSur la jetée, quelques hommes pêchaient, même s’il ne restait presque plus de poissons à cette période de l’année. — Ça ne fait rien, a dit l’un d’eux. C’est l’instant lui-même qui compte.\n\nJ’ai acheté une tasse de café chaud et une brioche à la cannelle, puis je me suis assis sur un banc. C’est étrange de voir à quel point une grande ville peut devenir calme quand tout le monde se cache à l’intérieur.", "es": "Era una tarde gris de domingo en noviembre cuando decidí salir. La lluvia había parado, pero las calles seguían mojadas y el aire se sentía frío en la cara. Tomé el metro hasta Slussen y luego caminé junto al agua hacia Södermalm.\n\nEn el muelle había unos hombres pescando, aunque casi no quedaban peces en esa época del año. —No importa —dijo uno de ellos—. Lo que cuenta es el momento.\n\nCompré una taza de café caliente y un bollo de canela y me senté en un banco. Es curioso lo tranquila que puede volverse una gran ciudad cuando todos los demás se esconden en casa.", "it": "Era un grigio pomeriggio di domenica di novembre quando decisi di uscire. La pioggia aveva smesso, ma le strade erano ancora bagnate e l’aria era fredda sul viso. Presi la metropolitana fino a Slussen e poi camminai lungo l’acqua verso Södermalm.\n\nSul molo c’erano alcuni uomini a pescare, anche se a quest’epoca dell’anno non c’era quasi più pesce. «Non fa niente», disse uno di loro. «È il momento in sé che conta.»\n\nComprai una tazza di caffè caldo e un panino alla cannella e mi sedetti su una panchina. È strano quanto possa diventare tranquilla una grande città quando tutti gli altri si nascondono in casa."};
+function sampleText(){return SAMPLES[S.learn]||""}
+
+var S={tab:"read",text:"",isSample:true,editing:false,fs:21,words:[],updated:0,textUpdated:0,
+  cur:null,reqId:0,queue:[],flip:false,done:0,total:0,search:"",showExport:false,trans:{},openTr:{},showAll:false,trBusyAll:false,trErrAll:"",trProg:"",imgLimits:null,showSettings:false,books:[],bookId:"",bookUi:null,my:"en",learn:"sv",langSet:false,keyDraft:"",uiBusy:false,uiMsg:"",syncKey:""};
+var sampleFn=null, downloads=null, dbDoc=null, dbRead=null, ready=false;
+
+/* ---------- storage ---------- */
+function loadLocal(){
+  try{
+    var d=JSON.parse(localStorage.getItem("svreader")||"null");
+    if(d){S.words=d.words||[];S.books=d.books||[];S.bookId=d.bookId||"";S.text=d.text||"";S.fs=d.fs||21;S.updated=d.updated||0;S.textUpdated=d.textUpdated||0;}
+  }catch(e){}
+  ensureBooks();
+  try{S.trans=JSON.parse(localStorage.getItem("svtrans")||"{}")||{}}catch(e){S.trans={}}
+  if(!S.text){S.text=sampleText();S.isSample=!!S.text}else{S.text=cleanText(S.text);S.isSample=false}
+}
+function touch(kind){var t=Date.now(); if(kind==="text")S.textUpdated=t; else S.updated=t; schedule()}
+function schedule(){
+  try{localStorage.setItem("svreader",JSON.stringify({words:S.words,books:S.books,bookId:S.bookId,text:S.isSample?"":S.text,fs:S.fs,updated:S.updated,textUpdated:S.textUpdated}))}catch(e){}
+  clearTimeout(saveTimer); saveTimer=setTimeout(flush,700);
+}
+var writing=false,dirty=false,saveTimer=null;
+async function flush(){
+  if(!ready||!dbDoc){if(!dbDoc)setSync("sync.local");return}
+  if(writing){dirty=true;return}
+  writing=true;
+  try{
+    setSync("sync.saving");
+    await dbDoc.vocab.set({words:S.words,books:S.books,bookId:S.bookId,updated:S.updated});
+    await dbDoc.reader.set({text:S.isSample?"":S.text,fs:S.fs,updated:S.textUpdated});
+    setSync("sync.synced");
+  }catch(e){setSync("sync.offline")}
+  writing=false;
+  if(dirty){dirty=false;flush()}
+}
+async function initRemote(){
+  try{
+    var c=window.claude; if(!c){setSync("sync.local");return}
+    var user=await c.use("user"), db=await c.use("db");
+    if(!user||!db){setSync("sync.local");return}
+    var id=await user.id(); if(!id){setSync("sync.local");return}
+    var col=db.collection("data/users/"+id);
+    dbDoc={vocab:col.doc("vocab"),reader:col.doc("reader")};
+    var timer=setTimeout(function(){setSync("sync.offline")},10000);
+    var v=await dbDoc.vocab.get(), r=await dbDoc.reader.get();
+    clearTimeout(timer);
+    if(v.exists){var vd=v.data(); if((vd.updated||0)>S.updated){S.words=vd.words||[];S.books=vd.books||[];S.bookId=vd.bookId||"";S.updated=vd.updated||0;ensureBooks()}}
+    if(r.exists){var rd=r.data(); if((rd.updated||0)>S.textUpdated&&rd.text){S.text=cleanText(rd.text);S.isSample=false;S.textUpdated=rd.updated||0;S.fs=rd.fs||S.fs}}
+    try{localStorage.setItem("svreader",JSON.stringify({words:S.words,books:S.books,bookId:S.bookId,text:S.isSample?"":S.text,fs:S.fs,updated:S.updated,textUpdated:S.textUpdated}))}catch(e){}
+    ready=true; setSync("sync.synced"); render();
+    if(S.updated||S.textUpdated) flush();
+  }catch(e){setSync("sync.local")}
+}
+
+/* ---------- reader ---------- */
+var WORD=/[\p{L}\p{M}][\p{L}\p{M}'’\-]*/gu;
+function paragraphs(){return S.text.split(/\n+/).map(function(s){return s.trim()}).filter(Boolean)}
+var ABBR=/(?:^|[\s(])(?:t\.ex|bl\.a|m\.fl|m\.m|m\.a|dvs|osv|ca|kl|nr|s\.k|jfr|mfl|mm|fr\.o\.m|t\.o\.m|p\.g\.a|resp|st|tel|ev|ex|inkl|exkl|ung|el|tex|f\.d|f\.ö|e\.kr|f\.kr|mr|mrs|dr|prof|no|vs|etc|e\.g|i\.e|ms|jr|approx|inc|ltd|z\.b|d\.h|u\.a|usw|bzw|vgl|bd|p\.ex|sra|sig|dott|ecc|art|cf)\.$/i;
+function splitSentences(p){
+  /* a sentence ends at . ! ? … (plus closing quotes) followed by a space and a capital letter, digit, quote or dash; abbreviations and lowercase continuations do not end it */
+  var re=/[.!?…]+["”»'’)\]]*(?=\s|$)/g,m,cuts=[],out=[];
+  while((m=re.exec(p))){
+    var end=m.index+m[0].length, rest=p.slice(end).replace(/^\s+/,"");
+    if(rest&&/^\p{Ll}/u.test(rest))continue;
+    if(/^[.]$/.test(m[0])&&ABBR.test(p.slice(0,end)))continue;
+    cuts.push(end);
+  }
+  var start=0;
+  function push(endIdx){
+    var raw=p.slice(start,endIdx),t=raw.replace(/\s+$/,"");
+    if(t.trim())out.push({start:start+(raw.length-raw.replace(/^\s+/,"").length),text:t.replace(/^\s+/,""),ws:raw.slice(t.length)});
+    start=endIdx;
+  }
+  cuts.forEach(function(c){
+    var e=c; while(e<p.length&&/\s/.test(p.charAt(e)))e++;
+    if(e>start)push(e);
+  });
+  if(start<p.length)push(p.length);
+  return out;
+}
+function wordsHtml(t,base,pi){
+  var out="",last=0,m; WORD.lastIndex=0;
+  while((m=WORD.exec(t))){
+    out+=esc(t.slice(last,m.index));
+    out+='<span class="w" data-p="'+pi+'" data-s="'+(base+m.index)+'">'+esc(m[0])+'</span>';
+    last=m.index+m[0].length;
+  }
+  return out+esc(t.slice(last));
+}
+function trVisible(pi,si){return S.showAll}
+function renderPara(p,pi){
+  var out="",last=0;
+  splitSentences(p).forEach(function(s,si){
+    if(s.start>last)out+=esc(p.slice(last,s.start));
+    var vis=trVisible(pi,si);
+    out+='<span class="s">'+wordsHtml(s.text,s.start,pi)+'</span>';
+    out+=esc(s.ws);
+    if(vis){
+      var arr=trOk(p)?S.trans[trKey(p)]:null,txt;
+      if(arr&&arr[si])txt=esc(arr[si]);
+      else if(S.trBusyAll)txt='<span class="spin"></span>'+esc(T("tr.busy"));
+      else if(S.trErrAll)txt=esc(S.trErrAll);
+      else txt="";
+      out+='<span class="tr">'+txt+'</span>';
+    }
+    last=s.start+s.text.length+s.ws.length;
+  });
+  out+=esc(p.slice(last));
+  return "<p>"+out+"</p>";
+}
+function sentenceAt(p,off){
+  var ss=splitSentences(p);
+  for(var i=0;i<ss.length;i++){ if(off>=ss[i].start&&off<ss[i].start+ss[i].text.length+ss[i].ws.length) return ss[i].text.trim(); }
+  return p;
+}
+function renderReader(){var r=$("#reader");if(!r)return;r.innerHTML=paragraphs().map(renderPara).join("");markSaved()}
+/* translation: the whole text is translated in one request (split only if very long); showing or hiding never calls Claude */
+function saveTrans(){
+  try{
+    var ks=Object.keys(S.trans); if(ks.length>300){ks.slice(0,ks.length-300).forEach(function(k){delete S.trans[k]})}
+    localStorage.setItem("svtrans",JSON.stringify(S.trans));
+  }catch(e){}
+}
+function trKey(p){return S.my+"\u0001"+p}
+function trOk(p){var a=S.trans[trKey(p)];return !!a&&a.length===splitSentences(p).length}
+function allTranslated(){return paragraphs().every(trOk)}
+function trLabel(){
+  if(S.trBusyAll)return T("tr.label.busy",{p:S.trProg||""});
+  if(!allTranslated())return T("tr.label.all");
+  return S.showAll?T("tr.label.hide"):T("tr.label.show");
+}
+function updateTrBtn(){
+  var b=document.querySelector('[data-act="tr-all"]'); if(!b)return;
+  b.textContent=trLabel(); b.disabled=!!S.trBusyAll; b.setAttribute("aria-pressed",String(S.showAll));
+}
+function translateAll(){
+  if(S.trBusyAll)return Promise.resolve();
+  var paras=paragraphs(),todo=[];
+  paras.forEach(function(p,i){if(!trOk(p))todo.push(i)});
+  if(!todo.length)return Promise.resolve();
+  if(!sampleFn){S.trErrAll=T("tr.err.generic");renderReader();return Promise.resolve()}
+  var chunks=[],cur=[],len=0;
+  todo.forEach(function(i){var l=paras[i].length;if(cur.length&&len+l>2000){chunks.push(cur);cur=[];len=0}cur.push(i);len+=l});
+  if(cur.length)chunks.push(cur);
+  S.trBusyAll=true;S.trErrAll="";S.trProg="1/"+chunks.length;renderReader();updateTrBtn();
+  var chain=Promise.resolve();
+  chunks.forEach(function(ch,ci){
+    chain=chain.then(function(){
+      S.trProg=(ci+1)+"/"+chunks.length;updateTrBtn();
+      var input=ch.map(function(i){return splitSentences(paras[i]).map(function(x){return x.text.trim().replace(/\s+/g," ")})});
+      var n=0,lines=[];
+      input.forEach(function(ss,k){ss.forEach(function(t){n++;lines.push(n+". "+t)});lines.push("")});
+      var prompt='Translate each '+learnEn()+' sentence line below into natural, accurate '+myEn()+'. The sentences come from one text, in order; blank lines separate paragraphs; use the context (for example, who a pronoun refers to). Output format: one line per sentence, written as "number. translation", with the same numbers as the input. One line per sentence: do not merge, split or skip sentences, do not put line breaks inside a translation, and output nothing else.\n\n'+lines.join("\n");
+      return sampleFn(prompt,{modelTier:"quick"}).then(function(res){
+        var got={},cur=0;
+        String(res.text||"").split("\n").forEach(function(l){
+          var m=l.match(/^\s*(\d+)\s*[.、)）:：]\s*(.*)$/);
+          if(m){cur=+m[1];got[cur]=m[2].trim()}
+          else if(l.trim()&&cur)got[cur]=(got[cur]+" "+l.trim()).trim();
+        });
+        var idx=0,missing=0;
+        ch.forEach(function(i,k){
+          var ss=input[k],arr=[],ok=true;
+          ss.forEach(function(){idx++;if(got[idx])arr.push(got[idx]);else{ok=false}});
+          if(ok)S.trans[trKey(paras[i])]=arr;else missing++;
+        });
+        saveTrans();renderReader();
+        if(missing)throw {code:res.truncated?"truncated":"incomplete"};
+      });
+    });
+  });
+  return chain.catch(function(e){
+    var code=(e&&e.code)||"unknown",msg;
+    var more=T("tr.more",{btn:T("tr.label.all"),code:code});
+    if(code==="rate_limited")msg=T("err.rate")+" "+more;
+    else if(code==="truncated")msg=T("tr.err.trunc")+" "+more;
+    else if(code==="incomplete"||code==="invalid_json"||code==="empty_completion")msg=T("tr.err.incomplete")+" "+more;
+    else if(code==="upstream_error")msg=T("tr.err.upstream")+" "+more;
+    else msg=T("tr.err.generic")+" "+more;
+    msg=keyErr(code)||msg;
+    S.trErrAll=msg;
+  }).then(function(){S.trBusyAll=false;renderReader();updateTrBtn()});
+}
+function toggleAll(){
+  S.openTr={};
+  if(!allTranslated()){S.showAll=true;S.trErrAll="";translateAll()}
+  else S.showAll=!S.showAll;
+  renderReader();updateTrBtn();
+}
+/* tidy pasted text: rejoin sentences broken by hard line wraps */
+function cleanText(raw){
+  var t=String(raw).replace(/\r\n?/g,"\n").replace(/[   ]/g," ").replace(/[​‌‍﻿­]/g,"").replace(/\t/g," ");
+  var out=[];
+  t.split(/\n[ ]*\n+/).forEach(function(block){
+    var lines=block.split("\n").map(function(l){return l.replace(/\s+/g," ").trim()}).filter(Boolean);
+    if(!lines.length)return;
+    var maxLen=Math.max.apply(null,lines.map(function(l){return l.length}));
+    var cur=lines[0];
+    for(var i=1;i<lines.length;i++){
+      var prev=lines[i-1],ln=lines[i];
+      var ends=/[.!?…]["”»'’)\]]*$/.test(prev);
+      var list=/^([-–—•*·]|\d{1,3}[.)])\s/.test(ln);
+      var join;
+      if(list)join=false;
+      else if(!ends){
+        /* sentence not finished: always continue it, except a short heading-like line */
+        join=!(prev.length<25&&prev.split(" ").length<=4&&/^\p{Lu}/u.test(ln));
+      }else join=maxLen>=40&&prev.length>=0.8*maxLen;
+      if(!join){out.push(cur);cur=ln;continue}
+      if(/\p{L}-$/u.test(prev)&&/^\p{Ll}/u.test(ln)){
+        var first=ln.split(" ")[0].toLowerCase();
+        if(["och","eller","samt","respektive","el","and","or","und","oder","et","ou","y","o","e","og","en","ja","tai","i","lub","и","или"].indexOf(first)>=0)cur+=" "+ln;
+        else cur=cur.slice(0,-1)+ln;
+      }else cur+=" "+ln;
+    }
+    out.push(cur);
+  });
+  return out.map(function(x){return x.replace(/ {2,}/g," ").trim()}).filter(Boolean).join("\n\n");
+}
+function savedSet(){
+  var s={};
+  bw().forEach(function(w){ [w.w,w.lemma].forEach(function(x){ if(x&&x.indexOf(" ")<0) s[x.toLowerCase()]=1 }) });
+  return s;
+}
+function markSaved(){
+  var set=savedSet();
+  document.querySelectorAll(".reader .w").forEach(function(el){
+    el.classList.toggle("saved",!!set[el.textContent.toLowerCase()]);
+  });
+}
+function clearActive(){document.querySelectorAll(".reader .w.active").forEach(function(e){e.classList.remove("active")})}
+
+/* ---------- lookup ---------- */
+function findSaved(term){
+  var t=term.toLowerCase();
+  var cw=bw();for(var i=0;i<cw.length;i++){var w=cw[i]; if(w.w.toLowerCase()===t||(w.lemma&&w.lemma.toLowerCase()===t)) return w}
+  return null;
+}
+function openLookup(term,ctx,spans){
+  term=term.replace(/\s+/g," ").trim(); if(!term)return;
+  clearActive(); (spans||[]).forEach(function(e){e.classList.add("active")});
+  var saved=findSaved(term);
+  var id=++S.reqId;
+  if(saved){
+    S.cur={term:saved.w,ctx:saved.ctx||ctx,data:{lemma:saved.lemma,pos:saved.pos,forms:saved.forms,zh:saved.zh,en:saved.en,gl:Object.assign({},glOf(saved)),note:saved.note,ex:saved.ex,ex_zh:saved.ex_zh},saved:saved.id,loading:false,error:""};
+    renderSheet(); return;
+  }
+  coachDone();
+  S.cur={term:term,ctx:ctx||"",data:{},saved:null,loading:!!sampleFn,edit:!sampleFn,error:sampleFn?"":T("err.lookup")};
+  renderSheet();
+  if(!sampleFn)return;
+  /* the data field "zh" holds the meaning in the reader's own language (whatever it is); "en" is an English gloss */
+  var gls=glLangs();
+  var enLine=gls.length?'- gloss: an object with a short gloss of the same meaning in each of these languages, keyed by language code: '+gls.map(function(c){return c+' = '+langInfo(c).en}).join(', ')+'\n':'- gloss: an empty object\n';
+  var prompt='You are a dictionary for learners of '+learnEn()+'. The reader\'s native language is '+myEn()+' and their level is about B1. Explain the '+learnEn()+' word or phrase in the sentence below. Reply with a single JSON object and nothing else. Use exactly these keys.\nFields:\n- lemma: dictionary form (verbs: infinitive; nouns: singular indefinite; phrases unchanged)\n- pos: part of speech, written in '+myEn()+'; for nouns also give the grammatical gender or article where the language has one, e.g. "noun (en)" for a Swedish noun\n- forms: common inflected forms, e.g. "bil, bilen, bilar, bilarna" or "springer, sprang, sprungit"; an empty string if none\n- zh: its meaning in this sentence, written in '+myEn()+' (the key is literally "zh" whatever the language), short; separate several senses with semicolons\n'+enLine+'- note: one short usage note written in '+myEn()+' (collocations, colloquial use or slang, easily confused words); an empty string if none\n- ex: one simple example sentence in '+learnEn()+'\n- ex_zh: the example sentence translated into '+myEn()+'\n\nWord or phrase: '+term+'\nSentence it appears in: '+(ctx||term);
+  sampleFn.json(prompt,{modelTier:"quick"}).then(function(d){
+    if(id!==S.reqId||!S.cur)return;
+    if(!d||typeof d!=="object")throw {code:"invalid_json"};
+    var g0=(d.gloss&&typeof d.gloss==="object")?d.gloss:{},gl={};gls.forEach(function(c){if(g0[c])gl[c]=String(g0[c])});if(!gl.en&&d.en&&gls.indexOf("en")>=0)gl.en=String(d.en);
+    S.cur.data={lemma:String(d.lemma||""),pos:String(d.pos||""),forms:String(d.forms||""),zh:String(d.zh||""),en:gl.en||"",gl:gl,note:String(d.note||""),ex:String(d.ex||""),ex_zh:String(d.ex_zh||"")};
+    S.cur.loading=false; renderSheet();
+  }).catch(function(e){
+    if(id!==S.reqId||!S.cur)return;
+    var code=e&&e.code, msg=T("err.lookup");
+    if(code==="rate_limited")msg=T("err.rate");
+    msg=keyErr(code)||msg;
+    S.cur.loading=false;S.cur.error=msg;S.cur.edit=true; renderSheet();
+  });
+}
+function hl(ctx,term){
+  var re=new RegExp("(?<![\\p{L}])"+term.replace(/[.*+?^${}()|[\]\\]/g,"\\$&").replace(/ /g,"\\s+")+"(?![\\p{L}])","iu");
+  return esc(ctx.replace(re,function(m){return "\u0001"+m+"\u0002"})).replace(/\u0001/g,"<b>").replace(/\u0002/g,"</b>");
+}
+function renderSheet(){
+  var sh=$("#sheet"),pn=$("#panel"),c=S.cur;
+  document.body.classList.toggle("has-sheet",!!c);
+  if(!c){sh.classList.remove("open");pn.innerHTML='<div class="lk-empty">'+face("mid")+'<span>'+esc(T("lookup.empty"))+'</span></div>';return}
+  sh.classList.add("open");
+  var d=c.data||{}, bn=curBook().name;
+  var h='<div class="stack">';
+  h+='<div class="lk-head"><h2 class="term" lang="'+S.learn+'">'+esc(c.term)+'</h2>'+
+    (canSpeak()?'<button class="btn ibtn" data-act="speak" aria-label="'+esc(T("lookup.speak"))+'" title="'+esc(T("lookup.speak"))+'">'+ic("vol")+'</button>':'')+
+    '<span style="flex:1"></span><button class="btn ibtn ghost" data-act="close" aria-label="'+esc(T("btn.close"))+'">'+ic("x")+'</button></div>';
+  if(d.pos||(d.lemma&&d.lemma.toLowerCase()!==c.term.toLowerCase()))
+    h+='<div class="chips">'+(d.pos?'<span class="chip">'+esc(d.pos)+'</span>':'')+(d.lemma&&d.lemma.toLowerCase()!==c.term.toLowerCase()?'<span class="chip">'+esc(T("chip.lemma",{x:d.lemma}))+'</span>':'')+'</div>';
+  if(c.ctx) h+='<div class="ctx" lang="'+S.learn+'">'+hl(c.ctx,c.term)+'</div>';
+  if(c.loading){
+    h+='<div class="stack" aria-label="'+esc(T("lookup.loading"))+'"><div class="sk" style="width:55%;height:26px"></div><div class="sk" style="width:35%"></div><div class="sk" style="width:85%"></div><div class="sk" style="width:70%"></div></div>';
+  }else if(c.edit){
+    if(c.error) h+='<div class="notice" style="margin:0">'+esc(c.error)+'</div>';
+    h+='<div class="field"><label for="f-zh">'+esc(myLabel())+'</label><input id="f-zh" data-f="zh" value="'+esc(d.zh)+'"></div>';
+    glLangs().forEach(function(cd){h+='<div class="field"><label for="f-g-'+cd+'">'+esc(glName(cd))+'</label><input id="f-g-'+cd+'" data-g="'+cd+'" value="'+esc((d.gl||{})[cd]||"")+'"></div>'});
+    h+='<div class="field"><label for="f-forms">'+esc(T("field.forms"))+'</label><input id="f-forms" data-f="forms" value="'+esc(d.forms)+'"></div>';
+    h+='<div class="field"><label for="f-note">'+esc(T("field.note"))+'</label><textarea id="f-note" data-f="note" rows="2">'+esc(d.note)+'</textarea></div>';
+  }else{
+    var sec=function(label,body,cls){return '<div class="sec"><div class="sec-l">'+esc(label)+'</div><div class="'+cls+'">'+body+'</div></div>'};
+    h+=sec(myLabel(),esc(d.zh),"meaning");
+    glLangs().forEach(function(cd){var v=(d.gl||{})[cd];if(v)h+=sec(glName(cd),esc(v),"gloss")});
+    if(d.forms)h+=sec(T("field.forms"),'<span lang="'+S.learn+'">'+esc(d.forms)+'</span>',"forms");
+    if(d.note)h+=sec(T("field.note"),esc(d.note),"note");
+  }
+  if(d.ex&&!c.loading&&!c.edit) h+='<div class="ex"><div lang="'+S.learn+'">'+esc(d.ex)+'</div><div class="muted">'+esc(d.ex_zh)+'</div></div>';
+  h+='<div class="lk-actions">';
+  if(c.saved&&!c.edit) h+='<span class="saved-tag">'+ic("check")+esc(T("lookup.savedIn",{b:bn}))+'</span><span style="flex:1"></span>';
+  else h+='<button class="btn primary wide" data-act="save"'+(c.loading?' disabled':'')+'>'+(c.saved?ic("check")+esc(T("btn.update")):ic("plus")+esc(T("btn.addTo",{b:bn})))+'</button>';
+  if(!c.loading&&!c.edit) h+='<button class="btn ibtn" data-act="edit-word" aria-label="'+esc(T("btn.edit"))+'" title="'+esc(T("btn.edit"))+'">'+ic("edit")+'</button>';
+  if(c.saved) h+='<button class="btn ibtn danger" data-act="del" aria-label="'+esc(T("btn.removeWord"))+'" title="'+esc(T("btn.removeWord"))+'">'+ic("trash")+'</button>';
+  h+='</div></div>';
+  pn.innerHTML=h;
+}
+function readSheetFields(){
+  var d=S.cur.data=S.cur.data||{};
+  document.querySelectorAll("#panel [data-f]").forEach(function(el){d[el.getAttribute("data-f")]=el.value.trim()});
+  d.gl=d.gl||{}; document.querySelectorAll("#panel [data-g]").forEach(function(el){var v=el.value.trim();if(v)d.gl[el.getAttribute("data-g")]=v;else delete d.gl[el.getAttribute("data-g")]});
+  d.en=d.gl.en||"";
+}
+function saveCur(){
+  if(!S.cur)return; readSheetFields();
+  var c=S.cur,d=c.data;
+  if(c.saved){
+    var w=S.words.filter(function(x){return x.id===c.saved})[0];
+    if(w){w.zh=d.zh;w.gl=Object.assign(glOf(w),d.gl||{});w.en=w.gl.en||"";w.forms=d.forms||"";w.note=d.note||"";}
+    c.edit=false;
+  }else{
+    var nw={id:uid(),w:c.term,lemma:d.lemma||"",pos:d.pos||"",forms:d.forms||"",zh:d.zh||"",en:(d.gl||{}).en||"",gl:d.gl||{},note:d.note||"",ex:d.ex||"",ex_zh:d.ex_zh||"",ctx:c.ctx||"",bookId:S.bookId,box:0,due:Date.now(),added:Date.now()};
+    S.words.unshift(nw); c.saved=nw.id;
+  }
+  touch("words"); closeSheet(); updateCounts(); render();
+}
+function closeSheet(){S.cur=null;S.reqId++;clearActive();renderSheet()}
+
+/* ---------- selection ---------- */
+function handleSelectionOrClick(ev){
+  var rd=$(".reader"); if(!rd)return;
+  var sel=window.getSelection(), txt=sel?sel.toString().replace(/\s+/g," ").trim():"";
+  if(txt&&sel.rangeCount&&rd.contains(sel.anchorNode)&&rd.contains(sel.focusNode)){
+    if(txt.split(" ").length>8)return;
+    var rng=sel.getRangeAt(0), spans=[].filter.call(rd.querySelectorAll(".w"),function(s){return rng.intersectsNode(s)});
+    if(!spans.length)return;
+    var p=paragraphs()[+spans[0].dataset.p]||"", ctx=sentenceAt(p,+spans[0].dataset.s);
+    var term=spans.map(function(s){return s.textContent}).join(" ");
+    // keep original spacing/punctuation inside phrase
+    var first=+spans[0].dataset.s, lastSp=spans[spans.length-1], end=+lastSp.dataset.s+lastSp.textContent.length;
+    var raw=p.slice(first,end); if(raw&&raw.length<120)term=raw;
+    sel.removeAllRanges();
+    openLookup(term,ctx,spans); return;
+  }
+  var t=ev&&ev.target&&ev.target.closest&&ev.target.closest(".w");
+  if(t&&rd.contains(t)){
+    var par=paragraphs()[+t.dataset.p]||"";
+    openLookup(t.textContent,sentenceAt(par,+t.dataset.s),[t]);
+  }
+}
+var selTimer=null;
+document.addEventListener("selectionchange",function(){
+  if(!window.matchMedia||!matchMedia("(pointer:coarse)").matches)return;
+  clearTimeout(selTimer);
+  selTimer=setTimeout(function(){
+    var s=window.getSelection(); if(s&&s.toString().trim()) handleSelectionOrClick(null);
+  },800);
+});
+
+/* ---------- views ---------- */
+function updateCounts(){
+  $("#n-book").textContent=bw().length;
+  var due=bw().filter(function(w){return w.due<=Date.now()}).length;
+  var n=$("#n-rev"); n.textContent=due; n.classList.toggle("due",due>0);
+}
+function setTab(t){
+  S.tab=t;
+  document.querySelectorAll("nav button").forEach(function(b){b.setAttribute("aria-selected",b.dataset.tab===t?"true":"false")});
+  if(t==="rev")startReview();
+  closeSheet(); render();
+}
+function render(){
+  applyChrome();
+  var m=$("#main");
+  if(!S.langSet){
+    m.innerHTML=welcomeHtml();
+    if(S.uiMsg)m.insertAdjacentHTML("afterbegin",'<div class="notice">'+esc(S.uiMsg)+'</div>');
+    enhanceSelects(); return;
+  }
+  updateCounts();
+  if(S.tab==="read")m.innerHTML=viewRead();
+  else if(S.tab==="book")m.innerHTML=viewBook();
+  else m.innerHTML=viewReview();
+  if(S.showSettings)m.insertAdjacentHTML("afterbegin",settingsHtml());
+  else if(!getCfg().key)m.insertAdjacentHTML("afterbegin",'<div class="notice keybar"><span>'+esc(T("notice.key"))+'</span><button class="btn small primary" data-act="settings">'+esc(T("btn.gosettings"))+'</button></div>');
+  if(S.uiBusy)m.insertAdjacentHTML("afterbegin",'<div class="notice"><span class="spin"></span>'+esc(T("lang.translating"))+'</div>');
+  else if(S.uiMsg)m.insertAdjacentHTML("afterbegin",'<div class="notice">'+esc(S.uiMsg)+'</div>');
+  if(S.tab==="read"&&!S.editing)markSaved();
+  enhanceSelects();
+  if(!S.cur)renderSheet();
+}
+function viewRead(){
+  if(S.editing||!S.text){
+    return '<div class="card stack editor">'+
+    '<textarea id="src" class="src" lang="'+S.learn+'" aria-label="'+esc(T("editor.label",{learn:langName(S.learn)}))+'" placeholder="'+esc(T("editor.placeholder"))+'">'+(S.draft!=null?esc(S.draft):(S.isSample?"":esc(S.text)))+'</textarea>'+
+    '<div class="tiles"><label class="tile" for="file">'+ic("file")+'<span>'+esc(T("btn.file"))+'</span></label><input id="file" class="sr" type="file" accept=".txt,.md,.text,.srt,.vtt,text/plain">'+
+    (S.imgLimits?'<label class="tile" for="imgfile">'+ic("cam")+'<span>'+esc(T("btn.photo"))+'</span></label><input id="imgfile" class="sr" type="file" accept="image/*" multiple>':'')+
+    (SAMPLES[S.learn]?'<button class="tile" data-act="sample">'+ic("spark")+'<span>'+esc(T("btn.sample"))+'</span></button>':'')+'</div>'+
+    '<div class="hint" id="ocr-msg" aria-live="polite"></div>'+
+    '<div class="ed-actions">'+(S.text?'<button class="btn wide" data-act="cancel-edit">'+esc(T("btn.cancel"))+'</button>':'')+'<button class="btn primary wide" data-act="start">'+esc(T("btn.start"))+'</button></div></div>';
+  }
+  var h='<div class="stack">';
+  h+='<div class="toolbar">'+bookSel()+'<span style="flex:1"></span>'+
+    '<button class="btn small" data-act="tr-all" aria-pressed="'+S.showAll+'"'+(S.trBusyAll?' disabled':'')+'>'+ic("tr")+'<span>'+esc(trLabel())+'</span></button>'+
+    '<span class="seg" role="group" aria-label="'+esc(T("fs"))+'"><button class="btn small" data-act="fs-" aria-label="'+esc(T("fs.dec"))+'">A</button><button class="btn small big-a" data-act="fs+" aria-label="'+esc(T("fs.inc"))+'">A</button></span>'+
+    '<button class="btn small" data-act="edit" title="'+esc(T("btn.changeText"))+'">'+ic("plus")+'<span class="hide-xs">'+esc(T("btn.newText"))+'</span></button></div>';
+  if(coachOn())h+='<div class="coach" id="coach">'+face("tiny")+'<span>'+esc(T("coach"))+'</span></div>';
+  h+='<div class="reader" id="reader" lang="'+S.learn+'" style="--fs:'+S.fs+'px">'+paragraphs().map(renderPara).join("")+'</div></div>';
+  return h;
+}
+function emptyHtml(title,sub,btnAct,btnLabel){
+  return '<div class="empty">'+face("mid")+'<b>'+esc(title)+'</b>'+(sub?'<span>'+esc(sub)+'</span>':'')+(btnAct?'<button class="btn primary" data-act="'+btnAct+'">'+esc(btnLabel)+'</button>':'')+'</div>';
+}
+function viewBook(){
+  var q=S.search.toLowerCase();
+  var ws=bw().filter(function(w){return !q||[w.w,w.lemma,w.zh].concat(Object.keys(glOf(w)).map(function(k){return glOf(w)[k]})).join(" ").toLowerCase().indexOf(q)>=0});
+  var h='<div class="stack"><div class="toolbar">'+bookSel()+'<span style="flex:1"></span>'+
+    '<button class="btn small ibtn" data-act="book-new" aria-label="'+esc(T("book.new"))+'" title="'+esc(T("book.new"))+'">'+ic("plus")+'</button>'+
+    '<button class="btn small ibtn" data-act="book-rename" aria-label="'+esc(T("book.rename"))+'" title="'+esc(T("book.rename"))+'">'+ic("edit")+'</button>'+
+    (S.books.length>1?'<button class="btn small ibtn danger" data-act="book-del" aria-label="'+esc(T("book.delete"))+'" title="'+esc(T("book.delete"))+'">'+ic("trash")+'</button>':'')+
+    (bw().length?'<button class="btn small" data-act="toggle-export" aria-pressed="'+S.showExport+'">'+ic("down")+'<span>Anki</span></button>':'')+'</div>';
+  h+=bookUiHtml();
+  if(S.showExport)h+=exportView();
+  if(!bw().length)return h+emptyHtml(T("empty.book"),T("empty.bookSub"),"go-read",T("btn.goRead"))+'</div>';
+  h+='<label class="search-wrap">'+ic("search")+'<input class="search" id="search" type="search" placeholder="'+esc(T("search.placeholder"))+'" value="'+esc(S.search)+'" aria-label="'+esc(T("search.aria"))+'"></label>';
+  h+='<div class="list">';
+  ws.forEach(function(w){
+    var due=w.due<=Date.now();
+    h+='<button class="item" data-open="'+w.id+'"><span><span class="t" lang="'+S.learn+'">'+esc(w.w)+'</span> <span class="muted" style="font-size:13px">'+esc(w.pos)+'</span><br><span class="m">'+esc(w.zh)+glLangs().map(function(cd){var v=glOf(w)[cd];return v?' · <span class="muted">'+esc(v)+'</span>':''}).join("")+'</span></span><span class="b'+(due?' due':'')+'">'+esc(due?T("item.due"):fmtDue(w.due))+'</span></button>';
+  });
+  if(!ws.length)h+='<div class="hint" style="text-align:center;padding:20px">'+esc(T("no.match"))+'</div>';
+  return h+'</div></div>';
+}
+function bookUiHtml(){
+  var u=S.bookUi; if(!u)return "";
+  if(u==="del"){
+    var n=bw().length;
+    return '<div class="card stack"><div>'+esc(T("book.delConfirm",{b:curBook().name,extra:n?T("book.delExtra",{n:n}):""}))+'</div><div class="row"><button class="btn danger" data-act="book-del-ok">'+esc(T("btn.confirmDelete"))+'</button><button class="btn" data-act="book-cancel">'+esc(T("btn.cancel"))+'</button></div></div>';
+  }
+  return '<div class="card stack"><div class="field"><label for="book-name">'+esc(u==="new"?T("book.nameNew"):T("book.nameRename"))+'</label><input id="book-name" maxlength="40" placeholder="'+esc(T("book.namePlaceholder"))+'" value="'+(u==="rename"?esc(curBook().name):"")+'"></div><div class="row"><button class="btn primary" data-act="book-ok">'+esc(u==="new"?T("btn.create"):T("btn.save"))+'</button><button class="btn" data-act="book-cancel">'+esc(T("btn.cancel"))+'</button></div></div>';
+}
+function fmtDue(t){var d=Math.ceil((t-Date.now())/DAY);return d<=1?T("due.tomorrow"):T("due.days",{d:d})}
+function exportText(){
+  var lines=["#separator:tab","#html:true","#notetype:Basic","#deck:"+curBook().name.replace(/[\t\r\n:]+/g," "),"#columns:Front\tBack"];
+  bw().slice().reverse().forEach(function(w){
+    function cl(s){return esc(s).replace(/[\t\r\n]+/g," ")}
+    var front='<b>'+cl(w.w)+'</b>'+(w.pos?' <small>('+cl(w.pos)+')</small>':'');
+    var back=cl(w.zh)+glLangs().map(function(cd){var v=glOf(w)[cd];return v?'<br>'+cl(v):''}).join("");
+    if(w.lemma&&w.lemma.toLowerCase()!==w.w.toLowerCase())back+='<br><small>'+cl(T("anki.lemma",{x:w.lemma}))+'</small>';
+    if(w.forms)back+='<br><small>'+cl(w.forms)+'</small>';
+    if(w.note)back+='<br><small>'+cl(w.note)+'</small>';
+    if(w.ctx)back+='<hr><i>'+cl(w.ctx)+'</i>';
+    else if(w.ex)back+='<hr><i>'+cl(w.ex)+'</i>'+(w.ex_zh?'<br><small>'+cl(w.ex_zh)+'</small>':'');
+    lines.push(front+"\t"+back);
+  });
+  return lines.join("\n")+"\n";
+}
+function exportView(){
+  return '<div class="card export stack"><div><b>'+esc(T("export.title"))+'</b><div class="hint">'+esc(T("export.help"))+'</div></div>'+
+  '<div class="row">'+(downloads?'<button class="btn primary" data-act="download">'+esc(T("export.download"))+'</button>':'')+'<button class="btn" data-act="copy">'+esc(T("export.copy"))+'</button></div>'+
+  '<textarea id="exp" readonly aria-label="'+esc(T("export.aria"))+'">'+esc(exportText())+'</textarea><div class="hint" id="exp-msg" aria-live="polite"></div></div>';
+}
+/* review */
+function startReview(){
+  var now=Date.now();
+  S.queue=bw().filter(function(w){return w.due<=now}).sort(function(a,b){return a.due-b.due}).map(function(w){return w.id});
+  S.total=S.queue.length;S.done=0;S.flip=false;
+}
+function viewReview(){
+  if(!bw().length)return '<div class="stack"><div class="toolbar">'+bookSel()+'</div>'+emptyHtml(T("empty.book"),T("empty.bookSub"),"go-read",T("btn.goRead"))+'</div>';
+  if(!S.queue.length){
+    var next=bw().map(function(w){return w.due}).sort(function(a,b){return a-b})[0];
+    return '<div class="stack"><div class="toolbar">'+bookSel()+'</div>'+emptyHtml(T("review.done"),T("review.doneSub",{d:fmtDue(next)}),"review-all",T("review.all",{n:bw().length}))+'</div>';
+  }
+  var w=S.words.filter(function(x){return x.id===S.queue[0]})[0];
+  if(!w){S.queue.shift();return viewReview()}
+  var h='<div class="stack"><div class="toolbar">'+bookSel()+'<span style="flex:1"></span><span class="muted" style="font-weight:800">'+S.done+' / '+S.total+'</span></div><div class="prog"><i style="width:'+(S.total?Math.round(S.done/S.total*100):0)+'%"></i></div>';
+  h+='<div class="card flash'+(S.flip?'':' tap')+'"'+(S.flip?'':' data-act="flip" role="button" tabindex="0" aria-label="'+esc(T("review.show"))+'"')+'><div class="big" lang="'+S.learn+'">'+esc(w.w)+'</div>'+(w.ctx?'<div class="ctx" lang="'+S.learn+'">'+hl(w.ctx,w.w)+'</div>':'');
+  if(S.flip){
+    h+='<div class="back stack"><div class="meaning">'+esc(w.zh)+'</div>'+glLangs().map(function(cd){var v=glOf(w)[cd];return v?'<div class="gloss">'+esc(v)+'</div>':''}).join("")+(w.pos||w.lemma?'<div class="hint">'+esc(w.pos)+(w.lemma&&w.lemma.toLowerCase()!==w.w.toLowerCase()?' · '+esc(T("chip.lemma",{x:w.lemma})):'')+'</div>':'')+(w.forms?'<div class="hint">'+esc(w.forms)+'</div>':'')+(w.note?'<div class="note">'+esc(w.note)+'</div>':'')+'</div>';
+  }else h+='<div class="flip-hint">'+esc(T("review.tapFlip"))+'</div>';
+  h+='</div>';
+  if(S.flip)h+='<div class="grade"><button class="btn no" data-grade="0">'+ic("x")+'<span>'+esc(T("review.no"))+'</span></button><button class="btn" data-grade="1">'+ic("tilde")+'<span>'+esc(T("review.maybe"))+'</span></button><button class="btn ok" data-grade="2">'+ic("check")+'<span>'+esc(T("review.yes"))+'</span></button></div>';
+  return h+'</div>';
+}
+function grade(g){
+  var id=S.queue.shift(), w=S.words.filter(function(x){return x.id===id})[0]; if(!w)return;
+  var now=Date.now();
+  if(g===0){w.box=0;w.due=now+10*60000;S.queue.push(id);}
+  else{
+    if(g===2)w.box=Math.min(w.box+1,STEPS.length-1);
+    w.due=now+(g===1?Math.max(STEPS[w.box],0.5):STEPS[w.box]||0.5)*DAY;
+    S.done++;
+  }
+  S.flip=false; touch("words"); render();
+}
+
+/* ---------- events ---------- */
+document.addEventListener("click",function(ev){
+  var t=ev.target;
+  var tab=t.closest&&t.closest("nav button"); if(tab){setTab(tab.dataset.tab);return}
+  var open=t.closest&&t.closest("[data-open]");
+  if(open){
+    var w=S.words.filter(function(x){return x.id===open.dataset.open})[0];
+    if(w){S.reqId++;S.cur={term:w.w,ctx:w.ctx,data:{lemma:w.lemma,pos:w.pos,forms:w.forms,zh:w.zh,en:w.en,gl:Object.assign({},glOf(w)),note:w.note,ex:w.ex,ex_zh:w.ex_zh},saved:w.id,loading:false,error:""};renderSheet()}
+    return;
+  }
+  var g=t.closest&&t.closest("[data-grade]"); if(g){grade(+g.dataset.grade);return}
+  var a=t.closest&&t.closest("[data-act]");
+  if(a){
+    var act=a.dataset.act;
+    if(act==="home"){try{localStorage.removeItem("svcoach")}catch(e){}closeSheet();S.showSettings=false;S.bookUi=null;S.showExport=false;S.uiMsg="";S.tab="read";S.editing=false;S.draft=null;S.langSet=false;render();window.scrollTo(0,0);return}
+    if(act==="close")closeSheet();
+    else if(act==="speak"){if(S.cur)speak(S.cur.term)}
+    else if(act==="edit-word"){if(S.cur){S.cur.edit=true;renderSheet();var fz=$("#f-zh");if(fz)fz.focus()}}
+    else if(act==="go-read"){setTab("read")}
+    else if(act==="save")saveCur();
+    else if(act==="del"){var id=S.cur.saved;S.words=S.words.filter(function(x){return x.id!==id});touch("words");closeSheet();render()}
+    else if(act==="retry"){var c=S.cur;openLookupFresh(c.term,c.ctx)}
+    else if(act==="edit"){S.draft=null;S.editing=true;render()}
+    else if(act==="cancel-edit"){S.draft=null;S.editing=false;render()}
+    else if(act==="sample"){var s=$("#src");s.value=sampleText()}
+    else if(act==="clean"){var ta=$("#src"),before=ta.value.split(/\n+/).filter(function(x){return x.trim()}).length;ta.value=cleanText(ta.value);var after=ta.value?ta.value.split("\n\n").length:0;$("#clean-msg").textContent=" "+T("clean.done",{a:before,b:after})}
+    else if(act==="tr-all"){toggleAll()}
+    else if(act==="settings"){S.showSettings=!S.showSettings;render();window.scrollTo(0,0)}
+    else if(act==="key-save"){
+      var old=getCfg(),nk=$("#api-key").value.trim()||old.key;
+      setCfg({key:nk,model:$("#api-model").value,remember:$("#api-remember").checked});
+      $("#key-msg").textContent=nk?T("key.saved"):T("key.none");
+      if(nk){S.showSettings=false;S.uiMsg="";render();ensureUi()}}
+    else if(act==="key-clear"){try{localStorage.removeItem(CFG_KEY);sessionStorage.removeItem(CFG_KEY)}catch(e){}render()}
+    else if(act==="key-test"){
+      var km=$("#key-msg"),typed=$("#api-key").value.trim(),old2=getCfg();
+      setCfg({key:typed||old2.key,model:$("#api-model").value,remember:$("#api-remember").checked});
+      km.innerHTML='<span class="spin"></span>'+esc(T("key.testing"));
+      callClaude("Reply with: OK",{max_tokens:10}).then(function(){km.textContent=T("key.ok")}).catch(function(e){km.textContent=keyErr(e&&e.code)||T("key.testFail",{m:e&&e.message?e.message:""})});}
+    else if(act==="welcome-go"){
+      var kd=$("#api-key"),wk=kd?kd.value.trim():(S.keyDraft||"");
+      if(S.learn===S.my){S.uiMsg=T("welcome.same");render();return}
+      if(wk){var oc=getCfg();setCfg({key:wk,model:oc.model,remember:oc.remember})}
+      S.keyDraft="";S.langSet=true;persistLang();S.uiMsg="";syncDefaultBook();
+      if(!S.text||S.isSample){S.text=sampleText();S.isSample=!!S.text}
+      render();ensureUi();window.scrollTo(0,0)}
+    else if(act==="backup"){
+      var snap=JSON.stringify({app:"svenska-reader",v:1,words:S.words,books:S.books,bookId:S.bookId,text:S.isSample?"":S.text,exported:new Date().toISOString()});
+      downloads.save({filename:"svenska-reader-backup.json",data:snap}).then(function(){$("#bk-msg").textContent=T("bk.exported")}).catch(function(){$("#bk-msg").textContent=T("bk.fail")});}
+    else if(act==="book-new"){S.bookUi="new";render();var bn=$("#book-name");if(bn)bn.focus()}
+    else if(act==="book-rename"){S.bookUi="rename";render();var bn2=$("#book-name");if(bn2){bn2.focus();bn2.select()}}
+    else if(act==="book-del"){S.bookUi="del";render()}
+    else if(act==="book-cancel"){S.bookUi=null;render()}
+    else if(act==="book-ok"){bookOk()}
+    else if(act==="book-del-ok"){
+      var gone=S.bookId;S.words=S.words.filter(function(w){return w.bookId!==gone});S.books=S.books.filter(function(b){return b.id!==gone});
+      S.bookId=S.books[0].id;S.bookUi=null;touch("words");render()}
+    else if(act==="start"){
+      var v=$("#src").value.trim();
+      if(v){v=cleanText(v);S.text=v.slice(0,100000);S.isSample=(!!sampleText()&&v===cleanText(sampleText()));S.openTr={};}
+      else{S.text=sampleText();S.isSample=!!S.text}
+      S.draft=null;S.editing=false;touch("text");render();window.scrollTo(0,0);
+    }
+    else if(act==="fs+"){S.fs=Math.min(S.fs+2,34);touch("text");render()}
+    else if(act==="fs-"){S.fs=Math.max(S.fs-2,15);touch("text");render()}
+    else if(act==="toggle-export"){S.showExport=!S.showExport;S.bookUi=null;render()}
+    else if(act==="download"){doDownload()}
+    else if(act==="copy"){doCopy()}
+    else if(act==="flip"){S.flip=true;render()}
+    else if(act==="review-all"){S.queue=bw().map(function(w){return w.id}).sort(function(){return Math.random()-.5});S.total=S.queue.length;S.done=0;S.flip=false;render()}
+    return;
+  }
+  if(t.closest&&t.closest("#reader")&&!(t.closest("#sheet"))){setTimeout(function(){handleSelectionOrClick(ev)},0)}
+});
+function openLookupFresh(term,ctx){
+  var spans=[].slice.call(document.querySelectorAll(".reader .w.active"));
+  openLookup(term,ctx,spans);
+}
+document.addEventListener("input",function(ev){
+  if(ev.target.id==="search"){S.search=ev.target.value;var pos=ev.target.selectionStart;render();var el=$("#search");if(el){el.focus();el.setSelectionRange(pos,pos)}}
+});
+function bookOk(){
+  var inp=$("#book-name"),name=inp?inp.value.trim():""; if(!name){if(inp)inp.focus();return}
+  if(S.bookUi==="new"){var b={id:uid(),name:name.slice(0,40)};S.books.push(b);S.bookId=b.id}
+  else if(S.bookUi==="rename"){curBook().name=name.slice(0,40);delete curBook().auto}
+  S.bookUi=null;touch("words");render();
+}
+document.addEventListener("keydown",function(e){if(e.key==="Enter"&&e.target.id==="book-name"){e.preventDefault();bookOk()}});
+document.addEventListener("change",function(ev){
+  if(ev.target.id==="gl-0"||ev.target.id==="gl-1"){
+    var a=$("#gl-0").value,b=$("#gl-1").value; S.gl=[a,b].filter(function(c,i,x){return c&&x.indexOf(c)===i}); S.glCustom=true; persistLang(); render(); return;
+  }
+  if(ev.target.id==="lang-my"||ev.target.id==="lang-learn"){
+    var kd2=$("#api-key"); if(kd2&&!S.langSet)S.keyDraft=kd2.value;
+        if(ev.target.id==="lang-my"){S.my=ev.target.value;loadUic(S.my);if(!S.glCustom)S.gl=defaultGl()}else S.learn=ev.target.value;
+    S.uiMsg="";
+    if(S.langSet&&S.learn!==S.my){persistLang();afterLangChange();render();ensureUi();return}
+    if(S.learn===S.my){S.uiMsg=T("welcome.same");if(S.langSet)restoreLang()}
+    render();return;
+  }
+  if(ev.target.id==="restore-file"&&ev.target.files[0]){
+    ev.target.files[0].text().then(function(t){
+      var d=JSON.parse(t); if(!d||d.app!=="svenska-reader"||!Array.isArray(d.words))throw 0;
+      S.words=d.words;S.books=d.books||[];S.bookId=d.bookId||"";ensureBooks();
+      if(d.text){S.text=cleanText(d.text);S.isSample=false;touch("text")}
+      touch("words");render();var bm=$("#bk-msg");if(bm)bm.textContent=T("bk.restored",{n:S.words.length});
+    }).catch(function(){var bm=$("#bk-msg");if(bm)bm.textContent=T("bk.invalid")});
+    return;
+  }
+  if(ev.target.id==="imgfile"){doOcr(ev.target);return}
+  if(ev.target.id==="book-sel"){
+    if(ev.target.value==="__new"){closeSheet();S.bookUi="new";setTab("book");var bn=$("#book-name");if(bn)bn.focus();return}
+    S.bookId=ev.target.value;S.bookUi=null;S.search="";closeSheet();touch("words");
+    if(S.tab==="rev")startReview();
+    render();return;
+  }
+  if(ev.target.id==="file"&&ev.target.files[0]){
+    ev.target.files[0].text().then(function(t){$("#src").value=t.slice(0,100000)});
+  }
+});
+document.addEventListener("dragover",function(e){if($("#src"))e.preventDefault()});
+document.addEventListener("drop",function(e){
+  var f=e.dataTransfer&&e.dataTransfer.files&&e.dataTransfer.files[0];
+  if(f&&$("#src")){e.preventDefault();f.text().then(function(t){$("#src").value=t.slice(0,100000)})}
+});
+document.addEventListener("keydown",function(e){
+  if(e.key==="Escape"&&S.cur)closeSheet();
+  if(e.key==="Enter"&&e.target.classList&&e.target.classList.contains("tap")){S.flip=true;render();return}
+  if(S.tab==="rev"&&!/INPUT|TEXTAREA/.test((e.target||{}).tagName||"")&&!S.cur){
+    if(e.key===" "&&!S.flip&&S.queue.length){e.preventDefault();S.flip=true;render()}
+    else if(S.flip&&"123".indexOf(e.key)>=0&&e.key){grade(+e.key-1)}
+  }
+});
+async function doDownload(){
+  var msg=$("#exp-msg");
+  try{await downloads.save({filename:curBook().name.replace(/[\\/:*?"<>|\s]+/g,"_")+"-anki.txt",data:exportText()});msg.textContent=T("export.saved")}
+  catch(e){msg.textContent=(e&&e.code==="declined")?T("export.cancelled"):T("export.cantDownload")}
+}
+async function doCopy(){
+  var msg=$("#exp-msg"),ta=$("#exp");
+  try{await navigator.clipboard.writeText(exportText());msg.textContent=T("export.copied")}
+  catch(e){ta.focus();ta.select();msg.textContent=T("export.selected")}
+}
+
+/* ---------- init ---------- */
+loadLang(); loadLocal();
+sampleFn=makeSample(); downloads=makeDownloads(); S.imgLimits={maxCount:5};
+S.syncKey="sync.local"; render(); ensureUi();
+})();
+</script>
+</body>
+</html>
