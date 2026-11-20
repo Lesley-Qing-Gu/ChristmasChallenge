@@ -25,7 +25,7 @@ I've always loved advent calendars, with a tiny surprise behind every door. Ship
 | 04 | Nov 14 | [Lätt svenska 2026 in Review](#day-04--lätt-svenska-2026-in-review) | ✅ Shipped |
 | 05 | Nov 16 | [MöleMe](#day-05--möleme) | ✅ Shipped |
 | 06 | Nov 18 | [Read & Learn](#day-06--read--learn) | ✅ Shipped |
-| 07 | Nov 20 | — | 🔒 |
+| 07 | Nov 20 | [Collie on the Wall](#day-07--collie-on-the-wall) | ✅ Shipped |
 | 08 | Nov 22 | — | 🔒 |
 | 09 | Nov 24 | — | 🔒 |
 | 10 | Nov 26 | — | 🔒 |
@@ -124,3 +124,16 @@ I learn Swedish by reading novels, but I kept looking up the same words and forg
 - **Stack:** plain HTML/CSS/JS, Claude API (Haiku 5.5 by default, Sonnet for reading photos) or OpenAI API (GPT-6 Luna by default), localStorage, GitHub Pages.
 
 ![Day 06](docs/screenshots/day-06.png)
+
+## Day 07 · Collie on the Wall
+
+**Shipped Nov 20** · [Pick your favourite](https://lesley-qing-gu.github.io/ChristmasChallenge/days/07/) · Source: [`days/07/`](days/07)
+
+Three videos of a border collie bouldering on a real wall. Two came from the same wall photo and the same one-line prompt ("Make a video of a border collie climbing here"). The third was made a different way. Pick the one you like best, and the page reveals how each was made.
+
+- **What it does:** plays three vertical videos side by side (stacked on phones), lets you pick a favourite, then reveals the tool behind each one. Your pick is remembered in the browser.
+- **How it's built:** one HTML file with plain CSS and JavaScript, with canvas snowfall and an SVG string of lights. The videos were re-encoded with ffmpeg to silent H.264 at 1280px tall with faststart, about 4 MB in total. Only videos on screen play, to save battery and data on phones.
+- **What I learned:** a one-line prompt easily gets you a dog on a wall. Getting it to climb like a climber takes more than a prompt.
+- **Stack:** Seedance, Kling, Claude, ffmpeg, plain HTML/CSS/JS on GitHub Pages.
+
+![Day 07](docs/screenshots/day-07.png)
