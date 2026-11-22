@@ -26,7 +26,7 @@ I've always loved advent calendars, with a tiny surprise behind every door. Ship
 | 05 | Nov 16 | [MöleMe](#day-05--möleme) | ✅ Shipped |
 | 06 | Nov 18 | [Read & Learn](#day-06--read--learn) | ✅ Shipped |
 | 07 | Nov 20 | [Collie on the Wall](#day-07--collie-on-the-wall) | ✅ Shipped |
-| 08 | Nov 22 | — | 🔒 |
+| 08 | Nov 22 | [Stockholm T Pendant](#day-08--stockholm-t-pendant) | ✅ Shipped |
 | 09 | Nov 24 | — | 🔒 |
 | 10 | Nov 26 | — | 🔒 |
 | 11 | Nov 28 | — | 🔒 |
@@ -137,3 +137,18 @@ Three videos of a border collie bouldering on a real wall. Two came from the sam
 - **Stack:** Seedance, Kling, Claude, ffmpeg, plain HTML/CSS/JS on GitHub Pages.
 
 ![Day 07](docs/screenshots/day-07.png)
+
+## Day 08 · Stockholm T Pendant
+
+**Shipped Nov 22** · [See it and download the STL](https://lesley-qing-gu.github.io/ChristmasChallenge/days/08/) · Source: [`days/08/`](days/08)
+
+Today's product is a physical one: a 3D-printed pendant, 39 mm tall, with a Stockholm metro T on three faces, so it shows a T from every side. Print it in green, red or blue for your line.
+
+- **What it does:** a product film, a 3D model you can spin and zoom and preview in each line's colour, and a free STL to print your own.
+- **How it's built:** the pendant was modelled as one solid and printed layer by layer. The page is one HTML file: three.js loads the STL straight into the viewer (only once it scrolls into view) and orbit controls handle drag and pinch. The film was compressed with ffmpeg from 48 MB to under 3 MB.
+- **What I learned:** a T that reads from every angle is a geometry puzzle, not a decal. And a real object in your palm lands very differently from anything on a screen.
+- **Stack:** 3D modelling and FDM printing, three.js 0.160 (STLLoader, OrbitControls), ffmpeg, plain HTML/CSS/JS on GitHub Pages.
+
+A fan-made tribute, not affiliated with SL or Region Stockholm.
+
+![Day 08](docs/screenshots/day-08.png)
