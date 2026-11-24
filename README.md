@@ -27,7 +27,7 @@ I've always loved advent calendars, with a tiny surprise behind every door. Ship
 | 06 | Nov 18 | [Read & Learn](#day-06--read--learn) | ✅ Shipped |
 | 07 | Nov 20 | [Collie on the Wall](#day-07--collie-on-the-wall) | ✅ Shipped |
 | 08 | Nov 22 | [Stockholm T Pendant](#day-08--stockholm-t-pendant) | ✅ Shipped |
-| 09 | Nov 24 | — | 🔒 |
+| 09 | Nov 24 | [SmallTalk](#day-09--smalltalk) | ✅ Shipped |
 | 10 | Nov 26 | — | 🔒 |
 | 11 | Nov 28 | — | 🔒 |
 | 12 | Nov 30 | — | 🔒 |
@@ -152,3 +152,16 @@ Today's product is a physical one: a 3D-printed pendant, 39 mm tall, with a Stoc
 A fan-made tribute, not affiliated with SL or Region Stockholm.
 
 ![Day 08](docs/screenshots/day-08.png)
+
+## Day 09 · SmallTalk
+
+**Shipped Nov 24** · [Start talking](https://lesley-qing-gu.github.io/ChristmasChallenge/days/09/) · Source: [`days/09/`](days/09)
+
+I can read Swedish far better than I can speak it. SmallTalk is a pocket speaking coach: every day Moose goes somewhere new, and you practise the conversation you'd have there.
+
+- **What it does:** each day on the calendar is a situation (a café, the doctor, a job interview, the neighbour, or anything you type). Pick a level and a conversation partner to get a natural dialogue with vocabulary, pronunciation tips and a cultural note, then keep talking or ask about it. In speaking practice you answer a question by typing or talking and get feedback on grammar and naturalness. Eight languages to learn, with translations and feedback in any of the eight; the interface is in English or Chinese. Installable as a PWA.
+- **How it's built:** one HTML file with plain JavaScript and no server. The browser calls the Claude API or the OpenAI API directly with the visitor's own key (the key decides which), and every reply is structured JSON. Read aloud uses speechSynthesis and dictation uses the Web Speech API. A service worker caches the app shell. Opened as a claude.ai artifact, the same file uses Claude's built-in features instead.
+- **What I learned:** the hardest part of speaking is not knowing the words but having them ready when someone is waiting. A partner who pushes back is much better practice than a polite one.
+- **Stack:** plain HTML/CSS/JS, Claude API (Sonnet 5.5 by default) or OpenAI API, Web Speech API, service worker, localStorage, GitHub Pages.
+
+![Day 09](docs/screenshots/day-09.png)

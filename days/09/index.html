@@ -1,0 +1,2071 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<meta name="theme-color" content="#b07b4f" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-title" content="SmallTalk" />
+<title>SmallTalk</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800;900&family=Noto+Sans+SC:wght@400;500;700&family=Noto+Sans+JP:wght@500;700&display=swap" rel="stylesheet" />
+<style>
+/* ---------- 主题变量 ---------- */
+:root, body[data-theme=journal]{
+  --frame:#b07b4f; --ring:#9a6840; --paper:#f8f0e7; --card:#fffaf4; --ink:#6b4e3a; --muted:#a08a78; --line:#eadccd;
+  --pill:#ece0d4; --pill-on:#dccbbb; --accent:#e5876b; --accent-ink:#fff; --accent-soft:#fbe3da; --me:#f6e2d3;
+  --good:#7cb26a; --warn:#e3a14f; --tip:#fbebb8; --tip-ink:#8a6420;
+  --font:'Nunito','Noto Sans SC',system-ui,sans-serif; --title:'Nunito','Noto Sans SC',system-ui,sans-serif;
+  --r:22px;
+}
+body[data-theme=nordic]{
+  --frame:#faf8f3; --ring:transparent; --paper:#faf8f3; --card:#ffffff; --ink:#17233b; --muted:#6b7285; --line:#ece7dc;
+  --pill:#efeadf; --pill-on:#ffffff; --accent:#1f4e9c; --accent-ink:#fff; --accent-soft:#eaf0fb; --me:#eaf0fb;
+  --good:#2f7d5b; --warn:#a8641b; --tip:#fdf4d6; --tip-ink:#8a6a00;
+  --font:'Inter','Noto Sans SC',system-ui,sans-serif; --title:'Inter','Noto Sans SC',system-ui,sans-serif;
+  --r:18px;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--frame);color:var(--ink);font:600 16px/1.55 var(--font);-webkit-font-smoothing:antialiased;overflow-x:hidden}
+body[data-theme=nordic]{font-weight:400}
+button,input,textarea{font:inherit;color:inherit}
+button{cursor:pointer;border:0;background:none;padding:0}
+button:disabled{cursor:not-allowed}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+p,h1,h2,h3,ul,ol{margin:0}
+ul,ol{padding:0;list-style:none}
+.hidden{display:none!important}
+.muted{color:var(--muted)}
+.small{font-size:14px}
+
+/* ---------- 手账外壳 ---------- */
+.app{position:relative;max-width:520px;min-height:100vh;margin:calc(14px + env(safe-area-inset-top)) auto 0;background:var(--paper);border-radius:30px 30px 0 0;padding:20px 18px calc(100px + env(safe-area-inset-bottom))}
+.rings{position:absolute;top:-10px;left:34px;right:34px;display:flex;justify-content:space-between;pointer-events:none}
+.rings i{width:10px;height:22px;border-radius:6px;background:var(--ring)}
+body[data-theme=nordic] .app{margin-top:env(safe-area-inset-top);border-radius:0}
+body[data-theme=nordic] .rings{display:none}
+@media(min-width:560px){.app{margin-top:28px;border-radius:30px;min-height:calc(100vh - 56px);margin-bottom:28px}}
+
+.top{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:6px 2px 14px}
+.brand{display:flex;align-items:center;gap:9px;font:900 19px/1 var(--title);letter-spacing:-.01em}
+body[data-theme=nordic] .brand{font-weight:600}
+.brand em{font-style:normal;color:var(--accent)}
+.logo{width:28px;height:28px;border-radius:9px;background:#3d77c2;position:relative;overflow:hidden;flex:none}
+.logo::before,.logo::after{content:'';position:absolute;background:#f5cf47}
+.logo::before{left:8px;top:0;bottom:0;width:5px}.logo::after{top:11px;left:0;right:0;height:5px}
+.date{font-size:13px;color:var(--muted);background:var(--pill);padding:5px 11px;border-radius:999px;white-space:nowrap}
+
+.seg{display:grid;grid-auto-flow:column;grid-auto-columns:1fr;background:var(--pill);border-radius:999px;padding:4px;margin-bottom:18px}
+.seg button{padding:10px 8px;border-radius:999px;font-size:14px;font-weight:800;letter-spacing:.06em;color:var(--muted);min-height:44px}
+body[data-theme=nordic] .seg button{font-weight:500;letter-spacing:0}
+.seg button[aria-selected=true],.seg button[aria-checked=true]{background:var(--pill-on);color:var(--ink)}
+body[data-theme=nordic] .seg button[aria-selected=true],body[data-theme=nordic] .seg button[aria-checked=true]{box-shadow:0 1px 3px rgba(23,35,59,.12)}
+
+.hello{padding:0 2px 16px}
+.hello h1{font:900 26px/1.25 var(--title)}
+body[data-theme=nordic] .hello h1{font-weight:600}
+.hello p{color:var(--muted);font-size:15px;margin-top:4px}
+
+/* ---------- 场景卡片网格 ---------- */
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:22px 14px}
+.tile{display:grid;justify-items:center;text-align:center;gap:2px}
+.tile .art{width:100%;aspect-ratio:1/.86;border-radius:var(--r);overflow:hidden;box-shadow:0 3px 0 rgba(107,78,58,.08);transition:transform .15s}
+.tile:active .art{transform:scale(.96)}
+@media(hover:hover){.tile:hover .art{transform:translateY(-2px)}}
+.art svg{display:block;width:100%;height:100%}
+svg.av{border-radius:50%;overflow:hidden;display:block}
+.tile b{font:800 15px/1.25 var(--title);margin-top:8px}
+body[data-theme=nordic] .tile b{font-weight:600}
+.tile .sv{font-size:12px;color:var(--muted);font-weight:700}
+.tile .count{font-size:12px;color:var(--muted)}
+.tile .count.done{color:var(--good)}
+
+/* ---------- 卡片与表单 ---------- */
+.card{background:var(--card);border-radius:var(--r);padding:18px;box-shadow:0 2px 0 rgba(107,78,58,.06)}
+body[data-theme=nordic] .card{border:1px solid var(--line);box-shadow:none}
+.stack{display:grid;gap:14px}
+.label{font-size:13px;font-weight:800;color:var(--muted);letter-spacing:.04em;margin-bottom:8px;display:block}
+body[data-theme=nordic] .label{font-weight:600;text-transform:uppercase;font-size:12px;letter-spacing:.08em}
+.field{width:100%;padding:13px 15px;border:2px solid var(--line);border-radius:16px;background:var(--paper);outline:none;font-size:16px;transition:.15s}
+.field:focus{border-color:var(--accent);background:var(--card)}
+.field::placeholder{color:#bfae9f}
+.keylinks a,.about a{color:inherit;font-weight:700}
+textarea.field{resize:vertical;min-height:120px;line-height:1.5}
+.primary{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;min-height:54px;border-radius:18px;background:var(--accent);color:var(--accent-ink);font-weight:800;font-size:17px;box-shadow:0 3px 0 rgba(0,0,0,.12);transition:.15s}
+body[data-theme=nordic] .primary{font-weight:600;box-shadow:none}
+.primary:active:not(:disabled){transform:translateY(2px);box-shadow:0 1px 0 rgba(0,0,0,.12)}
+.primary:disabled{background:#d8cbbf;box-shadow:none}
+body[data-theme=nordic] .primary:disabled{background:#c9d3e6}
+.ghost{min-height:40px;padding:0 14px;border-radius:999px;background:var(--pill);font-size:14px;font-weight:800;color:var(--ink)}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.chip{min-height:36px;padding:0 13px;border-radius:999px;background:var(--pill);font-size:14px;color:var(--ink)}
+
+/* ---------- 底部弹层 ---------- */
+.sheet-bg{position:fixed;inset:0;background:rgba(60,40,25,.35);z-index:40;display:flex;align-items:flex-end;justify-content:center;animation:fade .2s}
+.sheet{width:100%;max-width:520px;max-height:92vh;overflow:auto;background:var(--paper);border-radius:28px 28px 0 0;padding:10px 18px calc(22px + env(safe-area-inset-bottom));animation:up .25s ease}
+.grab{width:42px;height:5px;border-radius:9px;background:var(--line);margin:0 auto 12px}
+.sheet .art{height:150px;border-radius:var(--r);overflow:hidden;margin-bottom:14px}
+.sheet-head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:16px}
+.sheet-head h2{font:900 22px/1.25 var(--title)}
+body[data-theme=nordic] .sheet-head h2{font-weight:600}
+.close{width:40px;height:40px;border-radius:50%;background:var(--pill);font-size:20px;line-height:1;flex:none}
+.opt{margin-bottom:16px}
+.opt .seg{margin:0}
+.npcs{display:flex;gap:10px;overflow-x:auto;padding:2px 2px 6px;scrollbar-width:none}
+.npcs::-webkit-scrollbar{display:none}
+.npcs button{display:grid;justify-items:center;gap:4px;font-size:12px;color:var(--muted);flex:none;width:62px}
+.npcs .av{width:56px;height:56px;border-radius:50%;box-shadow:0 0 0 3px transparent;transition:.15s}
+.npcs button.on .av{box-shadow:0 0 0 3px var(--accent)}
+.npcs button.on{color:var(--ink)}
+.npcs .auto{display:grid;place-items:center;background:var(--pill);font-size:22px;font-weight:900;color:var(--ink)}
+@keyframes up{from{transform:translateY(40px);opacity:.4}to{transform:none;opacity:1}}
+@keyframes fade{from{opacity:0}to{opacity:1}}
+
+/* ---------- 课程页 ---------- */
+.backbar{display:flex;align-items:center;gap:10px;margin-bottom:14px}
+.backbar .t{flex:1;min-width:0;font:800 17px/1.3 var(--title);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.banner{height:150px;border-radius:var(--r);overflow:hidden;position:relative;margin-bottom:14px}
+.banner .who{position:absolute;left:12px;bottom:12px;display:flex;align-items:center;gap:8px;background:rgba(255,250,244,.92);padding:5px 12px 5px 5px;border-radius:999px;font-size:14px}
+.banner .who .av{width:34px;height:34px}
+.chat{display:grid;gap:14px}
+.msg{display:flex;gap:8px;align-items:flex-end}
+.msg.me{flex-direction:row-reverse}
+.msg .av{width:38px;height:38px;flex:none}
+.bubble{max-width:84%;background:var(--card);border-radius:20px 20px 20px 6px;padding:11px 13px;box-shadow:0 2px 0 rgba(107,78,58,.06)}
+body[data-theme=nordic] .bubble{border:1px solid var(--line);box-shadow:none}
+.msg.me .bubble{background:var(--me);border-radius:20px 20px 6px 20px;border-color:transparent}
+.brow{display:flex;gap:10px;align-items:flex-start}
+.sv-line{flex:1;min-width:0;font-size:17px;line-height:1.45;font-weight:700;overflow-wrap:anywhere}
+body[data-theme=nordic] .sv-line{font-weight:500}
+.zh{margin-top:5px;font-size:14px;color:var(--muted);font-weight:500;overflow-wrap:anywhere}
+.hide-zh .zh{display:none}
+.speak{flex:none;width:36px;height:36px;border-radius:50%;display:grid;place-items:center;background:var(--accent-soft);color:var(--accent);transition:.15s}
+.speak svg{width:14px;height:14px}
+.speak.playing{background:var(--accent);color:var(--accent-ink)}
+.no-voice .speak{display:none}
+.switch{display:flex;align-items:center;gap:8px;font-size:14px;color:var(--muted);cursor:pointer}
+.switch input{accent-color:var(--accent);width:18px;height:18px}
+.vocab{display:grid;gap:14px}
+.vocab li{display:flex;gap:12px;align-items:flex-start}
+.term{font-weight:800;color:var(--ink)}
+body[data-theme=nordic] .term{font-weight:600}
+.plain{display:grid;gap:10px}
+.plain li{padding-left:18px;position:relative;font-weight:500}
+.plain li::before{content:'';position:absolute;left:2px;top:.6em;width:8px;height:8px;border-radius:50%;background:var(--line)}
+.plain.good li::before{background:var(--good)}
+.plain.warn li::before{background:var(--warn)}
+.tip{background:var(--tip);border-radius:var(--r);padding:18px}
+.tip .label{color:var(--tip-ink)}
+.tip p{font-weight:700;line-height:1.6}
+.card-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+.card-head .label{margin:0}
+
+/* ---------- 口语 ---------- */
+.topic{text-align:center;padding:22px 18px}
+.topic .av{width:84px;height:84px;margin:0 auto 6px}
+.topic .name{font-size:13px;color:var(--muted);margin-bottom:12px}
+.topic-sv{font:900 23px/1.3 var(--title);margin-bottom:6px}
+body[data-theme=nordic] .topic-sv{font-weight:600}
+.answer{text-align:left;display:grid;gap:12px;margin-top:20px}
+.answer-tools{display:flex;justify-content:space-between;align-items:center}
+.answer-tools .label{margin:0}
+.mic{display:inline-flex;align-items:center;gap:6px;min-height:40px;padding:0 14px;border-radius:999px;background:var(--accent-soft);color:var(--accent);font-size:14px;font-weight:800}
+.mic svg{width:16px;height:16px}
+.mic.on{background:#d9534f;color:#fff;animation:pulse 1.6s infinite}
+@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(217,83,79,.4)}70%{box-shadow:0 0 0 14px rgba(217,83,79,0)}100%{box-shadow:0 0 0 0 rgba(217,83,79,0)}}
+.note{font-size:13px;color:var(--muted);font-weight:500;line-height:1.5}
+.score{display:grid;gap:6px}
+.score-top{display:flex;justify-content:space-between;font-weight:800}
+.bar{height:14px;border-radius:999px;background:var(--pill);overflow:hidden}
+.bar i{display:block;height:100%;border-radius:999px;background:var(--good);transition:width .6s ease}
+.bar.b2 i{background:var(--warn)}
+.quote{font-weight:800;font-size:17px;line-height:1.5;border-left:4px solid var(--good);padding-left:12px;flex:1;min-width:0;overflow-wrap:anywhere}
+body[data-theme=nordic] .quote{font-weight:500}
+
+/* ---------- 设置 ---------- */
+.theme-opts{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.theme-opts button{display:grid;gap:3px;justify-items:start;text-align:left;padding:10px;border-radius:18px;background:var(--paper);box-shadow:inset 0 0 0 2px var(--line)}
+.theme-opts button[aria-pressed=true]{box-shadow:inset 0 0 0 3px var(--accent)}
+.theme-opts small{color:var(--muted);font-size:12px;line-height:1.4;font-weight:500}
+.sw{width:100%;height:60px;border-radius:12px;margin-bottom:6px}
+.sw-journal{background:linear-gradient(#bfe3f2 0 50%,#a8d08d 50% 70%,#f8f0e7 70%);box-shadow:inset 0 0 0 5px #b07b4f}
+.sw-nordic{background:linear-gradient(90deg,#faf8f3 0 60%,#1f4e9c 60% 76%,#f2c230 76%);box-shadow:inset 0 0 0 1px #ece7dc}
+#caps li{font-size:15px}
+.about{text-align:center;font-size:13px;color:var(--muted);margin-top:4px}
+
+/* ---------- 底部导航 ---------- */
+.tabbar{position:fixed;left:0;right:0;bottom:0;z-index:30;display:flex;justify-content:center;pointer-events:none}
+.tabbar-in{pointer-events:auto;width:100%;max-width:520px;display:grid;grid-template-columns:repeat(3,1fr);background:var(--card);border-top:2px solid var(--line);padding-bottom:env(safe-area-inset-bottom)}
+@media(min-width:560px){.tabbar{bottom:28px}.tabbar-in{border-radius:0 0 30px 30px;border-top:2px solid var(--line)}}
+.tabbar button{display:grid;justify-items:center;gap:2px;padding:9px 0 10px;min-height:60px;font-size:12px;font-weight:800;color:var(--muted)}
+.tabbar svg{width:24px;height:24px}
+.tabbar button[aria-selected=true]{color:var(--accent)}
+
+.alert{display:flex;justify-content:space-between;align-items:center;gap:12px;background:#fde4df;color:#9b3a2c;padding:12px 16px;border-radius:16px;margin-bottom:14px;font-size:14px}
+.alert button{font-size:20px;line-height:1;opacity:.6}
+.spin{display:inline-block;animation:spin .9s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.rise{animation:rise .35s ease both}
+@keyframes rise{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+@media(max-width:360px){.grid{gap:18px 10px}.tile b{font-size:14px}}
+
+/* ===== 地铁图首页 ===== */
+:root, body[data-theme=journal]{ --mapbg:#f3ece3; --maptext:#5d5148; --water:#bddcee; --stn:#6b625b; --done:#ffd25a; }
+body[data-theme=nordic]{ --mapbg:#f2f3f5; --maptext:#4a4f5c; --water:#c4def0; --stn:#5c616b; --done:#f2c230; }
+.langbtn{display:inline-flex;align-items:center;gap:6px;min-height:38px;padding:0 12px;border-radius:999px;background:var(--pill);font-size:14px;font-weight:800;white-space:nowrap}
+body[data-theme=nordic] .langbtn{font-weight:600}
+.langbtn .flag{font-size:17px;line-height:1}
+.date{display:block;margin:-6px 2px 12px;background:none;padding:0}
+.mapcard{background:var(--mapbg);border-radius:var(--r);padding:6px 4px;margin-bottom:16px;position:relative}
+.mapcard svg{display:block;width:100%;height:auto}
+.map-title{position:absolute;left:14px;top:12px;font:900 13px/1.3 var(--title);color:var(--muted);letter-spacing:.04em}
+.map-legend{position:absolute;right:12px;top:12px;display:flex;align-items:center;gap:6px;font-size:12px;color:var(--muted)}
+.map-legend i{width:12px;height:12px;border-radius:50%;background:var(--done);box-shadow:inset 0 0 0 2.5px var(--stn)}
+.map-label{font:800 12px var(--font);fill:var(--maptext);paint-order:stroke;stroke:var(--mapbg);stroke-width:4px;stroke-linejoin:round}
+body[data-theme=nordic] .map-label{font-weight:600}
+.stn{cursor:pointer;outline:none}
+.stn .ring{transition:transform .15s;transform-box:fill-box;transform-origin:center}
+.stn:hover .ring,.stn:focus-visible .ring{transform:scale(1.25)}
+.stn:focus-visible .hit{stroke:var(--accent);stroke-width:2.5}
+.pulse{fill:none;stroke:var(--accent);stroke-width:2.5;transform-box:fill-box;transform-origin:center;animation:ping 1.8s ease-out infinite}
+@keyframes ping{0%{transform:scale(.7);opacity:.9}100%{transform:scale(2);opacity:0}}
+.lines{display:grid;gap:14px}
+.line-card{background:var(--card);border-radius:var(--r);padding:14px 14px 6px;box-shadow:0 2px 0 rgba(107,78,58,.06)}
+body[data-theme=nordic] .line-card{border:1px solid var(--line);box-shadow:none}
+.line-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px}
+.line-name{display:inline-flex;align-items:center;gap:8px;font:900 16px var(--title)}
+body[data-theme=nordic] .line-name{font-weight:600}
+.line-name i{width:26px;height:10px;border-radius:9px;background:var(--c)}
+.line-prog{font-size:13px;color:var(--muted)}
+.stops li button{display:grid;grid-template-columns:28px 1fr auto;align-items:center;gap:10px;width:100%;text-align:left;min-height:56px;position:relative}
+.stops li button::before{content:'';position:absolute;left:11px;top:0;bottom:0;width:6px;background:var(--c)}
+.stops li:first-child button::before{top:50%}
+.stops li:last-child button::before{bottom:50%}
+.stops .dot{position:relative;z-index:1;width:20px;height:20px;border-radius:50%;background:#fff;box-shadow:inset 0 0 0 3.5px var(--stn);margin-left:4px}
+.stops .done .dot{background:var(--done)}
+.stops .nm{display:grid;line-height:1.3;padding:8px 0}
+.stops .nm b{font-size:16px;font-weight:800}
+body[data-theme=nordic] .stops .nm b{font-weight:600}
+.stops .nm span{font-size:13px;color:var(--muted);font-weight:600}
+.stops .st{font-size:13px;color:var(--muted);padding-right:4px}
+.stops .done .st{color:var(--good);font-weight:800}
+.custom-card{margin-top:14px}
+.custom-row{display:flex;gap:8px}
+.custom-row .field{flex:1;min-width:0}
+.custom-row .primary{width:auto;padding:0 18px;min-height:50px;font-size:16px}
+.lang-list{display:grid;gap:10px}
+.lang-list button{display:grid;grid-template-columns:40px 1fr auto;align-items:center;gap:12px;text-align:left;padding:12px 14px;border-radius:18px;background:var(--card);box-shadow:inset 0 0 0 2px var(--line)}
+.lang-list button[aria-pressed=true]{box-shadow:inset 0 0 0 3px var(--accent)}
+.lang-list .flag{font-size:28px;line-height:1}
+.lang-list b{display:block;font-size:17px}
+.lang-list span{font-size:13px;color:var(--muted)}
+.reading{font-size:13px;color:var(--muted);font-weight:600;margin-top:2px;overflow-wrap:anywhere}
+.line-chip{display:inline-flex;align-items:center;gap:6px;font-size:13px;color:var(--muted);margin-top:4px}
+.line-chip i{width:18px;height:7px;border-radius:9px;background:var(--c)}
+
+/* ===== 桌面网页布局（≥900px） ===== */
+.desk-only{display:none}
+.empty-eval{text-align:center;padding:40px 24px;color:var(--muted)}
+.empty-eval .av{width:72px;height:72px;margin:0 auto 12px;opacity:.85}
+.lesson-main,.lesson-side{display:grid;gap:14px;align-content:start}
+@media(min-width:900px){
+  body{font-size:16px}
+  .app{max-width:1180px;margin:28px auto;padding:26px 40px 64px;border-radius:30px;min-height:calc(100vh - 56px)}
+  body[data-theme=nordic] .app{margin-top:0;border-radius:0;max-width:1240px}
+  .rings{left:90px;right:90px}
+  .top{padding:4px 0 6px}
+  .date{margin:0 2px 10px}
+  .tabbar{position:absolute;top:56px;bottom:auto;left:0;right:0}
+  body[data-theme=nordic] .tabbar{top:28px}
+  .tabbar-in{width:auto;max-width:none;display:flex;gap:4px;background:var(--pill);border:0;border-radius:999px;padding:4px;margin:0 auto;padding-bottom:4px}
+  .tabbar button{display:flex;align-items:center;gap:8px;min-height:42px;padding:0 18px;border-radius:999px;font-size:14px}
+  .tabbar svg{width:19px;height:19px}
+  .tabbar button[aria-selected=true]{background:var(--card);color:var(--accent);box-shadow:0 1px 3px rgba(60,40,25,.12)}
+  @media(hover:hover){.tabbar button:not([aria-selected=true]):hover{color:var(--ink)}}
+  .hello{padding:8px 2px 20px}
+  .hello h1{font-size:34px}
+  .hello p{font-size:16px}
+  .desk-only{display:block}
+
+  #home{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(320px,1fr);gap:0 28px;align-items:start}
+  #home .hello{grid-column:1/-1}
+  #home .mapcard{grid-column:1;grid-row:2/span 2;position:sticky;top:20px;margin:0;padding:14px 10px}
+  #map svg{max-height:calc(100vh - 90px);margin:0 auto}
+  .map-label{font-size:10.5px;stroke-width:3.5px}
+  #home .lines{grid-column:2;grid-row:2}
+  #home .custom-card{grid-column:2;grid-row:3}
+  @media(hover:hover){.stops li button:hover .nm b{color:var(--accent)}.stops li button:hover .dot{transform:scale(1.15)}}
+  .stops .dot{transition:transform .15s}
+
+  .sheet-bg{align-items:center;padding:24px}
+  .sheet{border-radius:28px;max-width:580px;padding:22px 28px 28px;max-height:calc(100vh - 48px)}
+  .grab{display:none}
+  .sheet .art{height:210px}
+
+  .backbar{margin-bottom:18px}
+  #lesson-body{display:grid;grid-template-columns:minmax(0,1.55fr) minmax(300px,1fr);gap:22px;align-items:start}
+  .lesson-side{position:sticky;top:20px}
+  .banner{height:230px}
+  .bubble{max-width:78%}
+  .sv-line{font-size:18px}
+
+  #view-lab .stack{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:24px;align-items:start}
+  #view-lab .topic{position:sticky;top:20px}
+  #evaluation .stack{gap:14px}
+
+  #view-settings .stack{display:grid;grid-template-columns:1fr 1fr;gap:18px;align-items:start}
+  #view-settings .about{grid-column:1/-1}
+}
+@media(min-width:1280px){ .app{max-width:1240px} }
+/* ===== 新首页：自己写场景 + 常用场景 ===== */
+.ob-note{margin:-12px 2px 20px;color:var(--muted);font-size:14px;font-weight:600}
+#ob-speak button{grid-template-columns:auto 1fr;align-items:center;gap:12px;justify-items:start}
+#ob-speak .flag{margin:0}
+#ob-speak button.on{box-shadow:inset 0 0 0 3px var(--accent)}
+.sec{font:900 19px/1.3 var(--title);margin:26px 2px 12px}
+.composer{padding:20px}
+.composer-row{display:flex;gap:10px;align-items:stretch}
+.composer textarea{flex:1;min-width:0;resize:none;min-height:56px;font-size:16px;line-height:1.45}
+.composer .primary{width:auto;flex:none;padding:0 20px;white-space:nowrap}
+.ideas{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-top:12px}
+.ideas-l{font-size:13px;font-weight:800;color:var(--muted);margin-right:2px}
+.ideas .chip{font:700 13px var(--font);padding:7px 12px;border-radius:999px;background:var(--pill);color:var(--ink);text-align:left;line-height:1.35;transition:.15s}
+@media(hover:hover){.ideas .chip:hover{background:var(--card);box-shadow:inset 0 0 0 2px var(--accent);color:var(--accent)}}
+.presets{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.preset{display:grid;text-align:left;border-radius:var(--r);overflow:hidden;background:var(--card);box-shadow:inset 0 0 0 2px var(--line),0 2px 0 rgba(107,78,58,.06);transition:transform .15s}
+.preset .pa{display:block;height:110px;overflow:hidden}
+.preset .pa svg{width:100%;height:100%;display:block}
+.preset .pt{display:grid;gap:2px;padding:12px 14px 14px}
+.preset b{font-size:16px;font-weight:900}
+.preset small{font-size:12.5px;color:var(--muted);font-weight:700}
+.mine{display:grid;gap:10px}
+.mine-item{display:flex;align-items:center;gap:6px;background:var(--card);border-radius:var(--r);box-shadow:inset 0 0 0 2px var(--line);padding:8px 8px 8px 10px}
+.mine-go{flex:1;min-width:0;display:flex;align-items:center;gap:12px;text-align:left}
+.mine-go .mi{flex:none;width:46px;height:40px;border-radius:12px;overflow:hidden}
+.mine-go .mi svg{width:100%;height:100%;display:block}
+.mine-go .mt{display:grid;min-width:0}
+.mine-go b{font-size:15px;font-weight:800;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.mine-go small{font-size:12.5px;color:var(--muted);font-weight:700}
+.mine-x{flex:none;width:34px;height:34px;border-radius:50%;font-size:20px;color:var(--muted)}
+@media(hover:hover){.preset:hover{transform:translateY(-2px)}.preset:hover b,.mine-go:hover b{color:var(--accent)}.mine-x:hover{background:var(--pill);color:var(--ink)}}
+.langbtn{gap:6px}
+.langbtn .pair-from{font-weight:800}
+.langbtn .pair-arrow{color:var(--muted);font-weight:800}
+.speak-list{grid-template-columns:repeat(2,minmax(0,1fr))}
+@media(max-width:480px){.composer-row{flex-direction:column}.composer .primary{min-height:48px}.langbtn .pair-from,.langbtn .pair-arrow{display:none}}
+@media(min-width:900px){
+  #home{display:block!important;max-width:980px;margin:0 auto}
+  .hello h1{font-size:38px}
+  .composer{padding:26px 28px}
+  .composer textarea{font-size:18px;min-height:64px}
+  .composer .primary{padding:0 28px;font-size:16px}
+  .presets{grid-template-columns:repeat(4,minmax(0,1fr));gap:16px}
+  .preset .pa{height:130px}
+  .mine{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .sec{font-size:21px;margin-top:34px}
+  #view-onboard{max-width:760px}
+}
+/* ===== v2.1：更清爽的首页 + 弹窗 ===== */
+.preset{grid-template-columns:72px 1fr;align-items:center;gap:0;box-shadow:inset 0 0 0 2px var(--line)}
+.preset .pa{height:64px;width:72px}
+.preset .pt{padding:10px 12px}
+.preset b{font-size:15px}
+.preset small:empty,.mine-go small:empty{display:none}
+.sec{font-size:15px;font-weight:900;color:var(--muted);letter-spacing:.02em;margin:24px 2px 10px}
+.mine{grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:8px}
+.mine-item{padding:6px 6px 6px 6px;box-shadow:inset 0 0 0 2px var(--line)}
+.mine-go .mi{width:56px;height:46px}
+.mine-go .mi svg{width:100%;height:100%}
+/* 选项面板：所有宽度都居中弹出 */
+.sheet-bg{align-items:center;padding:16px}
+.sheet{border-radius:28px;max-height:calc(100vh - 32px);padding:18px 20px 22px}
+.sheet .grab{display:none}
+.sheet .art svg,.banner-art svg{width:100%;height:100%;display:block}
+/* 对话弹窗 */
+body.modal-open{overflow:hidden}
+#lesson-screen{position:fixed;inset:0;z-index:50;background:rgba(60,40,25,.42);display:flex;justify-content:center;align-items:center;padding:28px 20px;animation:fade .2s}
+#lesson-screen.hidden{display:none}
+.lesson-modal{width:100%;max-width:1040px;max-height:100%;display:flex;flex-direction:column;background:var(--paper);border-radius:28px;overflow:hidden;animation:up .25s ease;box-shadow:0 20px 60px rgba(40,25,15,.25)}
+.lesson-modal .backbar{flex:none;display:flex;align-items:center;justify-content:space-between;gap:12px;margin:0;padding:16px 24px 12px;border-bottom:1.5px solid var(--line)}
+.lesson-modal .backbar .t{font:900 20px/1.3 var(--title);white-space:normal}
+#lesson{flex:1;min-height:0;overflow-y:auto;overscroll-behavior:contain;padding:18px 24px 28px}
+.lesson-side{position:static!important}
+.banner-art{position:absolute;inset:0}
+.banner{position:relative}
+.banner-art.fresh{animation:fade .6s}
+@media(max-width:700px){
+  #lesson-screen{padding:0}
+  .lesson-modal{border-radius:0;max-width:none;height:100%}
+  .lesson-modal .backbar{padding:12px 16px 10px}
+  .lesson-modal .backbar .t{font-size:17px}
+  #lesson{padding:14px 16px calc(28px + env(safe-area-inset-bottom))}
+}
+}
+@media(min-width:900px){
+  .presets{gap:12px}
+  .preset{grid-template-columns:84px 1fr}
+  .preset .pa{height:72px;width:84px}
+  .sheet .art{height:180px}
+}
+.banner .who{z-index:1}
+.sheet-bg{z-index:70}
+/* ===== v3：外框就是月历；标志和导航在外框外面 ===== */
+.date{display:none!important}
+.invisible{visibility:hidden}
+.outer-top{max-width:520px;margin:0 auto;padding:calc(12px + env(safe-area-inset-top)) 20px 0;color:#fff7ee}
+.outer-top .brand{color:#fff7ee}
+.outer-top .brand em{color:#ffd9c8}
+.outer-top .langbtn{background:rgba(255,255,255,.17);color:#fff7ee}
+.outer-top .tabbar{pointer-events:none}
+.app{margin-top:14px}
+@media(min-width:560px){.app{margin-top:16px}}
+@media(min-width:900px){
+  .outer-top{max-width:1180px;padding:20px 40px 0;display:grid;grid-template-columns:1fr auto 1fr;align-items:center}
+  .outer-top .top-actions{justify-self:end}
+  .outer-top .tabbar{position:static;display:block;pointer-events:auto}
+  .outer-top .tabbar-in{background:rgba(255,255,255,.14)}
+  .outer-top .tabbar button{color:#fbe9da}
+  .outer-top .tabbar button[aria-selected=true]{background:var(--card);color:var(--accent)}
+  @media(hover:hover){.outer-top .tabbar button:not([aria-selected=true]):hover{color:#fff}}
+  .app{margin-top:16px;padding-top:34px;padding-bottom:36px;min-height:auto}
+  #view-dialogue,#view-lab,#view-settings{padding-top:0}
+}
+@media(min-width:1280px){.outer-top{max-width:1240px}}
+/* 月历 */
+.m-head{display:flex;align-items:center;gap:10px;margin:2px 0 16px}
+.m-title{display:flex;align-items:baseline;gap:10px;white-space:nowrap;font:900 30px/1.1 var(--title);min-width:0;text-align:center;justify-content:center;flex:0 1 auto;padding:0 4px}
+.m-title small{font-size:17px;color:var(--muted);font-weight:800}
+.m-today{margin-left:auto;min-height:38px}
+.nav-btn{flex:none;width:42px;height:42px;border-radius:50%;background:var(--card);box-shadow:inset 0 0 0 2px var(--line);font-size:22px;font-weight:900;color:var(--ink)}
+.nav-btn:disabled{opacity:.3}
+.m-body{display:grid;gap:16px}
+.m-side{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:12px;align-items:center}
+.side-pic{aspect-ratio:16/10;border-radius:18px;overflow:hidden}
+.side-pic .home-pic{width:100%;height:100%}
+.home-pic svg{width:100%;height:100%;display:block}
+.side-card{display:block;width:100%;height:100%;padding:0;text-align:left}
+.side-card .postcard{padding:6px 6px 26px;transform:none;border-radius:10px}
+.side-card .pc-title{font-size:12px;bottom:6px;left:10px}
+.side-card .pc-stamp,.side-card .pc-mark{display:none}
+.go-btn{width:auto;display:inline-flex;align-items:center;gap:10px;padding:6px 22px 6px 8px;min-height:58px;font-size:17px;border-radius:999px;white-space:nowrap}
+.go-btn svg{width:44px;height:44px;background:#fff;border-radius:50%;flex:none}
+.m-count{grid-column:1/-1;color:var(--muted);font-weight:800;font-size:13px;margin:-4px 2px 0}
+.m-cal{display:grid;perspective:1800px;touch-action:pan-y}
+.m-cal>.m-page{grid-area:1/1;transform-origin:50% 0;backface-visibility:hidden;background:var(--paper)}
+.m-page.tear{z-index:3;animation:tear .55s cubic-bezier(.5,0,.75,0) forwards}
+.m-page.drop{z-index:3;animation:drop .55s cubic-bezier(.2,.7,.3,1)}
+@keyframes tear{to{transform:rotateX(-100deg) translateY(-10px);opacity:0}}
+@keyframes drop{from{transform:rotateX(-100deg) translateY(-10px);opacity:0}to{transform:none;opacity:1}}
+.m-week{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:5px;margin-bottom:6px}
+.m-week span{text-align:center;font-size:12px;font-weight:800;color:var(--muted)}
+.m-grid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:5px}
+.dcell{position:relative;aspect-ratio:1;border-radius:12px;background:var(--card);box-shadow:inset 0 0 0 1.5px var(--line);overflow:hidden;padding:0;transition:transform .15s}
+.dcell.blank{background:none;box-shadow:none}
+.dcell.future{background:transparent;box-shadow:inset 0 0 0 1.5px var(--line);opacity:.45;cursor:default}
+.dcell .thumb{position:absolute;inset:0}
+.dcell .thumb svg{width:100%;height:100%;display:block}
+.dcell .dn{position:absolute;top:4px;left:5px;font-size:11.5px;font-weight:900;color:var(--muted);line-height:1}
+.dcell.has .dn{background:rgba(255,250,244,.9);color:var(--ink);padding:2px 4px;border-radius:6px;top:3px;left:3px}
+.dcell.today{box-shadow:inset 0 0 0 2.5px var(--accent)}
+.dcell.today .dn{color:var(--accent)}
+.dcell.today.has .dn{background:var(--accent);color:#fff}
+.dcell .go-dot{position:absolute;left:14%;right:14%;bottom:6%;animation:bob 2.4s ease-in-out infinite}
+.dcell .go-dot svg{width:100%;display:block}
+@keyframes bob{50%{transform:translateY(-3px)}}
+.dcell .cnt{position:absolute;right:3px;bottom:3px;min-width:16px;height:16px;border-radius:8px;background:var(--accent);color:#fff;font-size:10px;font-weight:900;line-height:16px;text-align:center;padding:0 3px}
+@media(hover:hover){.dcell.has:hover,.dcell.today:hover{transform:scale(1.05);z-index:1}}
+@media(prefers-reduced-motion:reduce){.dcell .go-dot{animation:none}}
+@media(min-width:560px){.m-grid,.m-week{gap:8px}.dcell{border-radius:14px}.dcell .dn{font-size:13px;top:6px;left:7px}}
+@media(min-width:900px){
+  .m-head{margin:0 0 20px}
+  .m-title{font-size:36px}
+  .m-body{grid-template-columns:280px minmax(0,1fr);gap:30px;align-items:start}
+  .m-side{grid-template-columns:1fr;position:sticky;top:20px}
+  .side-pic{aspect-ratio:4/3}
+  .go-btn{width:100%;justify-content:center}
+  .m-count{margin:0;text-align:center}
+  .m-cal{max-width:calc((100vh - 268px) * 1.56);width:100%;justify-self:center}
+  .dcell{aspect-ratio:7/5}
+}
+@media(max-width:400px){.go-btn{padding:4px 16px 4px 6px;min-height:50px;font-size:15px}.go-btn svg{width:38px;height:38px}.m-title{font-size:25px}}
+/* 明信片 */
+.postcard{display:block;width:100%;height:100%;position:relative;background:#fff;border-radius:10px;padding:10px 10px 40px;box-shadow:0 2px 0 var(--line),0 10px 24px rgba(107,78,58,.16);transform:rotate(-1.2deg);text-align:left;transition:transform .2s}
+@media(hover:hover){.postcard:hover{transform:rotate(0deg) scale(1.01)}}
+.pc-img{display:block;position:relative;width:100%;height:100%;border-radius:4px;overflow:hidden}
+.pc-img>svg{position:absolute;inset:0;width:100%;height:100%}
+.pc-pet{position:absolute;right:3%;bottom:-3%;width:32%;filter:drop-shadow(0 3px 2px rgba(60,40,25,.2))}
+.pc-pet svg{width:100%;display:block}
+.pc-stamp{position:absolute;top:18px;right:18px;width:46px;height:54px;display:grid;place-items:center;background:#fffaf4;transform:rotate(5deg);
+  -webkit-mask:radial-gradient(circle 3.2px at 3.2px 3.2px,#0000 98%,#000) -3.2px -3.2px/8px 8px;mask:radial-gradient(circle 3.2px at 3.2px 3.2px,#0000 98%,#000) -3.2px -3.2px/8px 8px;box-shadow:0 1px 3px rgba(0,0,0,.15)}
+.pc-stamp span{font-size:24px;line-height:1;outline:2px solid #e5876b;outline-offset:6px;border-radius:2px}
+.pc-mark{position:absolute;top:24px;right:58px;width:58px;height:58px;border-radius:50%;border:2px solid rgba(107,78,58,.45);display:grid;place-content:center;text-align:center;transform:rotate(-14deg);color:rgba(107,78,58,.7);line-height:1.05}
+.pc-mark b{font-size:14px;font-weight:900}
+.pc-mark small{font-size:8px;font-weight:800;max-width:50px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pc-title{position:absolute;left:14px;right:14px;bottom:10px;font-size:15px;font-weight:900;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.postcard.arrive{animation:arrive .8s cubic-bezier(.2,.8,.3,1.2)}
+@keyframes arrive{from{transform:translateY(-40px) rotate(-12deg) scale(.85);opacity:0}to{transform:rotate(-1.2deg);opacity:1}}
+.pc-line{display:flex;align-items:center;gap:8px;min-width:0;flex:1;justify-content:center}
+.hand{font-style:italic;font-weight:800;font-size:17px;line-height:1.35;text-align:center}
+.pc-dots{display:flex;justify-content:center;gap:7px}
+.pc-dots button{width:8px;height:8px;border-radius:50%;background:var(--pill-on);padding:0}
+.pc-dots button.on{background:var(--accent)}
+.again{position:relative;flex:none;width:52px;height:52px;border-radius:50%;background:var(--pill);display:grid;place-items:center}
+.again svg{width:40px;height:40px}
+.again span{position:absolute;right:-2px;bottom:-2px;width:20px;height:20px;border-radius:50%;background:var(--accent);color:#fff;font-weight:900;font-size:15px;line-height:20px;text-align:center}
+
+/* 明信片弹窗 */
+#card-screen{position:fixed;inset:0;z-index:55;background:rgba(60,40,25,.45);display:flex;align-items:center;justify-content:center;padding:20px;animation:fade .2s}
+#card-screen.hidden{display:none}
+.card-modal{position:relative;width:100%;max-width:520px;max-height:100%;overflow-y:auto;background:var(--paper);border-radius:28px;padding:20px 22px 22px;display:grid;gap:14px;animation:up .25s ease;box-shadow:0 20px 60px rgba(40,25,15,.25)}
+.card-x{position:absolute;top:14px;right:14px;z-index:2}
+.card-date{font-weight:900;color:var(--muted);font-size:14px;padding-right:50px}
+.card-pic{aspect-ratio:4/3}
+.card-modal .pc-line{display:flex;align-items:center;justify-content:center;gap:8px}
+#card-open{min-height:50px}
+/* “去哪儿”弹窗 */
+#where-screen{position:fixed;inset:0;z-index:50;background:rgba(60,40,25,.42);display:flex;justify-content:center;align-items:center;padding:28px 20px;animation:fade .2s}
+#where-screen.hidden{display:none}
+.where-modal{width:100%;max-width:760px;max-height:100%;display:flex;flex-direction:column;background:var(--paper);border-radius:28px;overflow:hidden;animation:up .25s ease;box-shadow:0 20px 60px rgba(40,25,15,.25)}
+.where-modal .backbar{flex:none;display:flex;align-items:center;justify-content:space-between;gap:12px;margin:0;padding:16px 22px 12px}
+.where-modal .backbar .t{font:900 21px/1.3 var(--title);white-space:normal}
+.where-body{flex:1;min-height:0;overflow-y:auto;padding:4px 22px 24px;display:grid;gap:16px;align-content:start}
+.where-body .composer{padding:0;background:none;box-shadow:none}
+.where-body .presets{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.where-body .preset{grid-template-columns:1fr;box-shadow:inset 0 0 0 2px var(--line)}
+.where-body .preset .pa{width:100%;height:auto;aspect-ratio:6/4}
+.where-body .preset .pt{padding:9px 12px 11px}
+.where-body .preset small{display:none}
+.where-body .mine{grid-template-columns:repeat(auto-fill,minmax(200px,1fr))}
+@media(min-width:700px){.where-body .presets{grid-template-columns:repeat(4,minmax(0,1fr))}}
+@media(max-width:700px){
+  #where-screen{padding:0}
+  .where-modal{border-radius:0;max-width:none;height:100%}
+}
+@media(max-height:820px){.sheet .art{height:110px!important}.sheet-head{margin-bottom:10px}.sheet .opt{margin-bottom:12px}}
+@media(max-height:680px){.sheet .art{display:none}}
+/* 装订环不要伸进顶部栏 */
+.outer-top{padding-bottom:6px}
+.app{margin-top:26px!important}
+@media(min-width:900px){.app{margin-top:24px!important}}
+.outer-top .langbtn .pair-arrow{color:rgba(255,247,238,.75)}
+/* ===== 电脑：口语练习和设置一屏放下 ===== */
+@media(min-width:900px){
+  #view-lab .hello,#view-settings .hello{padding:0 2px 14px}
+  #view-lab .hello h1,#view-settings .hello h1{font-size:26px}
+  #view-lab>.stack{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.1fr);gap:22px;align-items:stretch;height:calc(100vh - 248px);min-height:420px}
+  #view-lab .topic{position:static;padding:18px 22px;display:flex;flex-direction:column;min-height:0;overflow:auto}
+  #asker{display:flex;align-items:center;justify-content:center;gap:10px}
+  #asker .av{width:46px;height:46px;margin:0}
+  #asker .name{margin:0}
+  .topic-sv{font-size:21px;margin:10px 0 4px}
+  #topic-tr{font-size:14px}
+  #view-lab .topic>div[style]{margin-top:8px!important}
+  .answer{margin-top:14px;gap:10px;flex:1;grid-template-rows:auto minmax(70px,1fr) auto auto}
+  #answer{min-height:70px;height:100%;resize:none}
+  #view-lab .note{margin:0}
+  #evaluation{min-height:0;overflow-y:auto;overscroll-behavior:contain;border-radius:var(--r)}
+  #evaluation>.empty-eval{height:100%;display:grid;place-content:center}
+  #evaluation .stack.rise{display:grid;grid-template-columns:1fr 1fr;gap:12px;height:auto;min-height:0;align-content:start}
+  #evaluation .stack.rise>.card:first-child{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+  #evaluation .stack.rise>.card:first-child,#evaluation .stack.rise>.card:nth-child(4),#evaluation .stack.rise>.card:nth-child(5){grid-column:1/-1}
+  #evaluation .card{padding:14px 16px}
+  /* 设置 */
+  #view-settings .stack{grid-template-columns:minmax(0,1.5fr) minmax(0,1fr);gap:16px;align-items:start}
+  #view-settings .stack>.card:nth-child(1),#view-settings .stack>.card:nth-child(2){grid-column:1}
+  #view-settings .stack>.card:nth-child(n+3){grid-column:2}
+  #view-settings .stack>.card:nth-child(1){grid-row:1}
+  #view-settings .stack>.card:nth-child(2){grid-row:2/span 2}
+  #view-settings .stack>.card:nth-child(3){grid-row:1}
+  #view-settings .stack>.card:nth-child(4){grid-row:2}
+  #view-settings .stack>.card:nth-child(5){grid-row:3}
+  #view-settings .about{grid-column:1;grid-row:4;text-align:left;margin:0;padding:4px 2px;font-size:12px}
+  #view-settings .card{padding:16px 18px}
+  #view-settings .lang-list{grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+  #view-settings .lang-list button{grid-template-columns:auto 1fr;gap:8px;padding:9px 10px;border-radius:14px}
+  #view-settings .lang-list .flag{font-size:22px}
+  #view-settings .lang-list b{font-size:14px}
+  #view-settings .lang-list span span,#view-settings .lang-list button>span:last-child{font-size:11.5px}
+  #view-settings .lang-list button>span:last-child:empty{display:none}
+  #view-settings .lang-list button>span:last-child:not(:empty){grid-column:1/-1}
+  #view-settings #caps li{font-size:13.5px}
+}
+@media(min-width:900px){
+  #view-settings .hello{padding-bottom:10px}
+  #view-settings .stack{gap:12px}
+  #view-settings .card{padding:14px 16px}
+  #view-settings .lang-list button{min-width:0}
+  #view-settings .lang-list b{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  #view-settings #caps li{margin:4px 0}
+}
+@media(min-width:900px) and (max-width:1199px){#view-settings .lang-list{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(min-width:900px) and (max-height:760px){#view-settings .hello,#view-lab .hello{display:none}#view-lab>.stack{height:calc(100vh - 200px)}}
+/* 追问 */
+.fu-list:empty{display:none}
+.fu-list{margin-bottom:12px}
+.fu-input{display:grid;gap:8px}
+.fu-input textarea{resize:none;min-height:56px}
+.fu-tools{display:flex;justify-content:flex-end;gap:8px}
+.fu-tools .primary{width:auto;padding:0 22px;min-height:44px}
+.fu-tools .mic{min-height:44px;width:44px;padding:0;justify-content:center}
+.fu-fix{font-size:13.5px;margin-top:6px;color:var(--ink)}
+.fu-fix b{font-weight:800;color:#5f8f4e}
+.msg.coach .bubble{background:var(--tip);color:var(--tip-ink)}
+.coach-av{display:grid;place-items:center;font-size:20px;background:var(--tip)}
+.coach-t{font-weight:600;line-height:1.5;white-space:pre-wrap}
+.msg.pending{opacity:.7}
+.typing{display:flex;gap:4px;padding:4px 2px}
+.typing i{width:7px;height:7px;border-radius:50%;background:var(--muted);animation:blink 1s infinite}
+.typing i:nth-child(2){animation-delay:.15s}.typing i:nth-child(3){animation-delay:.3s}
+@keyframes blink{50%{opacity:.25}}
+/* 自己出题 */
+.topic-actions{display:flex;justify-content:center;gap:8px;flex-wrap:wrap;margin-top:12px}
+.own-box{display:grid;gap:8px;margin-top:12px;text-align:left}
+.own-row{display:flex;gap:8px;align-items:stretch}
+.own-row textarea{flex:1;min-width:0;resize:none;min-height:52px;font-size:15px}
+.own-row .primary{width:auto;padding:0 16px;white-space:nowrap}
+.own-list{display:flex;flex-wrap:wrap;gap:6px}
+.own-list:empty{display:none}
+.own-list .chip{font:700 12.5px var(--font);padding:6px 11px;border-radius:999px;background:var(--pill);color:var(--ink);text-align:left;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.own-list .chip.on{background:var(--accent-soft);color:var(--accent);box-shadow:inset 0 0 0 2px var(--accent)}
+@media(max-width:480px){.own-row{flex-direction:column}.own-row .primary{min-height:44px}}
+.msg .coach-av{width:36px;height:36px;border-radius:50%;flex:none;align-self:flex-end}
+
+.ui-seg{margin:0}
+.st-logo{background:var(--accent)!important;display:grid;place-items:center}
+.st-logo::before,.st-logo::after{display:none}
+.st-logo svg{width:20px;height:20px}
+body.onboarding .top-actions,body.onboarding .date,body.onboarding .tabbar{display:none!important}
+#view-onboard{max-width:640px;margin:0 auto;padding:10px 0 40px}
+.ob-title{font:900 28px/1.25 var(--title);margin:18px 2px 22px}
+.ob-title span{display:block;font-size:17px;font-weight:700;color:var(--muted);margin-top:4px}
+.ob-ui{display:grid;gap:14px}
+.ob-ui button{display:grid;gap:4px;text-align:left;padding:22px 20px;border-radius:var(--r);background:var(--card);box-shadow:inset 0 0 0 2px var(--line),0 2px 0 rgba(107,78,58,.06);transition:.15s}
+.ob-ui button b{font-size:24px;font-weight:900}
+.ob-ui button small{font-size:14px;color:var(--muted)}
+.ob-ui button.on{box-shadow:inset 0 0 0 3px var(--accent)}
+.ob-langs{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+.ob-langs button{display:grid;justify-items:start;gap:2px;text-align:left;padding:16px 14px;border-radius:var(--r);background:var(--card);box-shadow:inset 0 0 0 2px var(--line),0 2px 0 rgba(107,78,58,.06);transition:transform .15s}
+.ob-langs .flag{font-size:30px;line-height:1;margin-bottom:6px}
+.ob-langs b{font-size:18px;font-weight:900}
+.ob-langs .nat{font-size:14px;color:var(--muted)}
+.ob-langs .metro{display:flex;align-items:center;gap:3px;font-size:12px;color:var(--muted);margin-top:8px}
+.ob-langs .metro i{width:10px;height:5px;border-radius:9px}
+.ob-langs .metro i:last-of-type{margin-right:4px}
+@media(hover:hover){.ob-langs button:hover,.ob-ui button:hover{transform:translateY(-2px)}}
+.ob-back{margin-top:6px}
+@media(min-width:900px){.ob-langs{grid-template-columns:repeat(3,1fr)}.ob-title{font-size:34px}body.onboarding .app{max-width:820px;min-height:auto}}
+.top-actions{display:flex;align-items:center;gap:8px}
+.uibtn{display:inline-flex;align-items:center;gap:5px;min-height:38px;padding:0 11px;border-radius:999px;background:var(--card);box-shadow:inset 0 0 0 2px var(--line);font-size:13px;font-weight:800;white-space:nowrap}
+.uibtn svg{width:15px;height:15px}
+@media(max-width:400px){.brand{font-size:17px;gap:7px}.logo{width:24px;height:24px}.top{gap:6px}.langbtn{padding:0 10px}}
+@media(max-width:380px){.langbtn .lname{display:none}.top-actions{gap:6px}}
+
+.styles{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.styles button{display:grid;gap:2px;text-align:left;padding:11px 13px;border-radius:14px;background:var(--card);box-shadow:inset 0 0 0 2px var(--line);transition:.15s}
+.styles b{font-size:14.5px;font-weight:900}
+.styles small{font-size:12px;color:var(--muted);font-weight:600}
+.styles button[aria-checked=true]{box-shadow:inset 0 0 0 2.5px var(--accent);background:var(--accent-soft,#fdf0ea)}
+.styles button[aria-checked=true] b{color:var(--accent)}
+@media(min-width:900px){.styles{grid-template-columns:repeat(4,minmax(0,1fr))}}
+</style>
+</head>
+<body data-theme="journal">
+<header class="top outer-top">
+    <div class="brand"><span class="logo st-logo" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 5h14a2 2 0 012 2v8a2 2 0 01-2 2h-7l-4.5 3.5V17H5a2 2 0 01-2-2V7a2 2 0 012-2z" fill="#fff"/><circle cx="8.5" cy="11" r="1.4" fill="#e5876b"/><circle cx="12" cy="11" r="1.4" fill="#3a93d4"/><circle cx="15.5" cy="11" r="1.4" fill="#3aa572"/></svg></span><span>Small<em>Talk</em></span></div>
+    <nav class="tabbar">
+  <div class="tabbar-in" role="tablist">
+    <button role="tab" id="tab-dialogue" aria-selected="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="5" width="17" height="15.5" rx="3"/><path d="M3.5 10h17M8 3v4M16 3v4"/><circle cx="12" cy="15" r="1.6" fill="currentColor"/></svg><span data-i18n="tabMap"></span></button>
+    <button role="tab" id="tab-lab" aria-selected="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><rect x="9" y="3" width="6" height="12" rx="3"/><path d="M5 11a7 7 0 0014 0M12 18v3"/></svg><span data-i18n="tabSpeak"></span></button>
+    <button role="tab" id="tab-settings" aria-selected="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="3.2"/><path d="M12 2.5v3M12 18.5v3M2.5 12h3M18.5 12h3M5.3 5.3l2.1 2.1M16.6 16.6l2.1 2.1M5.3 18.7l2.1-2.1M16.6 7.4l2.1-2.1"/></svg><span data-i18n="settings"></span></button>
+  </div>
+    </nav>
+    <div class="top-actions">
+      <button type="button" class="langbtn" id="langbtn"></button>
+    </div>
+  </header>
+<div class="app">
+  <div class="rings" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i></div>
+  <span class="date" id="date"></span>
+
+  <div id="alert" class="alert hidden" role="alert"><span id="alert-text"></span><button id="alert-x" data-i18n-aria="close">×</button></div>
+
+  <!-- 首次引导 -->
+  <section id="view-onboard" class="hidden">
+    <div id="ob-1" class="ob-step">
+      <h1 class="ob-title">你说什么语言？<span>What language do you speak?</span></h1>
+      <div class="ob-langs" id="ob-speak"></div>
+    </div>
+    <div id="ob-2" class="ob-step hidden">
+      <button type="button" class="ghost ob-back" id="ob-back"></button>
+      <h1 class="ob-title" id="ob-learn-title"></h1>
+      <div class="ob-langs" id="ob-langs"></div>
+    </div>
+  </section>
+
+  <!-- 月历 -->
+  <section id="view-dialogue">
+    <div id="month">
+      <div class="m-head">
+        <button type="button" class="nav-btn" id="m-prev" data-i18n-aria="prevMonth">‹</button>
+        <h1 class="m-title" id="m-title"></h1>
+        <button type="button" class="nav-btn" id="m-next" data-i18n-aria="nextMonth">›</button>
+        <button type="button" class="ghost m-today" id="m-today" data-i18n="thisMonth"></button>
+      </div>
+      <div class="m-body">
+        <aside class="m-side" id="m-side"></aside>
+        <div class="m-cal" id="m-cal"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 口语 -->
+  <section id="view-lab" class="hidden">
+    <div class="hello"><h1 id="lab-title"></h1></div>
+    <div class="stack">
+      <div class="card topic">
+        <div id="asker"></div>
+        <p id="topic-q" class="topic-sv"></p>
+        <p id="topic-tr" class="muted"></p>
+        <div class="topic-actions"><button id="shuffle" class="ghost" data-i18n="another"></button><button id="own-topic" class="ghost" data-i18n="ownTopic"></button></div>
+        <div id="own-box" class="own-box hidden"><div class="own-row"><textarea id="own-text" class="field" rows="2"></textarea><button id="own-go" class="primary" disabled data-i18n="ownGo"></button></div><div class="own-list" id="own-list"></div></div>
+        <div class="answer">
+          <div class="answer-tools"><span class="label" data-i18n="yourAnswer"></span><button id="mic" class="mic hidden" type="button"></button></div>
+          <textarea id="answer" class="field"></textarea>
+          <button id="evaluate" class="primary" disabled data-i18n="getFeedback"></button>
+          <p class="note" data-i18n="labNote"></p>
+        </div>
+      </div>
+      <div id="evaluation"></div>
+    </div>
+  </section>
+
+  <!-- 设置 -->
+  <section id="view-settings" class="hidden">
+    <div class="hello"><h1 data-i18n="settings"></h1></div>
+    <div class="stack">
+      <div class="card"><span class="label" data-i18n="iSpeak"></span><div class="lang-list" id="speak-list-settings"></div></div>
+      <div class="card"><span class="label" data-i18n="learning"></span><div class="lang-list" id="lang-list-settings"></div></div>
+      <div class="card hidden" id="key-card"><label class="label" for="api-key" data-i18n="apiKey"></label>
+        <p class="small muted" style="font-weight:500;margin-bottom:10px" data-i18n="apiKeyHelp"></p>
+        <input id="api-key" class="field" type="password" autocomplete="off" spellcheck="false" />
+        <div style="height:12px"></div>
+        <label class="label" for="api-model" data-i18n="model"></label>
+        <select id="api-model" class="field"></select>
+        <div style="height:12px"></div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap"><button type="button" class="ghost" id="key-test" data-i18n="keyTest"></button><button type="button" class="ghost" id="key-clear" data-i18n="keyClear"></button></div>
+        <p class="small muted" id="key-msg" aria-live="polite" style="font-weight:600;margin-top:10px"></p>
+        <p class="small muted keylinks" style="font-weight:500;margin-top:8px"><span data-i18n="keyPrivacy"></span> <a href="https://platform.claude.com/settings/keys" target="_blank" rel="noopener">platform.claude.com</a> · <a href="https://platform.openai.com/api-keys" target="_blank" rel="noopener">platform.openai.com</a></p></div>
+      <div class="card"><span class="label" data-i18n="onDevice"></span><ul class="plain" id="caps"></ul></div>
+      <div class="card"><span class="label" data-i18n="progress"></span><p class="small muted" id="stats"></p><div style="height:12px"></div><button type="button" class="ghost" id="reset" data-i18n="reset"></button></div>
+      <p class="about">SmallTalk · <a href="../../">Shipmas Day 9</a></p>
+    </div>
+  </section>
+</div>
+
+<div id="where-screen" class="overlay hidden" role="dialog" aria-modal="true" aria-labelledby="where-title">
+  <div class="where-modal">
+    <div class="backbar"><span class="t" id="where-title"></span><button type="button" id="where-x" class="close" data-i18n-aria="close">×</button></div>
+    <div class="where-body">
+      <div class="composer">
+        <div class="composer-row"><textarea id="custom-input" class="field" rows="2" autocomplete="off" data-i18n-aria="customLabel"></textarea><button id="custom-go" class="primary" disabled data-i18n="go"></button></div>
+        <div class="ideas" id="ideas"></div>
+      </div>
+      <div class="presets" id="presets"></div>
+      <div id="mine-wrap" class="hidden"><div class="mine" id="mine"></div></div>
+    </div>
+  </div>
+</div>
+<div id="card-screen" class="hidden" role="dialog" aria-modal="true">
+  <div class="card-modal" id="card-modal"></div>
+</div>
+<div id="lesson-screen" class="hidden" role="dialog" aria-modal="true" aria-labelledby="lesson-title">
+  <div class="lesson-modal">
+    <div class="backbar"><span class="t" id="lesson-title"></span><button type="button" id="back" class="close" data-i18n-aria="close">×</button></div>
+    <div id="lesson"></div>
+  </div>
+</div>
+<div id="sheet-root"></div>
+
+<script>
+const $ = (s) => document.querySelector(s);
+const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const store = {
+  get(k, d) { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : d; } catch { return d; } },
+  set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch {} },
+};
+
+/* ================= 界面语言 ================= */
+/* 用户自己说的语言：决定翻译和讲解用什么语言；界面文字只有中文和英文两套 */
+const SPEAKS = {
+  zh: { flag: '🇨🇳', native: '中文', fb: 'Simplified Chinese' }, en: { flag: '🇬🇧', native: 'English', fb: 'English' },
+  sv: { flag: '🇸🇪', native: 'Svenska', fb: 'Swedish' }, fr: { flag: '🇫🇷', native: 'Français', fb: 'French' },
+  de: { flag: '🇩🇪', native: 'Deutsch', fb: 'German' }, es: { flag: '🇪🇸', native: 'Español', fb: 'Spanish' },
+  pt: { flag: '🇵🇹', native: 'Português', fb: 'European Portuguese' }, ja: { flag: '🇯🇵', native: '日本語', fb: 'Japanese' },
+};
+let SPEAK = store.get('sk-speak', null) || store.get('sk-ui', null) || ((navigator.language || '').toLowerCase().slice(0, 2));
+if (!SPEAKS[SPEAK]) SPEAK = (navigator.language || '').toLowerCase().startsWith('zh') ? 'zh' : 'en';
+let UI = SPEAK === 'zh' ? 'zh' : 'en';
+const STR = {
+  zh: {
+    close: '关闭', helloSub: '写一个你最近真的会遇到的场景，生成一段可以跟着练的对话。也可以从常用场景开始。', customLabel: '你想练什么场景？', go: '去这里',
+    customPh: '写一个地方或场景，比如：跟房东说热水器坏了', ideasLabel: '试试', presetsTitle: '常用场景', mineTitle: '你的场景', removeIt: '删除',
+    backMap: '‹ 返回', labSub: '回答一个问题，获得语法和表达上的反馈。', another: '换一个问题', yourAnswer: '你的回答', getFeedback: '获取反馈',
+    labNote: '只评语法和表达，不评发音。',
+    settings: '设置', settingsSub: '你说的语言、学习语言和练习记录。', learning: '我在学', iSpeak: '我说的语言',
+    accessCode: '访问码', accessHelp: '部署时设置了访问码才需要填。', accessPh: '没有设置可以留空',
+    onDevice: '在这台设备上', progress: '练习记录', reset: '清空当前语言的记录', tabMap: '日历', today: '今天', followTitle: '接着聊 · 追问', followPh: (l) => `用${l}接着说，或者问一个关于这段对话的问题`, send: '发送', moreNatural: '更自然：', coach: '老师', ownTopic: '✎ 自己出题', ownPh: '写一个你想被问到的话题，比如：介绍我的工作', ownGo: '生成问题', makingQ: '正在出题…', prevMonth: '上个月', nextMonth: '下个月', thisMonth: '回到本月', openDialogue: '看对话', monthCount: (n) => `这个月寄回 ${n} 张`, whereTitle: (p) => `今天带${p}去哪？`, goOut: '出发', rest: '在家休息', again: '再去一个地方', newCard: '寄回来了', tabSpeak: '口语练习',
+    helloTitle: (l) => `今天想用${l}聊点什么？`, labTitle: (l) => `开口说${l}`, times: (n) => `练过 ${n} 次`,
+    pickLang: '语言设置', count: (n) => `练过 ${n} 次`,
+    level: '难度', styleL: '对方风格', words: '想用的词（可选）', eg: '例如：', start: '开始对话', arriving: '正在生成…',
+    dialogue: '对话', hideTr: '隐藏翻译', vocab: '词汇', pron: '发音要点', tip: '文化小贴士', asks: (n) => `${n} 问你：`, reading: '正在看你的回答…',
+    grammar: '语法', natural: '地道程度', good: '做得好', improve: '可以改进', better: '更自然的说法', grammarNotes: '语法与用词', pronTips: '发音提示',
+    emptyEval1: '写下你的回答', emptyEval2: '点「获取反馈」后，评分和更自然的说法会出现在这里。', dictate: '语音输入', stop: '停止', play: '朗读',
+    capAI: 'AI 生成与评估', capTTS: '朗读', capMic: '语音输入', ok: '可用', viaServer: '通过你的服务器调用 Claude', needClaude: '需在 claude.ai 中打开',
+    ttsClaude: '可用（Claude 语音）', ttsSys: '可用（系统语音）', na: '此设备不可用', micWeb: '可用（浏览器语音识别）', micNa: '此设备不可用，请打字',
+    stats: (l, total, n) => `${l.name.zh}：练了 ${total} 段对话，用过 ${n} 个场景。`, noStats: (l) => `${l.name.zh}：还没有练习记录。`,
+    errNeedClaude: '需要在 claude.ai 中打开这个页面才能使用 AI 功能', errRate: '请求太频繁，请稍后再试', errGrant: 'AI 功能未被授权，请在弹出的提示中允许',
+    errCode: '访问码不对：请在「设置」里填写正确的访问码', errServer: '服务器出错了：请检查部署的 API Key，或稍后再试', errOffline: '网络连接不上，请检查网络后再试',
+    errOutput: 'AI 返回的内容格式不对，请再试一次', errGeneric: '出错了，请稍后再试', errTTS: '朗读太频繁，请稍后再试', errMicGrant: '未授权语音输入，请直接打字', errMic: '语音识别出错了，可以直接打字', errMicLang: (l) => `暂时不支持用${l}语音输入，请打字`,
+    switchLang: '切换语言', learnQ: '想学什么语言？', obBack: '‹ 上一步',
+  },
+  en: {
+    close: 'Close', helloSub: "Describe a situation you'll actually face and get a dialogue to practise. Or start with a common one.", customLabel: 'What do you want to practise?', go: 'Go here',
+    customPh: 'A place or situation, e.g. telling my landlord the boiler is broken', ideasLabel: 'Try', presetsTitle: 'Common situations', mineTitle: 'Your scenarios', removeIt: 'Remove',
+    backMap: '‹ Back', labSub: 'Answer a question and get feedback on grammar and phrasing.', another: 'Another question', yourAnswer: 'Your answer', getFeedback: 'Get feedback',
+    labNote: 'Feedback covers grammar and phrasing, not pronunciation.',
+    settings: 'Settings', settingsSub: 'The language you speak, the one you are learning, and progress.', learning: "I'm learning", iSpeak: 'I speak',
+    accessCode: 'Access code', accessHelp: 'Only needed if the deployment set one.', accessPh: 'Leave empty if none was set',
+    onDevice: 'On this device', progress: 'Progress', reset: 'Reset progress for this language', tabMap: 'Calendar', today: 'Today', followTitle: 'Keep talking · Ask', followPh: (l) => `Reply in ${l}, or ask a question about this dialogue`, send: 'Send', moreNatural: 'More natural: ', coach: 'Teacher', ownTopic: '✎ Your own topic', ownPh: 'A topic you want to be asked about, e.g. describing my job', ownGo: 'Create question', makingQ: 'Writing a question…', prevMonth: 'Previous month', nextMonth: 'Next month', thisMonth: 'This month', openDialogue: 'Open dialogue', monthCount: (n) => `${n} postcard${n === 1 ? '' : 's'} this month`, whereTitle: (p) => `Where should ${p} go today?`, goOut: 'Go', rest: 'Stayed home', again: 'Go somewhere else', newCard: 'Just arrived', tabSpeak: 'Speaking',
+    helloTitle: (l) => `What do you want to talk about in ${l} today?`, labTitle: (l) => `Speak ${l}`, times: (n) => `Practised ${n}×`,
+    pickLang: 'Languages', count: (n) => `Practised ${n}×`,
+    level: 'Level', styleL: 'Their style', words: 'Words to use (optional)', eg: 'e.g. ', start: 'Start the conversation', arriving: 'Creating…',
+    dialogue: 'Dialogue', hideTr: 'Hide translation', vocab: 'Vocabulary', pron: 'Pronunciation', tip: 'Culture tip', asks: (n) => `${n} asks:`, reading: 'Reading your answer…',
+    grammar: 'Grammar', natural: 'Naturalness', good: 'What went well', improve: 'To improve', better: 'More natural', grammarNotes: 'Grammar & word choice', pronTips: 'Pronunciation tips',
+    emptyEval1: 'Write your answer', emptyEval2: 'Tap “Get feedback” and your scores and a more natural version will appear here.', dictate: 'Dictate', stop: 'Stop', play: 'Play',
+    capAI: 'AI lessons & feedback', capTTS: 'Read aloud', capMic: 'Dictation', ok: 'Available', viaServer: 'Calls Claude through your server', needClaude: 'Open in claude.ai to use',
+    ttsClaude: 'Available (Claude voice)', ttsSys: 'Available (system voice)', na: 'Not available on this device', micWeb: 'Available (browser speech recognition)', micNa: 'Not available — please type',
+    stats: (l, total, n) => `${l.name.en}: ${total} conversations across ${n} scenarios.`, noStats: (l) => `${l.name.en}: no practice yet.`,
+    errNeedClaude: 'Open this page in claude.ai to use the AI features', errRate: 'Too many requests — please try again shortly', errGrant: 'AI access was not granted — allow it in the prompt',
+    errCode: 'Wrong access code — enter the right one in Settings', errServer: 'Server error — check the deployed API key or try again later', errOffline: "Can't connect — check your network",
+    errOutput: 'The AI reply was malformed — please try again', errGeneric: 'Something went wrong — please try again', errTTS: 'Too many read-aloud requests — try again shortly', errMicGrant: 'Dictation not allowed — please type instead', errMic: 'Speech recognition failed — you can type instead', errMicLang: (l) => `Dictation isn't available in ${l} yet — please type`,
+    switchLang: 'Change languages', learnQ: 'What do you want to learn?', obBack: '‹ Back',
+  },
+};
+Object.assign(STR.zh, {"apiKey":"API Key（Claude 或 OpenAI）","apiKeyHelp":"生成对话和点评需要你自己的 API Key。sk-ant- 开头用 Claude，其他 sk- 开头用 OpenAI。","keyPh":"sk-ant-…（Claude）或 sk-…（OpenAI）","model":"模型","keyTest":"测试","keyClear":"删除 Key","keySaved":(p) => `已保存（${p}…），留空保持不变`,"keyOk":"连接正常，Key 可用。","keyNone":"还没有填写 Key。","keyTesting":"测试中…","keyCleared":"已删除。","keyPrivacy":"Key 只保存在这个浏览器里，只发给 api.anthropic.com 或 api.openai.com，这个页面没有服务器。费用由你自己的账户按用量支付。创建 Key：","mHaiku":"Claude Haiku 5.5：最便宜","mSonnet":"Claude Sonnet 5.5：更地道","mOpus":"Claude Opus 5.5：最强，最贵","mLuna":"GPT-6 Luna：最便宜","mSol":"GPT-6.2 Sol：更地道","mAstra":"GPT-6.2 Astra：最强，最贵","viaKey":"用你自己的 API Key","needKey":"在上面填入 API Key 后可用","errNoKey":"还没有 API Key：请在「设置」里填入你自己的 Claude 或 OpenAI API Key","errBadKey":"API Key 无效或已过期：请在「设置」里检查","errCredit":"API 账户余额不足：请到 platform.claude.com 或 platform.openai.com 充值"});
+Object.assign(STR.en, {"apiKey":"API key (Claude or OpenAI)","apiKeyHelp":"Lessons and feedback need your own API key. Keys starting with sk-ant- use Claude; other sk- keys use OpenAI.","keyPh":"sk-ant-… (Claude) or sk-… (OpenAI)","model":"Model","keyTest":"Test","keyClear":"Delete key","keySaved":(p) => `Saved (${p}…). Leave empty to keep it.`,"keyOk":"Connected. The key works.","keyNone":"No key entered yet.","keyTesting":"Testing…","keyCleared":"Deleted.","keyPrivacy":"The key is stored only in this browser and sent only to api.anthropic.com or api.openai.com. This page has no server. Usage is billed to your own account. Create a key:","mHaiku":"Claude Haiku 5.5: cheapest","mSonnet":"Claude Sonnet 5.5: more natural","mOpus":"Claude Opus 5.5: strongest, costs most","mLuna":"GPT-6 Luna: cheapest","mSol":"GPT-6.2 Sol: more natural","mAstra":"GPT-6.2 Astra: strongest, costs most","viaKey":"Uses your own API key","needKey":"Add your API key above to use it","errNoKey":"No API key yet. Add your own Claude or OpenAI API key in Settings.","errBadKey":"The API key is invalid or expired. Check it in Settings.","errCredit":"Your API account is out of credit. Top up at platform.claude.com or platform.openai.com."});
+const t = (k, ...a) => { const v = STR[UI][k]; return typeof v === 'function' ? v(...a) : v; };
+const loc = (o) => (o && typeof o === 'object' ? (o[UI] ?? o.zh) : o);
+
+/* ================= 插画（原创扁平 SVG） ================= */
+const sky = (c = '#cfe8f0') => `<rect width="120" height="100" fill="${c}"/>`;
+const cloud = (x, y, s = 1) => `<g transform="translate(${x} ${y}) scale(${s})" fill="#fff"><ellipse cx="0" cy="0" rx="9" ry="4.5"/><ellipse cx="7" cy="-3" rx="7" ry="5"/><ellipse cx="13" cy="0" rx="7" ry="4"/></g>`;
+const flowers = (pts) => pts.map(([x, y, c]) => `<circle cx="${x}" cy="${y}" r="1.6" fill="${c}"/>`).join('');
+
+function supermarketArt() {
+  const cols = ['#e5876b', '#f2c27b', '#9cc5a1', '#7fa8d1', '#f4a7a0', '#c7a6d8'];
+  let s = sky('#f3ebe2') + '<rect y="78" width="120" height="22" fill="#e2d2bf"/>';
+  s += '<rect x="6" y="12" width="72" height="66" rx="4" fill="#d8c3aa"/>';
+  [32, 52, 72].forEach((y) => { s += `<rect x="6" y="${y}" width="72" height="4" fill="#c08b60"/>`; });
+  for (let i = 0; i < 7; i++) s += `<rect x="${10 + i * 9.5}" y="${20 + (i % 2) * 3}" width="7.5" height="${12 - (i % 2) * 3}" rx="1.5" fill="${cols[i % 6]}"/>`;
+  for (let i = 0; i < 6; i++) s += `<rect x="${11 + i * 11}" y="38" width="6" height="14" rx="3" fill="${cols[(i + 2) % 6]}"/><rect x="${12.5 + i * 11}" y="35" width="3" height="4" fill="${cols[(i + 2) % 6]}"/>`;
+  for (let i = 0; i < 9; i++) s += `<circle cx="${12 + i * 7.5}" cy="${67 + (i % 2)}" r="3.6" fill="${i % 3 ? '#e5876b' : '#9cc5a1'}"/>`;
+  s += '<path d="M86 50 h30 l-4 20 h-23z" fill="#7fa8d1"/><path d="M80 44 h6 l3 6" stroke="#6b7c8f" stroke-width="2.5" fill="none" stroke-linecap="round"/>';
+  s += '<path d="M89 56 h25M90 62 h23" stroke="#a9c7e6" stroke-width="1.5"/><circle cx="92" cy="75" r="3" fill="#6b7c8f"/><circle cx="108" cy="75" r="3" fill="#6b7c8f"/>';
+  s += '<ellipse cx="96" cy="46" rx="3" ry="9" transform="rotate(25 96 46)" fill="#e3a978"/><rect x="102" y="40" width="8" height="11" rx="1.5" fill="#fff"/><rect x="102" y="40" width="8" height="3" fill="#7fa8d1"/><circle cx="112" cy="47" r="4" fill="#9cc5a1"/>';
+  return s;
+}
+
+const WM = `<rect x="10" y="40" width="40" height="40" rx="6" fill="#fff"/><rect x="10" y="40" width="40" height="9" rx="5" fill="#eef3f6"/>
+    <circle cx="17" cy="44.5" r="1.8" fill="#e5876b"/><circle cx="23" cy="44.5" r="1.8" fill="#7fa8d1"/><rect x="36" y="43" width="10" height="3" rx="1.5" fill="#cfdfe6"/>
+    <circle cx="30" cy="64" r="11.5" fill="#c9d6dc"/><circle cx="30" cy="64" r="8.5" fill="#9cc8e3"/><path d="M22 66 q8 5 16 0 v2 q-8 6 -16 0z" fill="#7fa8d1"/><circle cx="27" cy="60" r="2" fill="#e6f3fa"/>`;
+const ART = {
+  cafe: `<rect width="120" height="100" fill="#f4dfc8"/>
+    <rect x="12" y="12" width="42" height="34" rx="4" fill="#fff8ee"/><rect x="15" y="15" width="36" height="28" rx="2" fill="#bfe3f2"/>
+    <path d="M15 43 Q30 32 51 38 V43Z" fill="#a8d08d"/>${cloud(24, 23, .7)}
+    <rect x="32" y="15" width="2" height="28" fill="#fff8ee"/><rect x="15" y="28" width="36" height="2" fill="#fff8ee"/>
+    <line x1="88" y1="0" x2="88" y2="14" stroke="#8a6a52" stroke-width="1.5"/><path d="M77 25 Q88 9 99 25Z" fill="#e5876b"/><circle cx="88" cy="26" r="3" fill="#ffe7a8"/>
+    <rect x="66" y="40" width="44" height="3" rx="1.5" fill="#c08b60"/>
+    <rect x="70" y="30" width="8" height="10" rx="2" fill="#f2c27b"/><rect x="81" y="32" width="7" height="8" rx="2" fill="#9cc5a1"/><rect x="92" y="29" width="9" height="11" rx="2" fill="#e5876b"/><rect x="103" y="33" width="5" height="7" rx="1.5" fill="#fff"/>
+    <rect y="62" width="120" height="38" fill="#c08b60"/><rect y="57" width="120" height="7" rx="2" fill="#e3a978"/>
+    <path d="M27 44 h20 l-2.5 13 h-15z" fill="#fff"/><path d="M46 47 q7 0 6 5 q-1 4 -7 3" fill="none" stroke="#fff" stroke-width="2.6"/><ellipse cx="37" cy="44" rx="10" ry="2.2" fill="#8a5a3c"/>
+    <path d="M33 39 q-3 -4 0 -8 q3 -4 0 -8M40 39 q-3 -4 0 -8 q3 -4 0 -8" stroke="#fff" stroke-width="2" fill="none" stroke-linecap="round" opacity=".85"/>
+    <ellipse cx="80" cy="57.5" rx="17" ry="3" fill="#fff"/><ellipse cx="80" cy="51" rx="12" ry="7" fill="#e0a05a"/>
+    <path d="M72 51 q8 -8 13 -1 q3 4 -3 5 q-4 0 -3 -3" fill="none" stroke="#b8743a" stroke-width="2" stroke-linecap="round"/>
+    <circle cx="76" cy="47" r="1" fill="#fff"/><circle cx="85" cy="47" r="1" fill="#fff"/><circle cx="88" cy="52" r="1" fill="#fff"/>
+    <path d="M100 57 l2 -8 h12 l2 8z" fill="#e5876b"/><ellipse cx="104" cy="45" rx="3" ry="6" transform="rotate(-25 104 45)" fill="#7cb26a"/><ellipse cx="111" cy="44" rx="3" ry="6" transform="rotate(25 111 44)" fill="#8cc17a"/><ellipse cx="108" cy="42" rx="2.6" ry="6" fill="#6aa35a"/>`,
+
+  mobel: `<rect width="120" height="100" fill="#e6eef3"/><rect y="70" width="120" height="30" fill="#dcc3a3"/><rect y="69" width="120" height="3" fill="#c9ab86"/>
+    <rect x="13" y="14" width="20" height="16" rx="1.5" fill="#fff"/><path d="M15 28 l6 -7 l4 4 l3 -3 l4 6z" fill="#a8d08d"/><circle cx="28" cy="18" r="2" fill="#f5cf47"/>
+    <line x1="48" y1="0" x2="48" y2="16" stroke="#8a6a52" stroke-width="1.5"/><path d="M39 25 Q48 12 57 25Z" fill="#f2c27b"/>
+    <rect x="82" y="18" width="32" height="52" rx="3" fill="#c08b60"/>
+    <rect x="85" y="21" width="26" height="14" rx="1" fill="#f4dfc8"/><rect x="85" y="38" width="26" height="14" rx="1" fill="#f4dfc8"/><rect x="85" y="55" width="26" height="12" rx="1" fill="#f4dfc8"/>
+    <rect x="88" y="26" width="8" height="9" rx="1.5" fill="#9cc5a1"/><rect x="99" y="29" width="9" height="6" rx="1.5" fill="#e5876b"/>
+    <rect x="88" y="41" width="5" height="11" rx="1.5" fill="#7fa8d1"/><circle cx="102" cy="47" r="4.5" fill="#f2c27b"/><rect x="87" y="60" width="22" height="7" rx="2" fill="#fff"/>
+    <rect x="12" y="44" width="62" height="18" rx="7" fill="#6f9cc9"/><rect x="8" y="55" width="70" height="12" rx="6" fill="#7fa8d1"/>
+    <rect x="5" y="49" width="11" height="19" rx="5.5" fill="#6f9cc9"/><rect x="70" y="49" width="11" height="19" rx="5.5" fill="#6f9cc9"/>
+    <rect x="12" y="67" width="3" height="5" fill="#8a6a52"/><rect x="71" y="67" width="3" height="5" fill="#8a6a52"/>
+    <rect x="20" y="45" width="15" height="12" rx="4" fill="#f2c27b"/><rect x="50" y="45" width="15" height="12" rx="4" fill="#e5876b"/>
+    <rect x="58" y="34" width="13" height="8" rx="2" fill="#ffe27a"/><line x1="64" y1="42" x2="62" y2="46" stroke="#a08a78" stroke-width="1"/><rect x="61" y="37" width="7" height="1.6" fill="#d9a83b"/>`,
+
+  tvatt: `<rect width="120" height="100" fill="#dbe8ee"/><path d="M0 26H120M0 52H120M30 0V76M60 0V76M90 0V76" stroke="#cfdfe6" stroke-width="1"/>
+    <rect y="76" width="120" height="24" fill="#b9cbd3"/>
+    <path d="M2 10 Q60 22 118 10" stroke="#a08a78" stroke-width="1.2" fill="none"/>
+    <path d="M14 15 h14 l5 4 -3 4 -3 -2 v12 h-12 v-12 l-3 2 -3 -4z" fill="#e5876b"/>
+    <rect x="50" y="16" width="7" height="13" rx="3" fill="#f2c27b"/><rect x="60" y="16" width="7" height="13" rx="3" fill="#f2c27b"/>
+    <path d="M84 15 h14 l5 4 -3 4 -3 -2 v12 h-12 v-12 l-3 2 -3 -4z" fill="#9cc5a1"/>
+    ${WM}<g transform="translate(44 0)">${WM}</g>
+    <path d="M97 66 h20 l-3 14 h-14z" fill="#e3a978"/><path d="M98 70 h18M99 75 h16" stroke="#c98b5e" stroke-width="1.2"/>
+    <circle cx="103" cy="65" r="4.5" fill="#7fa8d1"/><circle cx="111" cy="64" r="4.5" fill="#f4a7a0"/>`,
+
+  jobb: `<rect width="120" height="100" fill="#efe7dc"/>
+    <rect x="10" y="10" width="58" height="42" rx="4" fill="#bfe3f2"/>
+    <rect x="14" y="30" width="9" height="22" fill="#9fc3d6"/><rect x="25" y="22" width="10" height="30" fill="#8cb5cc"/><rect x="37" y="32" width="8" height="20" fill="#9fc3d6"/><rect x="47" y="26" width="9" height="26" fill="#8cb5cc"/><rect x="58" y="34" width="7" height="18" fill="#9fc3d6"/>
+    ${cloud(20, 18, .6)}<path d="M10 31H68M39 10V52" stroke="#fff" stroke-width="2"/><rect x="10" y="10" width="58" height="42" rx="4" fill="none" stroke="#fff" stroke-width="3"/>
+    <circle cx="95" cy="24" r="11" fill="#fff" stroke="#c08b60" stroke-width="2.5"/><path d="M95 24V16M95 24l5 3" stroke="#6b4e3a" stroke-width="1.8" stroke-linecap="round"/>
+    <rect y="66" width="120" height="6" fill="#c08b60"/><rect y="72" width="120" height="28" fill="#dcb48b"/>
+    <path d="M40 45 h36 v21 h-36z" fill="#6b7c8f"/><rect x="42.5" y="47.5" width="31" height="16" rx="1" fill="#e6f3fa"/><rect x="46" y="51" width="14" height="2.5" rx="1" fill="#7fa8d1"/><rect x="46" y="56" width="22" height="2" rx="1" fill="#cfdfe6"/>
+    <path d="M33 66 h50 l-3 3 h-44z" fill="#8b9bad"/>
+    <rect x="88" y="55" width="10" height="11" rx="2.5" fill="#e5876b"/><path d="M98 58 q4 0 3 3.5 q-1 2 -3 2" fill="none" stroke="#e5876b" stroke-width="2"/>
+    <rect x="102" y="62" width="15" height="4" rx="1" fill="#fff"/>
+    <path d="M10 66 l2 -11 h13 l2 11z" fill="#f2c27b"/><ellipse cx="14" cy="47" rx="3" ry="7" transform="rotate(-25 14 47)" fill="#7cb26a"/><ellipse cx="23" cy="46" rx="3" ry="7" transform="rotate(25 23 46)" fill="#8cc17a"/><ellipse cx="18.5" cy="43" rx="2.6" ry="7" fill="#6aa35a"/>`,
+
+  vard: `${sky()}${cloud(14, 14, .9)}${cloud(92, 10, .7)}
+    <path d="M0 70 Q30 60 60 66 T120 64 V100 H0Z" fill="#bcdcae"/><rect y="78" width="120" height="22" fill="#a8d08d"/>
+    <rect x="22" y="30" width="76" height="50" fill="#fbf4ea"/><rect x="18" y="25" width="84" height="7" rx="3" fill="#7fb7b0"/>
+    <rect x="28" y="38" width="10" height="9" rx="1.5" fill="#bfe3f2"/><rect x="42" y="38" width="10" height="9" rx="1.5" fill="#bfe3f2"/><rect x="68" y="38" width="10" height="9" rx="1.5" fill="#bfe3f2"/><rect x="82" y="38" width="10" height="9" rx="1.5" fill="#bfe3f2"/>
+    <rect x="28" y="54" width="10" height="9" rx="1.5" fill="#bfe3f2"/><rect x="82" y="54" width="10" height="9" rx="1.5" fill="#bfe3f2"/>
+    <circle cx="60" cy="44" r="8" fill="#fff" stroke="#7fb7b0" stroke-width="2"/><path d="M60 39.5v9M55.5 44h9" stroke="#5aa69c" stroke-width="3.2" stroke-linecap="round"/>
+    <rect x="51" y="57" width="18" height="23" rx="2.5" fill="#7fb7b0"/><rect x="59" y="57" width="2" height="23" fill="#fbf4ea"/><rect x="53" y="60" width="5" height="9" rx="1" fill="#bfe3f2"/><rect x="62" y="60" width="5" height="9" rx="1" fill="#bfe3f2"/>
+    <path d="M53 80 h14 l9 20 h-32z" fill="#eedcbc"/>
+    <circle cx="22" cy="78" r="7" fill="#7cb26a"/><circle cx="30" cy="80" r="5" fill="#8cc17a"/><circle cx="96" cy="79" r="6" fill="#7cb26a"/><circle cx="103" cy="80" r="5" fill="#8cc17a"/>
+    ${flowers([[24, 75, '#f4a7a0'], [99, 76, '#fff'], [28, 79, '#fff']])}`,
+
+  granne: `${sky()}<circle cx="100" cy="18" r="9" fill="#ffe08a"/>${cloud(12, 16, .8)}
+    <path d="M0 62 Q30 50 60 58 T120 54 V100 H0Z" fill="#bcdcae"/><rect y="72" width="120" height="28" fill="#a8d08d"/>
+    <rect x="68" y="27" width="5" height="12" fill="#8f3a33"/>
+    <path d="M30 47 L58 26 L86 47Z" fill="#4c4a5a"/><rect x="36" y="45" width="44" height="31" fill="#c8524a"/>
+    <path d="M30 47 L58 26 L86 47" fill="none" stroke="#fff" stroke-width="2.4" stroke-linejoin="round"/>
+    <rect x="36" y="46" width="2.4" height="30" fill="#fff"/><rect x="77.6" y="46" width="2.4" height="30" fill="#fff"/>
+    <rect x="42" y="52" width="11" height="11" fill="#fff"/><rect x="43.6" y="53.6" width="7.8" height="7.8" fill="#9cc8e3"/><path d="M47.5 53.6v7.8M43.6 57.5h7.8" stroke="#fff" stroke-width="1.4"/>
+    <rect x="63" y="52" width="11" height="11" fill="#fff"/><rect x="64.6" y="53.6" width="7.8" height="7.8" fill="#9cc8e3"/><path d="M68.5 53.6v7.8M64.6 57.5h7.8" stroke="#fff" stroke-width="1.4"/>
+    <rect x="54" y="60" width="8" height="16" rx="1" fill="#5d8fbf"/><circle cx="60" cy="68" r=".9" fill="#f5cf47"/>
+    <rect x="15.5" y="38" width="4" height="38" fill="#f5f2ea"/><rect x="15.5" y="46" width="2" height="1.4" fill="#4a3a30"/><rect x="17.5" y="55" width="2" height="1.4" fill="#4a3a30"/><rect x="15.5" y="64" width="2" height="1.4" fill="#4a3a30"/>
+    <circle cx="18" cy="36" r="11" fill="#9cc98a"/><circle cx="12" cy="30" r="7" fill="#b4d89c"/><circle cx="24" cy="31" r="6" fill="#8cc17a"/>
+    <rect x="99" y="58" width="3" height="18" fill="#8a6a52"/><circle cx="100.5" cy="52" r="10" fill="#9cc98a"/><circle cx="106" cy="47" r="6" fill="#b4d89c"/>
+    <g fill="#ecd9bb">${Array.from({ length: 16 }, (_, i) => `<rect x="${i * 8 + 1}" y="70" width="3.2" height="11" rx="1.4"/>`).join('')}<rect y="73" width="120" height="2"/><rect y="77.5" width="120" height="2"/></g>
+    ${flowers([[30, 88, '#f4a7a0'], [48, 92, '#fff'], [70, 86, '#ffe08a'], [90, 93, '#c7a6d8'], [108, 87, '#f4a7a0'], [12, 94, '#ffe08a']])}`,
+
+  mat: supermarketArt(),
+
+  tbana: `<rect width="120" height="100" fill="#e9e4dd"/><path d="M0 0 H120 V20 Q60 4 0 20Z" fill="#d8d1c7"/>
+    <rect x="94" y="12" width="22" height="11" rx="2.5" fill="#3d5a80"/><rect x="97" y="15.5" width="10" height="1.6" rx=".8" fill="#fff"/><rect x="97" y="18.5" width="15" height="1.6" rx=".8" fill="#9fc3d6"/><line x1="99" y1="0" x2="99" y2="12" stroke="#8b8f99"/><line x1="111" y1="0" x2="111" y2="12" stroke="#8b8f99"/>
+    <rect y="70" width="120" height="10" fill="#8b8f99"/>
+    <rect x="-12" y="32" width="112" height="40" rx="11" fill="#7fa8d1"/>
+    <rect x="2" y="40" width="14" height="12" rx="2.5" fill="#e6f3fa"/><rect x="20" y="40" width="14" height="12" rx="2.5" fill="#e6f3fa"/><rect x="62" y="40" width="14" height="12" rx="2.5" fill="#e6f3fa"/>
+    <rect x="40" y="38" width="17" height="32" rx="2.5" fill="#6a93bd"/><rect x="42" y="41" width="5.5" height="12" rx="1" fill="#e6f3fa"/><rect x="49.5" y="41" width="5.5" height="12" rx="1" fill="#e6f3fa"/>
+    <path d="M82 38 h7 q8 0 8 9 v9 h-15z" fill="#e6f3fa"/><rect x="-12" y="59" width="112" height="3" fill="#f5cf47"/>
+    <circle cx="92" cy="64" r="2" fill="#ffe7a8"/>
+    <rect y="80" width="120" height="20" fill="#cfc6ba"/><rect y="80" width="120" height="3.5" fill="#f5cf47"/>
+    <rect x="102" y="62" width="3" height="18" fill="#8b8f99"/><circle cx="103.5" cy="60" r="5" fill="#fff" stroke="#8b8f99" stroke-width="1.5"/><path d="M103.5 60v-3M103.5 60l2 1.5" stroke="#6b4e3a" stroke-width="1" stroke-linecap="round"/>`,
+
+  midsommar: `${sky('#d6edf3')}<circle cx="96" cy="20" r="11" fill="#ffe9a0"/>${cloud(12, 14, .8)}
+    <path d="M0 64 Q40 52 80 60 T120 58 V100 H0Z" fill="#bcdcae"/><rect y="74" width="120" height="26" fill="#a8d08d"/>
+    <rect x="58" y="16" width="4" height="66" rx="2" fill="#f5f2ea"/>
+    ${Array.from({ length: 10 }, (_, i) => `<ellipse cx="${i % 2 ? 62 : 58}" cy="${20 + i * 6}" rx="3" ry="4.5" fill="${i % 2 ? '#7cb26a' : '#8cc17a'}"/>`).join('')}
+    <rect x="38" y="28" width="44" height="3.5" rx="1.75" fill="#f5f2ea"/>
+    <path d="M40 31.5v6M80 31.5v6" stroke="#a08a78" stroke-width="1"/>
+    <circle cx="40" cy="44" r="7" fill="none" stroke="#7cb26a" stroke-width="3.4"/><circle cx="80" cy="44" r="7" fill="none" stroke="#7cb26a" stroke-width="3.4"/>
+    ${flowers([[34, 41, '#f4a7a0'], [45, 47, '#ffe08a'], [38, 50, '#fff'], [74, 40, '#c7a6d8'], [86, 46, '#f4a7a0'], [79, 51, '#ffe08a']])}
+    <path d="M60 18 l-10 4 10 3z" fill="#3d77c2"/><path d="M62 18 l10 4 -10 3z" fill="#f5cf47"/>
+    <rect x="12" y="80" width="30" height="4" rx="2" fill="#fff"/><rect x="15" y="84" width="2.5" height="8" fill="#c08b60"/><rect x="36" y="84" width="2.5" height="8" fill="#c08b60"/>
+    <circle cx="19" cy="78" r="2.4" fill="#e5876b"/><circle cx="24" cy="78" r="2.4" fill="#e5876b"/><circle cx="29" cy="78.5" r="2.2" fill="#f2c27b"/><circle cx="34" cy="78" r="2.4" fill="#e5876b"/>
+    ${flowers([[52, 90, '#f4a7a0'], [70, 86, '#fff'], [84, 93, '#ffe08a'], [100, 84, '#c7a6d8'], [110, 92, '#f4a7a0'], [6, 92, '#fff'], [92, 80, '#fff']])}`,
+
+  custom: `<rect width="120" height="100" fill="#f4e6d6"/>
+    <rect x="18" y="14" width="84" height="74" rx="6" fill="#fffaf4"/><path d="M28 30H92M28 42H92M28 54H92M28 66H76" stroke="#eadccd" stroke-width="2"/>
+    <rect x="14" y="18" width="7" height="6" rx="2" fill="#b07b4f"/><rect x="14" y="40" width="7" height="6" rx="2" fill="#b07b4f"/><rect x="14" y="62" width="7" height="6" rx="2" fill="#b07b4f"/>
+    <path d="M60 24 h34 a6 6 0 0 1 6 6 v12 a6 6 0 0 1 -6 6 h-20 l-8 7 v-7 h-6 a6 6 0 0 1 -6 -6 v-12 a6 6 0 0 1 6 -6z" fill="#e5876b"/>
+    <circle cx="68" cy="36" r="2.2" fill="#fff"/><circle cx="77" cy="36" r="2.2" fill="#fff"/><circle cx="86" cy="36" r="2.2" fill="#fff"/>
+    <path d="M26 56 h28 a5 5 0 0 1 5 5 v10 a5 5 0 0 1 -5 5 h-4 v6 l-7 -6 h-17 a5 5 0 0 1 -5 -5 v-10 a5 5 0 0 1 5 -5z" fill="#7fa8d1"/>
+    <rect x="30" y="62" width="20" height="2.6" rx="1.3" fill="#fff"/><rect x="30" y="68" width="13" height="2.6" rx="1.3" fill="#fff"/>
+    <path d="M96 66 l10 -10 4 4 -10 10 -5 1z" fill="#f2c27b"/><path d="M106 56 l4 4 2 -2 -4 -4z" fill="#e5876b"/>`,
+};
+
+ART.fest = (() => {
+  let s = `${sky('#d6edf3')}${cloud(16, 16, .8)}${cloud(90, 12, .6)}<path d="M0 66 Q40 56 80 62 T120 60 V100 H0Z" fill="#bcdcae"/><rect y="74" width="120" height="26" fill="#a8d08d"/>`;
+  s += '<path d="M4 22 Q60 40 116 22" stroke="#a08a78" stroke-width="1" fill="none"/>';
+  const cols = ['#e5876b', '#f5cf47', '#7fa8d1', '#9cc5a1', '#c7a6d8'];
+  for (let i = 0; i < 10; i++) { const x = 9 + i * 11.3, y = 22 + 9 * (1 - ((x - 60) / 56) ** 2); s += `<path d="M${x - 4} ${y} L${x + 4} ${y} L${x} ${y + 8}Z" fill="${cols[i % 5]}"/>`; }
+  s += '<rect x="96" y="50" width="4" height="26" fill="#8a6a52"/><circle cx="98" cy="46" r="11" fill="#7cb26a"/><circle cx="92" cy="42" r="7" fill="#8cc17a"/>';
+  s += '<path d="M24 80 L88 80 L100 96 L12 96Z" fill="#e5876b"/><path d="M34 80 L28 96M48 80 L45 96M62 80 L63 96M76 80 L80 96M18 88 H94" stroke="#fff" stroke-width="2" opacity=".55"/>';
+  s += '<path d="M64 74 h16 l-2 8 h-12z" fill="#c08b60"/><path d="M66 74 q6 -8 12 0" stroke="#8a6a52" stroke-width="1.5" fill="none"/>';
+  s += '<circle cx="38" cy="86" r="3" fill="#f5cf47"/><rect x="47" y="83" width="5" height="7" rx="1.2" fill="#fff"/><circle cx="58" cy="88" r="2.6" fill="#9cc5a1"/>';
+  return s;
+})();
+const artSvg = (id) => `<svg viewBox="0 0 120 100" preserveAspectRatio="xMidYMid slice" aria-hidden="true">${ART[id] || ART.custom}</svg>`;
+
+/* ================= 小宠物（原创扁平插画，每种语言一只本地动物） =================
+   petSvg(id, {bag, sleep}) 返回 viewBox 0 0 100 100 的 SVG 内容 */
+const PETS = {
+  sv: { kind: 'moose', name: { zh: '小驼鹿', en: 'Moose' }, c: '#9c6b45', d: '#7a5236', m: '#c9a27e' },
+  en: { kind: 'hedgehog', name: { zh: '小刺猬', en: 'Hedgehog' }, c: '#f1d3b0', d: '#8a6248', m: '#f6e3cc' },
+  fr: { kind: 'cat', name: { zh: '小猫', en: 'Cat' }, c: '#aab3c0', d: '#7f8a99', m: '#eef0f3' },
+  de: { kind: 'bear', name: { zh: '小熊', en: 'Bear' }, c: '#8b5a3c', d: '#6e452d', m: '#d9b48f' },
+  es: { kind: 'donkey', name: { zh: '小毛驴', en: 'Donkey' }, c: '#a7a29b', d: '#5b5149', m: '#e8e0d6' },
+  pt: { kind: 'rooster', name: { zh: '小公鸡', en: 'Rooster' }, c: '#34353f', d: '#24252d', m: '#d9473b' },
+  ja: { kind: 'shiba', name: { zh: '小柴犬', en: 'Shiba' }, c: '#e59a52', d: '#c97d3a', m: '#fbeedb' },
+  zh: { kind: 'panda', name: { zh: '小熊猫', en: 'Panda' }, c: '#fbfaf7', d: '#2f2c33', m: '#fbfaf7' },
+};
+function petSvg(id, o = {}) {
+  const P = PETS[id] || PETS.sv, k = P.kind, ink = '#3b2f2a';
+  let back = '', body = '', face = '', front = '';
+  const bodyCol = k === 'panda' ? P.c : P.c;
+  // 身体与脚
+  if (k === 'rooster') {
+    back += `<path d="M70 66 Q90 52 86 34 Q80 48 70 52 Q84 40 78 26 Q72 42 64 50Z" fill="#2a6b5f"/><path d="M68 68 Q92 64 92 46 Q84 58 70 60Z" fill="#c8524a"/>`;
+    body += `<ellipse cx="50" cy="70" rx="24" ry="22" fill="${P.c}"/><path d="M34 66 Q42 82 58 80 Q48 74 44 62Z" fill="${P.d}"/>`;
+    body += `<path d="M44 90 v6 M40 96 h8 M56 90 v6 M52 96 h8" stroke="#f2b84b" stroke-width="2.6" stroke-linecap="round"/>`;
+    body += ['#e5876b', '#f5cf47', '#7fa8d1', '#9cc5a1', '#f4a7a0'].map((c, i) => `<path d="M${40 + (i % 3) * 9} ${68 + Math.floor(i / 3) * 9} c-2 -3 -6 0 -3 3 l3 3 l3 -3 c3 -3 -1 -6 -3 -3z" fill="${c}"/>`).join('');
+  } else {
+    if (k === 'shiba') back += `<path d="M68 72 Q86 70 82 56 Q78 48 72 54 Q80 56 76 64 Q72 68 66 66Z" fill="${P.c}"/><path d="M74 58 Q79 59 77 63" stroke="${P.m}" stroke-width="3" fill="none" stroke-linecap="round"/>`;
+    if (k === 'cat') back += `<path d="M68 82 Q90 82 88 60 Q86 54 82 58 Q84 74 66 76Z" fill="${P.c}"/>`;
+    if (k === 'hedgehog') back += `<path d="${spikes(50, 66, 31, 27, 22)}" fill="${P.d}"/>`;
+    const bc = k === 'hedgehog' ? P.c : bodyCol;
+    body += `<ellipse cx="50" cy="74" rx="21" ry="19" fill="${bc}"/>`;
+    if (k === 'panda') body += `<ellipse cx="31" cy="72" rx="7" ry="11" fill="${P.d}" transform="rotate(20 31 72)"/><ellipse cx="69" cy="72" rx="7" ry="11" fill="${P.d}" transform="rotate(-20 69 72)"/><ellipse cx="40" cy="92" rx="8" ry="5" fill="${P.d}"/><ellipse cx="60" cy="92" rx="8" ry="5" fill="${P.d}"/>`;
+    else {
+      body += `<ellipse cx="50" cy="78" rx="12" ry="11" fill="${k === 'hedgehog' ? P.m : P.m}" opacity="${k === 'moose' || k === 'bear' ? .55 : .9}"/>`;
+      body += `<ellipse cx="40" cy="92" rx="7" ry="4.5" fill="${k === 'hedgehog' ? '#8a6248' : P.d}"/><ellipse cx="60" cy="92" rx="7" ry="4.5" fill="${k === 'hedgehog' ? '#8a6248' : P.d}"/>`;
+    }
+  }
+  // 耳朵、角、刺（在头后面）
+  const hx = 50, hy = k === 'rooster' ? 40 : 44, hr = k === 'rooster' ? 17 : 21;
+  if (k === 'moose') {
+    const ant = (m) => `<path transform="${m}" d="M38 30 C30 30 20 24 18 12 C22 15 24 15 25 9 C28 15 30 14 31 8 C34 14 36 13 38 9 C40 17 41 24 42 28Z" fill="#e8cf9a"/>`;
+    back += ant('') + ant('translate(100 0) scale(-1 1)');
+    back += `<ellipse cx="27" cy="38" rx="8" ry="4.5" fill="${P.d}" transform="rotate(-25 27 38)"/><ellipse cx="73" cy="38" rx="8" ry="4.5" fill="${P.d}" transform="rotate(25 73 38)"/>`;
+  }
+  if (k === 'panda') back += `<circle cx="33" cy="27" r="7.5" fill="${P.d}"/><circle cx="67" cy="27" r="7.5" fill="${P.d}"/>`;
+  if (k === 'bear') back += `<circle cx="33" cy="27" r="7.5" fill="${P.c}"/><circle cx="67" cy="27" r="7.5" fill="${P.c}"/><circle cx="33" cy="27" r="4" fill="${P.m}"/><circle cx="67" cy="27" r="4" fill="${P.m}"/>`;
+  if (k === 'shiba' || k === 'cat') back += `<path d="M30 36 L33 16 L46 28Z" fill="${P.c}"/><path d="M70 36 L67 16 L54 28Z" fill="${P.c}"/><path d="M33 31 L34.5 21 L41 27Z" fill="${k === 'shiba' ? P.m : '#f4c4bd'}"/><path d="M67 31 L65.5 21 L59 27Z" fill="${k === 'shiba' ? P.m : '#f4c4bd'}"/>`;
+  if (k === 'donkey') back += `<ellipse cx="32" cy="22" rx="7" ry="13" fill="${P.c}" transform="rotate(-34 32 22)"/><ellipse cx="68" cy="22" rx="7" ry="13" fill="${P.c}" transform="rotate(34 68 22)"/><ellipse cx="32" cy="22" rx="3.4" ry="8.5" fill="#eed8d0" transform="rotate(-34 32 22)"/><ellipse cx="68" cy="22" rx="3.4" ry="8.5" fill="#eed8d0" transform="rotate(34 68 22)"/>`;
+  if (k === 'hedgehog') back += `<path d="${spikes(50, 42, 27, 23, 16, -200, 20)}" fill="${P.d}"/>`;
+  if (k === 'rooster') back += `<path d="M40 26 Q38 16 44 18 Q44 10 50 14 Q53 8 57 14 Q63 12 60 22 Q64 24 58 27Z" fill="${P.m}"/>`;
+  // 头
+  face += `<circle cx="${hx}" cy="${hy}" r="${hr}" fill="${P.c}"/>`;
+  if (k === 'hedgehog') face += `<circle cx="${hx}" cy="${hy}" r="${hr}" fill="${P.c}"/><circle cx="36" cy="27" r="4" fill="#d9b48f"/><circle cx="64" cy="27" r="4" fill="#d9b48f"/>`;
+  if (k === 'shiba') face += `<path d="M30 48 Q30 66 50 66 Q70 66 70 48 Q64 40 58 46 Q50 52 42 46 Q36 40 30 48Z" fill="${P.m}"/><ellipse cx="41" cy="36" rx="3" ry="2" fill="${P.m}"/><ellipse cx="59" cy="36" rx="3" ry="2" fill="${P.m}"/>`;
+  if (k === 'cat') face += `<path d="M40 30 l2 6 M50 26 v7 M60 30 l-2 6" stroke="${P.d}" stroke-width="2.2" stroke-linecap="round"/>`;
+  if (k === 'donkey') face += `<path d="M40 28 Q44 14 50 20 Q56 12 60 26 Q56 22 54 28 Q50 22 46 29 Q44 24 40 28Z" fill="${P.d}"/>`;
+  const muzzle = { moose: [50, 56, 13, 9.5], bear: [50, 53, 9, 7], donkey: [50, 57, 14, 10], cat: [50, 52, 7, 5] }[k];
+  if (muzzle) face += `<ellipse cx="${muzzle[0]}" cy="${muzzle[1]}" rx="${muzzle[2]}" ry="${muzzle[3]}" fill="${P.m}"/>`;
+  if (k === 'panda') face += `<ellipse cx="41" cy="45" rx="5.6" ry="7.4" fill="${P.d}" transform="rotate(25 41 45)"/><ellipse cx="59" cy="45" rx="5.6" ry="7.4" fill="${P.d}" transform="rotate(-25 59 45)"/>`;
+  // 眼睛
+  const ex = k === 'rooster' ? 7 : 8, ey = k === 'rooster' ? hy - 2 : hy - (k === 'moose' ? 4 : 0);
+  if (o.sleep) face += `<path d="M${hx - ex - 3} ${ey} q3 3 6 0 M${hx + ex - 3} ${ey} q3 3 6 0" stroke="${k === 'panda' || k === 'rooster' ? '#fff' : ink}" stroke-width="2.2" fill="none" stroke-linecap="round"/>`;
+  else {
+    const eyeC = k === 'rooster' ? '#fff' : (k === 'panda' ? '#fff' : ink);
+    if (k === 'rooster') face += `<circle cx="${hx - ex}" cy="${ey}" r="3.6" fill="#fff"/><circle cx="${hx + ex}" cy="${ey}" r="3.6" fill="#fff"/>`;
+    face += `<circle cx="${hx - ex}" cy="${ey}" r="2.7" fill="${k === 'rooster' ? ink : eyeC}"/><circle cx="${hx + ex}" cy="${ey}" r="2.7" fill="${k === 'rooster' ? ink : eyeC}"/>`;
+    if (k === 'panda') face += `<circle cx="${hx - ex}" cy="${ey}" r="1.4" fill="${ink}"/><circle cx="${hx + ex}" cy="${ey}" r="1.4" fill="${ink}"/>`;
+    else if (k !== 'rooster') face += `<circle cx="${hx - ex + 0.9}" cy="${ey - 0.9}" r=".9" fill="#fff"/><circle cx="${hx + ex + 0.9}" cy="${ey - 0.9}" r=".9" fill="#fff"/>`;
+  }
+  // 鼻子和嘴
+  if (k === 'rooster') face += `<path d="M46 ${hy + 3} L54 ${hy + 3} L50 ${hy + 10}Z" fill="#f2b84b"/><path d="M48 ${hy + 9} Q50 ${hy + 18} 53 ${hy + 9}Z" fill="${P.m}"/>`;
+  else if (k === 'moose') face += `<ellipse cx="45" cy="55" rx="1.6" ry="2.2" fill="${P.d}"/><ellipse cx="55" cy="55" rx="1.6" ry="2.2" fill="${P.d}"/><path d="M46 61 q4 3 8 0" stroke="${P.d}" stroke-width="1.8" fill="none" stroke-linecap="round"/>`;
+  else if (k === 'donkey') face += `<ellipse cx="45" cy="55" rx="1.6" ry="2" fill="${P.d}"/><ellipse cx="55" cy="55" rx="1.6" ry="2" fill="${P.d}"/><path d="M46 60 q4 3 8 0" stroke="${P.d}" stroke-width="1.8" fill="none" stroke-linecap="round"/>`;
+  else {
+    const ny = k === 'hedgehog' ? 51 : (k === 'bear' ? 50 : 50);
+    face += `<ellipse cx="50" cy="${ny}" rx="${k === 'hedgehog' ? 3.4 : 2.8}" ry="2.2" fill="${k === 'panda' ? P.d : ink}"/><path d="M47 ${ny + 4} q3 2.5 3 -0.5 q0 3 3 0.5" stroke="${k === 'panda' ? P.d : ink}" stroke-width="1.5" fill="none" stroke-linecap="round"/>`;
+  }
+  if (k === 'cat') face += `<path d="M30 50 h8 M30 54 l8 -1.5 M70 50 h-8 M70 54 l-8 -1.5" stroke="${P.d}" stroke-width="1.2" stroke-linecap="round"/>`;
+  if (k !== 'rooster') face += `<ellipse cx="36" cy="52" rx="3.6" ry="2.3" fill="#f4a7a0" opacity=".65"/><ellipse cx="64" cy="52" rx="3.6" ry="2.3" fill="#f4a7a0" opacity=".65"/>`;
+  // 旅行包
+  if (o.bag) front += `<path d="M36 58 L68 86" stroke="#b5533f" stroke-width="3.2" stroke-linecap="round"/><rect x="58" y="76" width="20" height="16" rx="4" fill="#e5876b"/><path d="M58 82 h20" stroke="#cf6f55" stroke-width="2"/><circle cx="68" cy="83" r="1.6" fill="#f5cf47"/>`;
+  if (o.sleep) front += `<text x="74" y="22" font-family="Nunito, sans-serif" font-weight="900" font-size="12" fill="#a08a78">z</text><text x="82" y="13" font-family="Nunito, sans-serif" font-weight="900" font-size="9" fill="#a08a78">z</text>`;
+  return back + body + face + front;
+}
+function spikes(cx, cy, rx, ry, n, a0 = 0, a1 = 360) {
+  let d = '';
+  for (let i = 0; i <= n * 2; i++) {
+    const a = (a0 + (a1 - a0) * i / (n * 2)) * Math.PI / 180, r = i % 2 ? 1.18 : 0.92;
+    d += (i ? 'L' : 'M') + (cx + Math.cos(a) * rx * r).toFixed(1) + ' ' + (cy + Math.sin(a) * ry * r).toFixed(1);
+  }
+  return d + 'Z';
+}
+const petTag = (id, o) => `<svg viewBox="0 0 100 100" aria-hidden="true">${petSvg(id, o)}</svg>`;
+/* 家：小屋里的房间 */
+function homeScene(id, sleep) {
+  return `<svg viewBox="0 0 160 120" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+    <rect width="160" height="120" fill="#fbe8c8"/><rect y="84" width="160" height="36" fill="#e8c9a2"/><rect y="82" width="160" height="4" fill="#d8b38a"/>
+    <rect x="18" y="18" width="40" height="34" rx="4" fill="#fff"/><rect x="21" y="21" width="34" height="28" rx="2" fill="#d6edf3"/><path d="M21 42 Q34 34 55 40 V49 H21Z" fill="#bcdcae"/><path d="M38 21 v28 M21 35 h34" stroke="#fff" stroke-width="2"/>
+    <circle cx="47" cy="28" r="4" fill="#ffe08a"/>
+    <rect x="112" y="40" width="26" height="4" rx="2" fill="#c08b60"/><rect x="116" y="30" width="6" height="10" rx="1.5" fill="#7fa8d1"/><rect x="124" y="27" width="5" height="13" rx="1.5" fill="#e5876b"/><rect x="131" y="32" width="5" height="8" rx="1.5" fill="#9cc5a1"/>
+    <path d="M128 84 h14 l-2 -14 h-10z" fill="#c8524a"/><circle cx="135" cy="62" r="9" fill="#7cb26a"/><circle cx="129" cy="58" r="6" fill="#9cc98a"/><circle cx="141" cy="57" r="5" fill="#8cc17a"/>
+    <ellipse cx="80" cy="101" rx="46" ry="9" fill="#e5876b" opacity=".35"/><ellipse cx="80" cy="101" rx="34" ry="6" fill="#f4a7a0" opacity=".45"/>
+    <g transform="translate(52 50) scale(.56)">${petSvg(id, { sleep })}</g></svg>`;
+}
+
+/* ================= 角色（原创扁平头像） ================= */
+function avatar(c, cls = '') {
+  const skin = c.skin || '#f6cfae', hair = c.hair, hat = c.hat || hair, ink = '#4a3a30';
+  let back = '', front = '';
+  if (c.style === 'long') back = `<path d="M15 30 Q15 12 32 12 Q49 12 49 30 V52 Q45 55 40 51 V32 H24 V51 Q19 55 15 52Z" fill="${hair}"/>`;
+  const top = `<path d="M18 30 Q17 13 32 13 Q47 13 46 30 Q43 21 37 20 Q30 24 21 22 Q19 25 18 30Z" fill="${hair}"/>`;
+  if (c.style === 'short' || c.style === 'long') front = top;
+  if (c.style === 'bun') front = `<circle cx="32" cy="11" r="6.5" fill="${hair}"/>` + top;
+  if (c.style === 'hat') front = `<path d="M18 27 Q18 21 22 20 V31Z M46 27 Q46 21 42 20 V31Z" fill="${hair}"/><ellipse cx="32" cy="20" rx="21" ry="4.5" fill="${hat}"/><path d="M21 20 Q22 6 32 6 Q42 6 43 20Z" fill="${hat}"/><rect x="21.5" y="15" width="21" height="3.2" fill="${c.band || '#e5876b'}"/>`;
+  if (c.style === 'beanie') front = `<path d="M18 28 V24 H22 V30Z M46 28 V24 H42 V30Z" fill="${hair}"/><path d="M17 25 Q17 8 32 8 Q47 8 47 25Z" fill="${hat}"/><rect x="16" y="22" width="32" height="6.5" rx="3.2" fill="${c.hatDark || hat}"/><circle cx="32" cy="7" r="4" fill="#fff"/>`;
+  let face = `<ellipse cx="26" cy="32" rx="1.9" ry="2.3" fill="${ink}"/><ellipse cx="38" cy="32" rx="1.9" ry="2.3" fill="${ink}"/>
+    <ellipse cx="22.5" cy="37" rx="3" ry="1.8" fill="#f4a7a0" opacity=".7"/><ellipse cx="41.5" cy="37" rx="3" ry="1.8" fill="#f4a7a0" opacity=".7"/>`;
+  if (c.beard) face += `<path d="M19 33 Q20 47 32 48 Q44 47 45 33 Q41 40 32 40 Q23 40 19 33Z" fill="${hair}"/><path d="M28.5 41.5 Q32 43.5 35.5 41.5" stroke="${ink}" stroke-width="1.6" fill="none" stroke-linecap="round"/>`;
+  else face += `<path d="M28.5 37.5 Q32 41 35.5 37.5" stroke="${ink}" stroke-width="1.8" fill="none" stroke-linecap="round"/>`;
+  if (c.glasses) face += `<g fill="none" stroke="${ink}" stroke-width="1.4"><circle cx="26" cy="32" r="4.6"/><circle cx="38" cy="32" r="4.6"/><path d="M30.6 32 h2.8"/></g>`;
+  const body = `<path d="M11 64 Q11 45 32 45 Q53 45 53 64Z" fill="${c.clothes}"/>` +
+    (c.apron ? `<path d="M23 64 V50 H41 V64Z" fill="#fff"/><path d="M24 50 L22 46M40 50 L42 46" stroke="#fff" stroke-width="2"/>` : `<path d="M27 45.5 L32 51 L37 45.5" fill="${skin}"/>`);
+  return `<svg class="av ${cls}" viewBox="0 0 64 64" aria-hidden="true"><g><rect width="64" height="64" fill="${c.bg || '#f4e6d6'}"/>${back}${body}<rect x="27.5" y="38" width="9" height="9" rx="3" fill="${skin}"/>
+    <circle cx="17.5" cy="32" r="3.4" fill="${skin}"/><circle cx="46.5" cy="32" r="3.4" fill="${skin}"/><circle cx="32" cy="30" r="14.5" fill="${skin}"/>${face}${front}</g></svg>`;
+}
+
+const PLAYER = { style: 'hat', hair: '#5a3d2b', hat: '#f2d38a', band: '#7fa8d1', clothes: '#e5876b', bg: '#fbe3da', voice: 'rounded' };
+const CHARS = {
+  baker:     { title: { zh: '店员', en: 'Server' }, hint: 'cafes, bakeries, restaurants, food', style: 'long', hair: '#d0844a', clothes: '#e5876b', apron: true, bg: '#fbe8c8', voice: 'airy' },
+  neighbor:  { title: { zh: '邻居', en: 'Neighbour' }, hint: 'neighbours, small talk, daily life, celebrations', style: 'hat', hair: '#8a6a4a', hat: '#f2d38a', clothes: '#7cb26a', beard: true, skin: '#eebd96', bg: '#dcefd2', voice: 'buttery' },
+  doctor:    { title: { zh: '医生', en: 'Doctor' }, hint: 'doctors, clinics, health', style: 'bun', hair: '#3b3348', clothes: '#7fb7b0', glasses: true, skin: '#dba882', bg: '#d6ecea', voice: 'glassy' },
+  shop:      { title: { zh: '店员', en: 'Shop assistant' }, hint: 'shops, markets, furniture, customer service', style: 'beanie', hair: '#5a4636', hat: '#e5876b', hatDark: '#cf6f55', clothes: '#7fa8d1', bg: '#dceaf5', voice: 'buttery' },
+  colleague: { title: { zh: '职员', en: 'Clerk' }, hint: 'job interviews, offices, paperwork, banks', style: 'short', hair: '#4a3a6a', clothes: '#4f6f9a', glasses: true, skin: '#f0c39b', bg: '#e3e0f0', voice: 'rounded' },
+  granny:    { title: { zh: '楼里的奶奶', en: 'Granny next door' }, hint: 'housing, laundry rooms, building rules', style: 'bun', hair: '#d9d6df', clothes: '#b48ac8', glasses: true, skin: '#f1c7a5', bg: '#efe2f3', voice: 'airy' },
+  guide:     { title: { zh: '路人', en: 'Local' }, hint: 'transport, directions, travel, outdoors', style: 'beanie', hair: '#b0643a', hat: '#f2c27b', hatDark: '#dfa957', clothes: '#5aa69c', beard: true, skin: '#e6b48a', bg: '#fbefd0', voice: 'buttery' },
+};
+
+/* ================= 场景类型 ================= */
+const TYPES = {
+  mat:    { art: 'mat', name: { zh: '超市购物', en: 'Grocery shopping' }, npc: 'shop', prompt: 'grocery shopping: asking where things are and paying at the checkout' },
+  tbana:  { art: 'tbana', name: { zh: '坐地铁问路', en: 'Tickets & directions' }, npc: 'guide', prompt: 'buying a ticket and asking for directions on public transport' },
+  cafe:   { art: 'cafe', name: { zh: '咖啡店点单', en: 'Ordering at a café' }, npc: 'baker', prompt: 'ordering coffee and pastries at a café' },
+  resto:  { art: 'cafe', name: { zh: '餐厅点餐', en: 'Eating out' }, npc: 'baker', prompt: 'ordering food at a restaurant and asking about the menu' },
+  granne: { art: 'granne', name: { zh: '和邻居聊天', en: 'Chatting with a neighbour' }, npc: 'neighbor', prompt: 'small talk with a neighbour about the weather and the weekend' },
+  vard:   { art: 'vard', name: { zh: '看医生', en: 'Seeing a doctor' }, npc: 'doctor', prompt: 'seeing a doctor because of a bad cold' },
+  mobel:  { art: 'mobel', name: { zh: '家具店购物', en: 'Furniture shopping' }, npc: 'shop', prompt: 'shopping at a big furniture store: asking about products, delivery and returns' },
+  tvatt:  { art: 'tvatt', name: { zh: '洗衣房', en: 'Laundry room' }, npc: 'granny', prompt: 'a small disagreement about booked times in a shared laundry room' },
+  jobb:   { art: 'jobb', name: { zh: '工作面试', en: 'Job interview' }, npc: 'colleague', prompt: 'a job interview at a local company' },
+  office: { art: 'custom', name: { zh: '办手续', en: 'Paperwork' }, npc: 'colleague', prompt: 'handling paperwork at a public office' },
+  fest:   { art: 'fest', name: { zh: '节日', en: 'Festival' }, npc: 'neighbor', prompt: 'celebrating a local festival with friends' },
+};
+
+/* ================= 学习语言与城市 ================= */
+const LANGS = {
+  sv: {
+    flag: '🇸🇪', name: { zh: '瑞典语', en: 'Swedish' }, native: 'Svenska', english: 'Swedish', city: { zh: '斯德哥尔摩', en: 'Stockholm' }, cityNative: 'Stockholm', locale: 'sv-SE', tts: 'sv',
+    seasons: ['Vinter', 'Vår', 'Sommar', 'Höst'], fillers: 'liksom, ju, väl, precis, alltså, faktiskt', kw: 'påtår, kanelbulle',
+    customPh: { zh: '例如：和房东讨论修理', en: 'e.g. asking the landlord about repairs' },
+    answerPh: 'Skriv eller säg ditt svar på svenska…', levelBasic: 'SFI C/D level: clear, careful grammar and common vocabulary',
+    names: { baker: 'Astrid', neighbor: 'Olle', doctor: 'Maja', shop: 'Gunnar', colleague: 'Frida', granny: 'Greta', guide: 'Bosse' },
+    topics: [
+      ['Berätta om din favoritplats i Sverige.', '说说你在瑞典最喜欢的地方', 'Your favourite place in Sweden'],
+      ['Vad tycker du om det svenska vädret?', '你觉得瑞典的天气怎么样？', 'What do you think of the Swedish weather?'],
+      ['Hur firar man en perfekt midsommar?', '如何庆祝一个完美的仲夏节？', 'How do you celebrate the perfect midsummer?'],
+      ['Beskriv din morgonrutin.', '描述你的早晨例行公事', 'Describe your morning routine.'],
+      ['Vad är din favoriträtt i det svenska köket?', '你最喜欢的瑞典菜是什么？', 'Your favourite Swedish dish?'],
+      ["Vad betyder 'lagom' för dig?", "'lagom' 对你意味着什么？", "What does 'lagom' mean to you?"],
+      ['Hur ser en typisk lördag ut för dig?', '你典型的周六是怎么度过的？', 'What does a typical Saturday look like for you?'],
+      ['Vad är det svåraste med att lära sig svenska?', '学瑞典语最难的是什么？', 'The hardest thing about learning Swedish?'],
+      ['Hur hanterar du mörkret på vintern?', '你是如何应对冬天的黑暗的？', 'How do you cope with the winter darkness?'],
+      ["Vad är 'fika' för dig?", "对你来说 'fika' 是什么？", "What does 'fika' mean to you?"],
+    ],
+  },
+  en: {
+    flag: '🇬🇧', name: { zh: '英语', en: 'English' }, native: 'English', english: 'British English', city: { zh: '伦敦', en: 'London' }, cityNative: 'London', locale: 'en-GB', tts: 'en',
+    seasons: ['Winter', 'Spring', 'Summer', 'Autumn'], fillers: 'you know, actually, I mean, sort of, right', kw: 'cheers, queue',
+    customPh: { zh: '例如：和房东讨论修理', en: 'e.g. asking the landlord about repairs' },
+    answerPh: 'Write or say your answer in English…', levelBasic: 'Intermediate (B1): clear grammar and common vocabulary',
+    names: { baker: 'Emma', neighbor: 'Tom', doctor: 'Dr Patel', shop: 'Sam', colleague: 'Olivia', granny: 'Margaret', guide: 'Jack' },
+    topics: [
+      ['Tell me about your favourite place in your city.', '说说你最喜欢的城市角落'], ['What did you do last weekend?', '你上周末做了什么？'],
+      ['Describe your morning routine.', '描述你的早晨'], ['What is your dream job, and why?', '你的梦想工作是什么？为什么？'],
+      ['What is the hardest thing about learning English?', '学英语最难的是什么？'], ['Tell me about a trip you have taken.', '说说你的一次旅行'],
+      ['What do you like to cook?', '你喜欢做什么菜？'], ['How do you relax after a long day?', '忙碌一天后你怎么放松？'],
+    ],
+  },
+  fr: {
+    flag: '🇫🇷', name: { zh: '法语', en: 'French' }, native: 'Français', english: 'French (France)', city: { zh: '巴黎', en: 'Paris' }, cityNative: 'Paris', locale: 'fr-FR', tts: 'fr',
+    seasons: ['Hiver', 'Printemps', 'Été', 'Automne'], fillers: 'bah, du coup, en fait, euh, quoi', kw: "un café, s'il vous plaît",
+    customPh: { zh: '例如：和房东讨论修理', en: 'e.g. asking the landlord about repairs' },
+    answerPh: 'Écris ou dis ta réponse en français…', levelBasic: 'A2–B1: clear grammar and common vocabulary; tu with peers, vous with staff',
+    names: { baker: 'Camille', neighbor: 'Pierre', doctor: 'Dr Martin', shop: 'Hugo', colleague: 'Léa', granny: 'Mme Dubois', guide: 'Lucas' },
+    water: 'M0 296 C70 286 120 312 190 302 S300 288 360 304 V320 C300 306 240 326 180 318 S70 304 0 312Z',
+    topics: [
+      ['Parle-moi de ton quartier.', '说说你住的街区', 'Tell me about your neighbourhood.'], ['Qu’est-ce que tu as fait le week-end dernier ?', '你上周末做了什么？', 'What did you do last weekend?'],
+      ['Quel est ton plat préféré ?', '你最喜欢的菜是什么？', 'What is your favourite dish?'], ['Décris ta routine du matin.', '描述你的早晨', 'Describe your morning routine.'],
+      ['Pourquoi est-ce que tu apprends le français ?', '你为什么学法语？', 'Why are you learning French?'], ['Quel est le travail de tes rêves ?', '你的梦想工作是什么？', 'What is your dream job?'],
+      ['Raconte-moi un voyage que tu as fait.', '说说你的一次旅行', 'Tell me about a trip you took.'], ['Comment est-ce que tu te détends après une longue journée ?', '忙碌一天后你怎么放松？', 'How do you relax after a long day?'],
+    ],
+  },
+  de: {
+    flag: '🇩🇪', name: { zh: '德语', en: 'German' }, native: 'Deutsch', english: 'German', city: { zh: '柏林', en: 'Berlin' }, cityNative: 'Berlin', locale: 'de-DE', tts: 'de',
+    seasons: ['Winter', 'Frühling', 'Sommer', 'Herbst'], fillers: 'also, halt, eben, ja, na ja, genau', kw: 'bitte, Tschüss',
+    customPh: { zh: '例如：和房东讨论修理', en: 'e.g. asking the landlord about repairs' },
+    answerPh: 'Schreib oder sag deine Antwort auf Deutsch…', levelBasic: 'A2–B1: clear grammar and common vocabulary; du with peers, Sie with staff',
+    names: { baker: 'Lena', neighbor: 'Jonas', doctor: 'Dr. Weber', shop: 'Tim', colleague: 'Anna', granny: 'Frau Schulz', guide: 'Max' },
+    water: 'M0 206 C70 198 130 216 190 208 S300 196 360 210 V224 C300 212 240 230 180 222 S70 214 0 220Z',
+    topics: [
+      ['Erzähl mir von deinem Kiez.', '说说你住的街区', 'Tell me about your neighbourhood.'], ['Was hast du letztes Wochenende gemacht?', '你上周末做了什么？', 'What did you do last weekend?'],
+      ['Was ist dein Lieblingsessen?', '你最喜欢吃什么？', 'What is your favourite food?'], ['Beschreib deine Morgenroutine.', '描述你的早晨', 'Describe your morning routine.'],
+      ['Warum lernst du Deutsch?', '你为什么学德语？', 'Why are you learning German?'], ['Was ist dein Traumjob?', '你的梦想工作是什么？', 'What is your dream job?'],
+      ['Erzähl von einer Reise, die du gemacht hast.', '说说你的一次旅行', 'Tell me about a trip you took.'], ['Wie entspannst du dich nach einem langen Tag?', '忙碌一天后你怎么放松？', 'How do you relax after a long day?'],
+    ],
+  },
+  es: {
+    flag: '🇪🇸', name: { zh: '西班牙语', en: 'Spanish' }, native: 'Español', english: 'Spanish (Spain)', city: { zh: '巴塞罗那', en: 'Barcelona' }, cityNative: 'Barcelona', locale: 'es-ES', tts: 'es',
+    seasons: ['Invierno', 'Primavera', 'Verano', 'Otoño'], fillers: 'pues, bueno, o sea, vale, oye, es que', kw: 'vale, la cuenta',
+    customPh: { zh: '例如：和房东讨论修理', en: 'e.g. asking the landlord about repairs' },
+    answerPh: 'Escribe o di tu respuesta en español…', levelBasic: 'A2–B1, Spanish from Spain: clear grammar and common vocabulary',
+    names: { baker: 'Lucía', neighbor: 'Jordi', doctor: 'Dra. García', shop: 'Pau', colleague: 'Marta', granny: 'Doña Carmen', guide: 'Marc' },
+    water: 'M240 430 Q290 382 360 388 V430Z',
+    topics: [
+      ['Háblame de tu barrio.', '说说你住的街区', 'Tell me about your neighbourhood.'], ['¿Qué hiciste el fin de semana pasado?', '你上周末做了什么？', 'What did you do last weekend?'],
+      ['¿Cuál es tu comida favorita?', '你最喜欢吃什么？', 'What is your favourite food?'], ['Describe tu rutina de la mañana.', '描述你的早晨', 'Describe your morning routine.'],
+      ['¿Por qué aprendes español?', '你为什么学西班牙语？', 'Why are you learning Spanish?'], ['¿Cuál es el trabajo de tus sueños?', '你的梦想工作是什么？', 'What is your dream job?'],
+      ['Cuéntame un viaje que hayas hecho.', '说说你的一次旅行', 'Tell me about a trip you took.'], ['¿Cómo te relajas después de un día largo?', '忙碌一天后你怎么放松？', 'How do you relax after a long day?'],
+    ],
+  },
+  pt: {
+    flag: '🇵🇹', name: { zh: '葡萄牙语', en: 'Portuguese' }, native: 'Português', english: 'European Portuguese (Portugal)', city: { zh: '里斯本', en: 'Lisbon' }, cityNative: 'Lisboa', locale: 'pt-PT', tts: 'pt-PT',
+    seasons: ['Inverno', 'Primavera', 'Verão', 'Outono'], fillers: 'pois, então, olha, tipo, sabes', kw: 'obrigado, a conta',
+    customPh: { zh: '例如：和房东讨论修理', en: 'e.g. asking the landlord about repairs' },
+    answerPh: 'Escreve ou diz a tua resposta em português…', levelBasic: 'A2–B1, European Portuguese: clear grammar and common vocabulary',
+    names: { baker: 'Inês', neighbor: 'João', doctor: 'Dra. Sousa', shop: 'Tiago', colleague: 'Mariana', granny: 'Dona Rosa', guide: 'Rui' },
+    topics: [
+      ['Fala-me do teu bairro.', '说说你住的街区', 'Tell me about your neighbourhood.'], ['O que fizeste no fim de semana passado?', '你上周末做了什么？', 'What did you do last weekend?'],
+      ['Qual é a tua comida preferida?', '你最喜欢吃什么？', 'What is your favourite food?'], ['Descreve a tua rotina da manhã.', '描述你的早晨', 'Describe your morning routine.'],
+      ['Porque é que estás a aprender português?', '你为什么学葡萄牙语？', 'Why are you learning Portuguese?'], ['Qual é o emprego dos teus sonhos?', '你的梦想工作是什么？', 'What is your dream job?'],
+      ['Conta-me uma viagem que fizeste.', '说说你的一次旅行', 'Tell me about a trip you took.'], ['Como é que relaxas depois de um dia longo?', '忙碌一天后你怎么放松？', 'How do you relax after a long day?'],
+    ],
+  },
+  ja: {
+    flag: '🇯🇵', name: { zh: '日语', en: 'Japanese' }, native: '日本語', english: 'Japanese', city: { zh: '东京', en: 'Tokyo' }, cityNative: '東京', locale: 'ja-JP', tts: 'ja',
+    seasons: ['冬', '春', '夏', '秋'], fillers: 'えっと, なんか, ちょっと, やっぱり, そうですね', kw: 'すみません, お願いします',
+    customPh: { zh: '例如：在药妆店买药', en: 'e.g. buying medicine at a drugstore' },
+    answerPh: '日本語で答えを書くか、話してください…', levelBasic: 'Beginner (JLPT N4–N3): polite です/ます form, common vocabulary', reading: true, readingName: 'romaji', vocabReading: 'kana',
+    names: { baker: 'さくら', neighbor: '田中さん', doctor: '山本先生', shop: '佐藤さん', colleague: '鈴木さん', granny: '春子さん', guide: '健太' },
+    topics: [
+      ['週末はいつも何をしていますか。', '你周末通常做什么？', 'What do you usually do at weekends?'], ['好きな日本の食べ物は何ですか。', '你喜欢什么日本料理？', 'What Japanese food do you like?'],
+      ['あなたの町について教えてください。', '介绍一下你住的城市', 'Tell me about your town.'], ['どうして日本語を勉強していますか。', '你为什么学日语？', 'Why are you learning Japanese?'],
+      ['朝のルーティンを説明してください。', '描述你的早晨', 'Describe your morning routine.'], ['夢の仕事は何ですか。', '你的梦想工作是什么？', 'What is your dream job?'],
+      ['最近の旅行について話してください。', '说说最近的一次旅行', 'Tell me about a recent trip.'], ['ストレスがたまった時、どうしますか。', '压力大的时候你会怎么做？', 'What do you do when you are stressed?'],
+    ],
+  },
+  zh: {
+    flag: '🇨🇳', name: { zh: '中文', en: 'Chinese' }, native: '普通话', english: 'Mandarin Chinese', city: { zh: '上海', en: 'Shanghai' }, cityNative: '上海', locale: 'zh-CN', tts: 'zh',
+    seasons: ['冬', '春', '夏', '秋'], fillers: '那个, 就是, 然后, 对吧, 其实, 嗯', kw: '麻烦你, 不好意思',
+    customPh: { zh: '例如：在快递站取包裹', en: 'e.g. picking up a parcel at the delivery station' },
+    answerPh: '用中文写下或说出你的回答…', levelBasic: 'Intermediate (HSK 3–4): simplified characters, clear grammar and common vocabulary', reading: true,
+    readingName: 'Hanyu Pinyin with tone marks', vocabReading: 'pinyin',
+    names: { baker: '小雨', neighbor: '李叔叔', doctor: '陈医生', shop: '王老板', colleague: '刘婷', granny: '张阿婆', guide: '阿强' }, stations: {},
+    topics: [
+      ['你周末一般做什么？', '你周末通常做什么？', 'What do you usually do at weekends?'], ['你最喜欢吃什么中国菜？', '你最喜欢什么中国菜？', 'What is your favourite Chinese food?'],
+      ['介绍一下你住的城市吧。', '介绍一下你住的城市', 'Tell me about your town.'], ['你为什么学中文？', '你为什么学中文？', 'Why are you learning Chinese?'],
+      ['说说你早上一般怎么过。', '描述你的早晨', 'Describe your morning routine.'], ['你理想的工作是什么？', '你的梦想工作是什么？', 'What is your dream job?'],
+      ['讲讲你最近的一次旅行。', '说说最近的一次旅行', 'Tell me about a recent trip.'], ['压力大的时候你会怎么做？', '压力大的时候你会怎么做？', 'What do you do when you are stressed?'],
+    ],
+  },
+};
+const LEVELS = [
+  { id: 'basic', label: { zh: '基础', en: 'Basic' } },
+  { id: 'work', label: { zh: '职场', en: 'Work' }, prompt: 'Professional: clear, polite workplace language' },
+  { id: 'casual', label: { zh: '口语', en: 'Casual' }, prompt: 'Casual: natural everyday spoken language' },
+];
+const ICON = {
+  play: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5.5v13a1 1 0 001.5.9l10-6.5a1 1 0 000-1.7l-10-6.5A1 1 0 008 5.5z"/></svg>',
+  stop: '<svg viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="6" width="12" height="12" rx="2.5"/></svg>',
+  mic: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><rect x="9" y="3" width="6" height="12" rx="3"/><path d="M5 11a7 7 0 0014 0M12 18v3"/></svg>',
+};
+
+/* ================= 状态 ================= */
+const WEB = !(window.claude && window.claude.use);   // 独立部署（非 claude.ai）
+let sample = null, tts = null, dict = null, playingId = null;
+let langId = LANGS[store.get('sk-lang', 'sv')] ? store.get('sk-lang', 'sv') : 'sv';
+if (langId === SPEAK) langId = Object.keys(LANGS).find((k) => k !== SPEAK);
+let L = LANGS[langId];
+let progress = store.get('sk-progress2', {});
+const STYLES = [
+  { id: 'patient', label: { zh: '耐心慢速', en: 'Patient & slow' }, desc: { zh: '句子短，说得慢', en: 'Short sentences, slow' }, rate: 0.8,
+    prompt: 'The other speaker is patient and kind: short, simple sentences, speaks slowly and clearly, and now and then rephrases or checks that the learner understood.' },
+  { id: 'normal', label: { zh: '正常语速', en: 'Natural pace' }, desc: { zh: '自然的日常对话', en: 'Everyday conversation' }, rate: 1,
+    prompt: 'The other speaker talks at a natural everyday pace, friendly, with normal sentence length.' },
+  { id: 'fast', label: { zh: '快而随意', en: 'Fast & casual' }, desc: { zh: '口语多、会省略', en: 'Slang, dropped words' }, rate: 1.12,
+    prompt: 'The other speaker is quick and casual: colloquial expressions and contractions that locals really use, informal shortcuts and some dropped words, so the learner has to keep up. Explain the colloquial expressions in the vocabulary.' },
+  { id: 'tough', label: { zh: '不太好说话', en: 'Hard to deal with' }, desc: { zh: '会拒绝、要你争取', en: 'Pushes back, you insist' }, rate: 1,
+    prompt: 'The other speaker is a bit impatient or unhelpful and at first refuses, disagrees or raises problems. The learner has to explain, politely insist and negotiate to get what they need, and finally reaches a realistic outcome. Keep it realistic, never rude or insulting. Include useful phrases for insisting politely in the vocabulary.' },
+];
+let opts = { level: store.get('sk-level', 'basic'), style: STYLES.some((x) => x.id === store.get('sk-style', 'normal')) ? store.get('sk-style', 'normal') : 'normal', keywords: '' };
+const styleOf = (id) => STYLES.find((x) => x.id === id) || STYLES[1];
+let topic = null, current = null, lastLesson = null, lastEval = null;
+const npcName = (id) => L.names[id] || id;
+const plain = (n) => n.replace(/\n/g, ' ');
+const feedbackLang = () => SPEAKS[SPEAK].fb;
+const PRESETS = ['cafe', 'vard', 'granne', 'jobb'];
+const IDEAS = {
+  zh: ['跟房东说热水器坏了，约时间来修', '在药店买感冒药，问怎么吃', '打电话预约理发', '和同事约周末一起爬山', '在餐厅说自己对坚果过敏', '退一件尺码不合适的衣服', '在健身房问怎么办会员卡', '跟快递员改送货时间'],
+  en: ['Telling my landlord the boiler is broken', 'Buying cold medicine at a pharmacy', 'Booking a haircut by phone', 'Inviting a colleague for a weekend hike', 'Telling a waiter about a nut allergy', 'Returning clothes that do not fit', 'Asking about a gym membership', 'Rescheduling a parcel delivery'],
+};
+let mine = store.get('sk-mine', {});
+const presetInfo = (ty) => ({ id: langId + ':p:' + ty, title: loc(TYPES[ty].name), prompt: TYPES[ty].prompt, art: TYPES[ty].art, npc: TYPES[ty].npc });
+let scenes = store.get('sk-scenes', {});
+let titleMap = store.get('sk-titles', {});
+const titleOf = (text) => (text && titleMap[text] && titleMap[text][UI]) || text;
+function saveTitles(text, tt) {
+  if (!text || !tt || typeof tt !== 'object') return;
+  const cur = titleMap[text] || {};
+  ['zh', 'en'].forEach((k) => { if (tt[k]) cur[k] = String(tt[k]).slice(0, 80); });
+  titleMap[text] = cur; store.set('sk-titles', titleMap);
+}
+let translating = false;
+async function ensureTitles() {
+  if (!sample || translating) return;
+  const need = new Set();
+  Object.values(diary).forEach((book) => Object.values(book).forEach((list) => list.forEach((e) => { if (e.custom && !(titleMap[e.custom] && titleMap[e.custom][UI])) need.add(e.custom); })));
+  Object.values(mine).forEach((list) => list.forEach((x) => { if (!(titleMap[x] && titleMap[x][UI])) need.add(x); }));
+  const items = [...need].slice(0, 40); if (!items.length) return;
+  translating = true;
+  try {
+    const r = await sample.json(
+`Translate each short scenario title below into ${UI === 'zh' ? 'Simplified Chinese' : 'English'}. Keep them short and natural, like a label. If one is already in that language, return it unchanged (you may tidy it slightly).
+${items.map((x, i) => `${i + 1}. ${x}`).join('\n')}
+Reply with ONLY valid JSON: {"titles":["...", "..."]} in the same order.`, { cache: false });
+    (r && Array.isArray(r.titles) ? r.titles : []).forEach((tt, i) => { if (items[i] && tt) saveTitles(items[i], { [UI]: tt }); });
+    renderHome(); if (cardKey) showCard(cardKey);
+  } catch {}
+  translating = false;
+}
+const customInfo = (text) => ({ id: langId + ':c:' + text, custom: text, title: titleOf(text), prompt: text, art: 'custom', npc: 'auto', svg: scenes[text] || null });
+const artFor = (st) => (st && st.svg) || artSvg(st ? st.art : 'custom');
+function cleanSvg(str) {
+  try {
+    if (!str || str.length > 14000) return null;
+    const doc = new DOMParser().parseFromString(String(str).trim(), 'image/svg+xml'), root = doc.documentElement;
+    if (root.nodeName !== 'svg' || doc.querySelector('parsererror')) return null;
+    const ok = new Set(['svg', 'g', 'rect', 'circle', 'ellipse', 'path', 'polygon', 'polyline', 'line', 'defs', 'linearGradient', 'radialGradient', 'stop']);
+    [...root.querySelectorAll('*')].forEach((el) => { if (!ok.has(el.nodeName)) el.remove(); });
+    [root, ...root.querySelectorAll('*')].forEach((el) => [...el.attributes].forEach((a) => { const n = a.name.toLowerCase(); if (n.startsWith('on') || n.includes('href') || n === 'style' || /url\(\s*['"]?(?!#)/i.test(a.value)) el.removeAttribute(a.name); }));
+    if (root.querySelectorAll('*').length < 4) return null;
+    root.setAttribute('viewBox', root.getAttribute('viewBox') || '0 0 120 100');
+    root.setAttribute('preserveAspectRatio', 'xMidYMid slice'); root.setAttribute('aria-hidden', 'true');
+    root.removeAttribute('width'); root.removeAttribute('height');
+    return new XMLSerializer().serializeToString(root);
+  } catch { return null; }
+}
+async function makeScene(st) {
+  const r = await sample.json(
+`Draw a small flat vector illustration that sets the scene for this everyday situation: "${st.prompt}" (everyday life in ${L.cityNative}).
+Style: a cosy flat illustration like in a journaling app. Soft warm pastel palette such as #f8f0e7 #fbe8c8 #d6edf3 #bcdcae #a8d08d #e5876b #f5cf47 #7fa8d1 #9cc5a1 #c8524a #c08b60 #8a6a52 #ffffff. Simple geometric shapes, no outlines.
+Show the place with a few telling objects. No text, letters, numbers, logos or flags. No detailed people: at most a simple silhouette without a face.
+Technical: one <svg> element with viewBox="0 0 120 100"; the background must fill the whole 120x100 canvas. Use only rect, circle, ellipse, path, polygon, polyline, line and g. 15 to 45 shapes, under 5000 characters, coordinates with at most one decimal.
+Reply with ONLY valid JSON: {"svg":"<svg ...>...</svg>"}`, { cache: false });
+  return cleanSvg(r && r.svg);
+}
+function saveScene(text, svg) {
+  scenes[text] = svg; const keys = Object.keys(scenes); if (keys.length > 24) delete scenes[keys[0]];
+  store.set('sk-scenes', scenes);
+}
+/* ================= 通用 ================= */
+function showError(msg) { $('#alert-text').textContent = msg; $('#alert').classList.remove('hidden'); window.scrollTo({ top: 0, behavior: 'smooth' }); }
+function clearError() { $('#alert').classList.add('hidden'); }
+$('#alert-x').onclick = clearError;
+function errText(e) {
+  const c = e && e.code;
+  if (!sample) return t('errNeedClaude');
+  return ({ no_key: t('errNoKey'), bad_key: t('errBadKey'), no_credit: t('errCredit'), rate_limited: t('errRate'), not_granted: t('errGrant'), unauthorized: t('errCode'), server: t('errServer'), offline: t('errOffline'), bad_output: t('errOutput') })[c] || t('errGeneric');
+}
+function setPlaying(id) {
+  playingId = id;
+  document.querySelectorAll('.speak').forEach((b) => { const on = b.dataset.id === id; b.classList.toggle('playing', on); b.innerHTML = on ? ICON.stop : ICON.play; });
+}
+const speakBtn = (id, text, voice) => `<button type="button" class="speak" data-id="${esc(id)}" data-text="${esc(text)}" data-voice="${esc(voice || '')}" aria-label="${esc(t('play'))}">${ICON.play}</button>`;
+async function speak(id, text, voice) {
+  if (playingId === id) { if (tts) tts.stop(); else if ('speechSynthesis' in window) speechSynthesis.cancel(); return setPlaying(null); }
+  setPlaying(id);
+  try {
+    if (tts) await tts.speak(text, voice ? { language: L.tts, voice } : { language: L.tts });
+    else if ('speechSynthesis' in window) {
+      speechSynthesis.cancel();
+      const u = new SpeechSynthesisUtterance(text); u.lang = L.locale; u.rate = lastLesson ? (styleOf(lastLesson.style).rate || 1) : 1;
+      const vs = speechSynthesis.getVoices(), lc = L.locale.toLowerCase(); const vv = vs.find((v) => (v.lang || '').toLowerCase().replace('_', '-') === lc) || vs.find((v) => (v.lang || '').toLowerCase().startsWith(lc.slice(0, 2))); if (vv) u.voice = vv;
+      u.onend = u.onerror = () => { if (playingId === id) setPlaying(null); }; speechSynthesis.speak(u); return;
+    }
+  } catch (e) { if (e && e.code === 'rate_limited') showError(t('errTTS')); }
+  if (playingId === id) setPlaying(null);
+}
+document.addEventListener('click', (e) => { const b = e.target.closest('.speak'); if (b) speak(b.dataset.id, b.dataset.text, b.dataset.voice); });
+
+function tickDate() {
+  const d = new Date(), q = [0, 0, 1, 1, 1, 2, 2, 2, 3, 3, 3, 0][d.getMonth()];
+  let txt; try { txt = new Intl.DateTimeFormat(L.locale, { weekday: 'short', day: 'numeric', month: 'short' }).format(d); } catch { txt = d.toDateString(); }
+  $('#date').textContent = `${txt} · ${L.seasons[q]}`;
+}
+setInterval(() => { tickDate(); const tk = todayKey(); if (window._lastTk && window._lastTk !== tk) renderCalendar(); window._lastTk = tk; }, 60000);
+
+/* ================= 导航 ================= */
+const VIEWS = ['dialogue', 'lab', 'settings'];
+function switchTab(v) {
+  VIEWS.forEach((x) => { $('#view-' + x).classList.toggle('hidden', x !== v); $('#tab-' + x).setAttribute('aria-selected', String(x === v)); });
+  clearError(); window.scrollTo(0, 0);
+  if (v === 'settings') renderSettings();
+}
+VIEWS.forEach((v) => $('#tab-' + v).onclick = () => switchTab(v));
+function showLesson(on) {
+  if (playingId) { if (tts) tts.stop(); else if ('speechSynthesis' in window) speechSynthesis.cancel(); setPlaying(null); }
+  $('#lesson-screen').classList.toggle('hidden', !on); syncModal();
+  if (!on && justArrived) { const k = justArrived; justArrived = null; renderCalendar(); showCard(k, true); }
+  if (on) { $('#lesson').scrollTop = 0; $('#back').focus({ preventScroll: true }); }
+}
+$('#lesson-screen').addEventListener('click', (e) => { if (e.target.id === 'lesson-screen') showLesson(false); });
+$('#back').onclick = () => showLesson(false);
+
+/* ================= 首页 ================= */
+function renderIdeas() {
+  const pool = IDEAS[UI].slice().sort(() => Math.random() - 0.5).slice(0, 3);
+  $('#ideas').innerHTML = `<span class="ideas-l">${esc(t('ideasLabel'))}</span>` + pool.map((x) => `<button type="button" class="chip" data-idea="${esc(x)}">${esc(x)}</button>`).join('');
+}
+$('#ideas').onclick = (e) => { const b = e.target.closest('[data-idea]'); if (!b) return; $('#custom-input').value = b.dataset.idea; $('#custom-go').disabled = false; $('#custom-input').focus(); };
+function renderPresets() {
+  $('#presets').innerHTML = PRESETS.map((ty) => { const st = presetInfo(ty), n = progress[st.id] || 0;
+    return `<button type="button" class="preset" data-preset="${ty}"><span class="pa">${artSvg(st.art)}</span><span class="pt"><b>${esc(st.title)}</b><small>${n ? esc(t('count', n)) : '&nbsp;'}</small></span></button>`; }).join('');
+}
+$('#presets').onclick = (e) => { const b = e.target.closest('[data-preset]'); if (b) openSheet(presetInfo(b.dataset.preset)); };
+function renderMine() {
+  const list = mine[langId] || [];
+  $('#mine-wrap').classList.toggle('hidden', !list.length);
+  $('#mine').innerHTML = list.map((x, i) => { const n = progress[langId + ':c:' + x] || 0;
+    return `<div class="mine-item"><button type="button" class="mine-go" data-mine="${i}"><span class="mi">${scenes[x] || artSvg('custom')}</span><span class="mt"><b>${esc(titleOf(x))}</b><small>${n ? esc(t('count', n)) : ''}</small></span></button><button type="button" class="mine-x" data-mine-x="${i}" aria-label="${esc(t('removeIt'))}">×</button></div>`; }).join('');
+}
+$('#mine').onclick = (e) => {
+  const x = e.target.closest('[data-mine-x]'), g = e.target.closest('[data-mine]'), list = mine[langId] || [];
+  if (x) { list.splice(+x.dataset.mineX, 1); mine[langId] = list; store.set('sk-mine', mine); renderMine(); return; }
+  if (g) openSheet(customInfo(list[+g.dataset.mine]));
+};
+function rememberMine(text) {
+  const list = (mine[langId] || []).filter((x) => x !== text); list.unshift(text); mine[langId] = list.slice(0, 12); store.set('sk-mine', mine);
+}
+/* ================= 日历 + 明信片 ================= */
+let diary = store.get('sk-diary', {});
+const dkey = (d) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+const todayKey = () => dkey(new Date());
+const keyDate = (k) => { const [y, m, d] = k.split('-').map(Number); return new Date(y, m - 1, d); };
+const shiftKey = (k, n) => { const d = keyDate(k); d.setDate(d.getDate() + n); return dkey(d); };
+let calIdx = {}, justArrived = null;
+const dayEntries = (k) => ((diary[langId] || {})[k] || []);
+function saveDiary() {
+  const book = diary[langId] || {}, keys = Object.keys(book).sort();
+  while (keys.length > 120) delete book[keys.shift()];
+  try { store.set('sk-diary', diary); } catch {}
+}
+function addPostcard(st, lesson) {
+  const book = diary[langId] = diary[langId] || {}, k = todayKey();
+  const first = (lesson.dialogue || []).find((x) => String(x.role || '').toUpperCase() !== 'ME') || (lesson.dialogue || [])[0] || {};
+  const e = { title: st.title, ty: (st.id || '').split(':p:')[1] || null, art: st.art, svg: st.svg || null, custom: st.custom || null, id: st.id, npc: st.npc, line: first.text || '', tr: first.translation || '', lesson };
+  (book[k] = book[k] || []).push(e); calIdx[k] = book[k].length - 1; saveDiary();
+  return e;
+}
+const petName = () => loc(PETS[langId].name);
+const cardTitle = (e) => {
+  const ty = e.ty || Object.keys(TYPES).find((k) => TYPES[k].name.zh === e.title || TYPES[k].name.en === e.title);
+  return ty && TYPES[ty] ? loc(TYPES[ty].name) : (e.custom ? titleOf(e.custom) : e.title);
+};
+function postcardHTML(e, k, i, arrive) {
+  const d = keyDate(k);
+  return `<div class="postcard${arrive ? ' arrive' : ''}">
+    <span class="pc-img">${e.svg || artSvg(e.art)}<span class="pc-pet">${petTag(langId, { bag: true })}</span></span>
+    <span class="pc-stamp"><span>${L.flag}</span></span><span class="pc-mark"><b>${d.getDate()}.${d.getMonth() + 1}</b><small>${esc(L.cityNative)}</small></span>
+    <span class="pc-title">${esc(cardTitle(e))}</span></div>`;
+}
+const monthKey = (k) => k.slice(0, 7);
+let calMonth = monthKey(todayKey()), cardKey = null;
+const fmtD = (d, o) => { try { return new Intl.DateTimeFormat(UI === 'zh' ? 'zh-CN' : 'en-GB', o).format(d); } catch { return ''; } };
+function monthHTML(mk) {
+  const [y, m] = mk.split('-').map(Number), first = new Date(y, m - 1, 1), days = new Date(y, m, 0).getDate();
+  const lead = (first.getDay() + 6) % 7, tk = todayKey();
+  const wk = Array.from({ length: 7 }, (_, i) => fmtD(new Date(2024, 0, 1 + i), { weekday: UI === 'zh' ? 'narrow' : 'short' }));
+  let cells = '';
+  for (let i = 0; i < lead; i++) cells += '<span class="dcell blank"></span>';
+  for (let dd = 1; dd <= days; dd++) {
+    const k = `${mk}-${String(dd).padStart(2, '0')}`, list = dayEntries(k), fut = k > tk, isT = k === tk;
+    const e = list[list.length - 1];
+    cells += `<button type="button" class="dcell${list.length ? ' has' : ''}${isT ? ' today' : ''}${fut ? ' future' : ''}" data-day="${k}" ${fut ? 'disabled' : ''} aria-label="${esc(fmtD(keyDate(k), { day: 'numeric', month: 'long' }))}${list.length ? ' · ' + esc(cardTitle(e)) : ''}">
+      ${e ? `<span class="thumb">${e.svg || artSvg(e.art)}</span>` : (isT ? `<span class="go-dot">${petTag(langId, { bag: true })}</span>` : '')}
+      <span class="dn">${dd}</span>${list.length > 1 ? `<span class="cnt">${list.length}</span>` : ''}</button>`;
+  }
+  return `<div class="m-week">${wk.map((w) => `<span>${esc(w)}</span>`).join('')}</div><div class="m-grid">${cells}</div>`;
+}
+function sideHTML() {
+  const tk = todayKey(), list = dayEntries(tk), n = Object.entries((diary[langId] || {})).filter(([k]) => monthKey(k) === calMonth).reduce((a, [, v]) => a + v.length, 0);
+  const pic = list.length
+    ? `<button type="button" class="side-card" data-day="${tk}">${postcardHTML(list[list.length - 1], tk, list.length - 1)}</button>`
+    : `<div class="home-pic">${homeScene(langId, false)}</div>`;
+  return `<div class="side-pic">${pic}</div>
+    <button type="button" class="primary go-btn" id="go-out">${petTag(langId, { bag: true })}<span>${esc(list.length ? t('again') : t('goOut'))}</span></button>
+    ${n ? `<p class="m-count">${esc(t('monthCount', n))}</p>` : ''}`;
+}
+function renderCalendar(dir) {
+  const [y, m] = calMonth.split('-').map(Number);
+  $('#m-title').innerHTML = `<span>${esc(fmtD(new Date(y, m - 1, 1), { month: 'long' }))}</span><small>${y}</small>`;
+  $('#m-next').disabled = calMonth >= monthKey(todayKey());
+  $('#m-today').classList.toggle('invisible', calMonth === monthKey(todayKey()));
+  $('#m-side').innerHTML = sideHTML();
+  const box = $('#m-cal'), html = `<div class="m-page">${monthHTML(calMonth)}</div>`, old = box.querySelector('.m-page');
+  if (!dir || !old || matchMedia('(prefers-reduced-motion: reduce)').matches) { box.innerHTML = html; return; }
+  box.insertAdjacentHTML(dir > 0 ? 'afterbegin' : 'beforeend', html);
+  const nw = dir > 0 ? box.firstElementChild : box.lastElementChild;
+  box.classList.add('flipping'); if (dir > 0) old.classList.add('tear'); else nw.classList.add('drop');
+  setTimeout(() => { old.remove(); nw.classList.remove('drop'); box.classList.remove('flipping'); }, 560);
+}
+function flipMonth(n) {
+  if ($('#m-cal').classList.contains('flipping')) return;
+  const [y, m] = calMonth.split('-').map(Number), d = new Date(y, m - 1 + n, 1), mk = dkey(d).slice(0, 7);
+  if (mk > monthKey(todayKey())) return;
+  calMonth = mk; renderCalendar(n);
+}
+$('#m-prev').onclick = () => flipMonth(-1);
+$('#m-next').onclick = () => flipMonth(1);
+$('#m-today').onclick = () => { if (calMonth !== monthKey(todayKey())) { calMonth = monthKey(todayKey()); renderCalendar(1); } };
+(() => { let x0 = null, y0 = 0;
+  $('#m-cal').addEventListener('pointerdown', (e) => { x0 = e.clientX; y0 = e.clientY; });
+  $('#m-cal').addEventListener('pointerup', (e) => { if (x0 === null) return; const dx = e.clientX - x0, dy = e.clientY - y0; x0 = null; if (Math.abs(dx) > 60 && Math.abs(dx) > Math.abs(dy) * 1.3) flipMonth(dx < 0 ? 1 : -1); });
+})();
+document.addEventListener('keydown', (e) => { if ($('#view-dialogue').classList.contains('hidden') || document.body.classList.contains('modal-open') || $('#sheet-bg') || /INPUT|TEXTAREA/.test(document.activeElement.tagName)) return; if (e.key === 'ArrowLeft') flipMonth(-1); if (e.key === 'ArrowRight') flipMonth(1); });
+$('#view-dialogue').addEventListener('click', (e) => {
+  if (e.target.closest('#go-out')) { showWhere(true); return; }
+  const c = e.target.closest('[data-day]'); if (!c) return;
+  const k = c.dataset.day;
+  if (dayEntries(k).length) showCard(k);
+  else if (k === todayKey()) showWhere(true);
+});
+/* 明信片弹窗 */
+function showCard(k, arrive) {
+  const list = dayEntries(k); if (!list.length) { hideCard(); return; }
+  cardKey = k; const i = Math.min(calIdx[k] ?? list.length - 1, list.length - 1), e = list[i];
+  const dots = list.length > 1 ? `<div class="pc-dots">${list.map((_, j) => `<button type="button" data-dot="${j}" class="${j === i ? 'on' : ''}" aria-label="${j + 1}"></button>`).join('')}</div>` : '';
+  $('#card-modal').innerHTML = `<button type="button" class="close card-x" id="card-x" aria-label="${esc(t('close'))}">×</button>
+    <p class="card-date">${esc(fmtD(keyDate(k), { weekday: 'long', day: 'numeric', month: 'long' }))}</p>
+    <div class="card-pic">${postcardHTML(e, k, i, arrive)}</div>${dots}
+    ${e.line ? `<div class="pc-line"><p class="hand">${esc(e.line)}</p>${speakBtn('pc' + k + i, e.line)}</div>` : ''}
+    <button type="button" class="primary" id="card-open">${esc(t('openDialogue'))}</button>`;
+  $('#card-screen').classList.remove('hidden'); document.body.classList.add('modal-open');
+}
+function hideCard() { $('#card-screen').classList.add('hidden'); cardKey = null; syncModal(); }
+function syncModal() { document.body.classList.toggle('modal-open', ['#card-screen', '#lesson-screen', '#where-screen'].some((x) => !$(x).classList.contains('hidden'))); }
+$('#card-screen').addEventListener('click', (e) => {
+  if (e.target.id === 'card-screen' || e.target.closest('#card-x')) { hideCard(); return; }
+  const dot = e.target.closest('[data-dot]'); if (dot) { calIdx[cardKey] = +dot.dataset.dot; showCard(cardKey); return; }
+  if (e.target.closest('#card-open')) {
+    const list = dayEntries(cardKey), en = list[Math.min(calIdx[cardKey] ?? list.length - 1, list.length - 1)];
+    if (en && en.lesson) { hideCard(); renderLesson(en.lesson, { title: cardTitle(en), art: en.art, svg: en.svg, npc: en.npc, custom: en.custom }); showLesson(true); }
+  }
+});
+function showWhere(on) {
+  $('#where-screen').classList.toggle('hidden', !on); syncModal();
+  if (on) { $('#where-title').textContent = t('whereTitle', petName()); renderIdeas(); }
+}
+$('#where-x').onclick = () => showWhere(false);
+$('#where-screen').addEventListener('click', (e) => { if (e.target.id === 'where-screen') showWhere(false); });
+
+function renderHome() {
+  $('#langbtn').innerHTML = `<span class="pair-from">${esc(SPEAKS[SPEAK].native)}</span><span class="pair-arrow">→</span><span class="flag">${L.flag}</span><span class="lname">${esc(loc(L.name))}</span> ▾`;
+  $('#langbtn').setAttribute('aria-label', t('switchLang'));
+  $('#custom-input').placeholder = t('customPh');
+  renderIdeas(); renderPresets(); renderMine(); tickDate(); renderCalendar();
+}
+
+/* ================= 静态文字 ================= */
+function applyUI() {
+  document.documentElement.lang = UI === 'en' ? 'en' : 'zh-CN';
+  document.querySelectorAll('[data-i18n]').forEach((el) => { el.textContent = t(el.dataset.i18n); });
+  document.querySelectorAll('[data-i18n-aria]').forEach((el) => el.setAttribute('aria-label', t(el.dataset.i18nAria)));
+  $('#api-key').placeholder = getCfg().key ? t('keySaved', getCfg().key.slice(0, 10)) : t('keyPh');
+  renderModels();
+}
+function setSpeak(id) {
+  if (!SPEAKS[id]) return;
+  SPEAK = id; store.set('sk-speak', id); UI = id === 'zh' ? 'zh' : 'en';
+  if (langId === SPEAK) setLang(Object.keys(LANGS).find((k) => k !== SPEAK));
+  applyUI(); renderHome(); showTopic(true); renderSettings(); renderCaps(); setupDictationLabel();
+  if (lastLesson) renderLesson(lastLesson.l, lastLesson.st);
+  if (lastEval) renderEval(lastEval); else resetEval();
+  ensureTitles();
+}
+
+/* ================= 学习语言切换 ================= */
+function langButtons() {
+  return Object.entries(LANGS).filter(([id]) => id !== SPEAK).map(([id, l]) => {
+    const n = Object.entries(progress).filter(([k]) => k.startsWith(id + ':')).reduce((a, [, v]) => a + v, 0);
+    return `<button type="button" data-lang="${id}" aria-pressed="${id === langId}"><span class="flag">${l.flag}</span><span><b>${esc(loc(l.name))}</b><span>${esc(l.native)}</span></span><span class="small muted">${n ? esc(t('count', n)) : ''}</span></button>`;
+  }).join('');
+}
+function speakButtons() {
+  return Object.entries(SPEAKS).map(([id, l]) => `<button type="button" data-speak="${id}" aria-pressed="${id === SPEAK}"><span class="flag">${l.flag}</span><span><b>${esc(l.native)}</b></span><span></span></button>`).join('');
+}
+function setLang(id) {
+  if (!LANGS[id] || id === SPEAK) return;
+  langId = id; L = LANGS[id]; store.set('sk-lang', id);
+  topic = null; lastLesson = null; lastEval = null; showTopic(); resetEval(); $('#answer').value = ''; $('#evaluate').disabled = true;
+  showLesson(false); renderHome(); renderSettings();
+}
+$('#langbtn').onclick = () => {
+  $('#sheet-root').innerHTML = `<div class="sheet-bg" id="sheet-bg"><div class="sheet" role="dialog" aria-modal="true" aria-label="${esc(t('pickLang'))}">
+    <div class="grab"></div><div class="sheet-head"><div><h2>${esc(t('pickLang'))}</h2></div><button type="button" class="close" id="sheet-x" aria-label="${esc(t('close'))}">×</button></div>
+    <span class="label">${esc(t('learning'))}</span><div class="lang-list" id="lang-list">${langButtons()}</div>
+    <div style="height:16px"></div><span class="label">${esc(t('iSpeak'))}</span><div class="lang-list speak-list" id="speak-list">${speakButtons()}</div></div></div>`;
+  const close = () => { $('#sheet-root').innerHTML = ''; };
+  $('#sheet-x').onclick = close;
+  $('#sheet-bg').onclick = (e) => { if (e.target.id === 'sheet-bg') close(); };
+  $('#lang-list').onclick = (e) => { const b = e.target.closest('[data-lang]'); if (b) { setLang(b.dataset.lang); close(); } };
+  $('#speak-list').onclick = (e) => { const b = e.target.closest('[data-speak]'); if (b) { setSpeak(b.dataset.speak); close(); } };
+};
+
+/* ================= 自定义场景 ================= */
+$('#custom-input').oninput = () => { $('#custom-go').disabled = !$('#custom-input').value.trim(); };
+$('#custom-go').onclick = () => { const v = $('#custom-input').value.trim(); if (v) openSheet(customInfo(v)); };
+$('#custom-input').onkeydown = (e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); $('#custom-go').click(); } };
+
+/* ================= 弹层：出发 ================= */
+function openSheet(st) {
+  current = st;
+  const styleBtns = STYLES.map((x) => `<button type="button" role="radio" data-style="${x.id}" aria-checked="${opts.style === x.id}"><b>${esc(loc(x.label))}</b><small>${esc(loc(x.desc))}</small></button>`).join('');
+  $('#sheet-root').innerHTML = `
+  <div class="sheet-bg" id="sheet-bg"><div class="sheet" role="dialog" aria-modal="true" aria-label="${esc(st.title)}">
+    <div class="grab"></div><div class="art">${artFor(st)}</div>
+    <div class="sheet-head"><div><h2>${esc(st.title)}</h2></div><button type="button" class="close" id="sheet-x" aria-label="${esc(t('close'))}">×</button></div>
+    <div class="opt"><span class="label">${esc(t('level'))}</span><div class="seg" id="lv" role="radiogroup">${LEVELS.map((l) => `<button type="button" role="radio" aria-checked="${opts.level === l.id}" data-lv="${l.id}">${esc(loc(l.label))}</button>`).join('')}</div></div>
+    <div class="opt"><span class="label">${esc(t('styleL'))}</span><div class="styles" id="styles" role="radiogroup">${styleBtns}</div></div>
+    <div class="opt"><label class="label" for="kw">${esc(t('words'))}</label><input id="kw" class="field" placeholder="${esc(t('eg') + L.kw)}" autocomplete="off" value="${esc(opts.keywords)}" /></div>
+    <button type="button" class="primary" id="start">${esc(t('start'))}</button>
+  </div></div>`;
+  const close = () => { $('#sheet-root').innerHTML = ''; };
+  $('#sheet-x').onclick = close;
+  $('#sheet-bg').onclick = (e) => { if (e.target.id === 'sheet-bg') close(); };
+  $('#lv').onclick = (e) => { const b = e.target.closest('button'); if (!b) return; opts.level = b.dataset.lv; store.set('sk-level', opts.level); document.querySelectorAll('#lv button').forEach((x) => x.setAttribute('aria-checked', String(x === b))); };
+  $('#styles').onclick = (e) => { const b = e.target.closest('[data-style]'); if (!b) return; opts.style = b.dataset.style; store.set('sk-style', opts.style); document.querySelectorAll('#styles button').forEach((x) => x.setAttribute('aria-checked', String(x === b))); };
+  $('#start').onclick = () => { opts.keywords = $('#kw').value.trim(); generate(close); };
+}
+document.addEventListener('keydown', (e) => { if (e.key !== 'Escape') return; if ($('#sheet-bg')) $('#sheet-root').innerHTML = ''; else if (!$('#lesson-screen').classList.contains('hidden')) showLesson(false); else if (!$('#card-screen').classList.contains('hidden')) hideCard(); else if (!$('#where-screen').classList.contains('hidden')) showWhere(false); });
+
+/* ================= 生成对话 ================= */
+async function generate(closeSheet) {
+  const btn = $('#start'); btn.disabled = true; btn.innerHTML = `<span class="spin">◌</span> ${esc(t('arriving'))}`;
+  const st = current, fb = feedbackLang();
+  try {
+    if (!sample) throw new Error('no sample');
+    const level = opts.level === 'basic' ? L.levelBasic : LEVELS.find((l) => l.id === opts.level).prompt;
+    const npcRule = `Choose the character who best fits the scenario and put its id in "npc". Options: ${Object.entries(CHARS).map(([k, c]) => `${k} (${npcName(k)}: ${c.hint})`).join('; ')}.`;
+    const style = styleOf(opts.style);
+    const scenePromise = st.custom && !st.svg ? makeScene(st).catch(() => null) : null;
+    const lesson = await sample.json(
+`You are a warm, expert ${L.english} language coach.
+Write an authentic, practical, everyday dialogue in ${L.english}.
+
+Setting: everyday life in ${L.cityNative}
+Scenario: ${st.prompt}
+Level: ${level}
+Words to include if natural: ${opts.keywords || 'none'}
+
+Rules:
+- 6 to 8 turns. The learner's role is exactly "ME"; the other speaker's role is exactly "NPC". The NPC speaks first.
+- ${npcRule}
+- Speaking style of the other speaker: ${style.prompt}
+- Use natural spoken fillers where they fit, such as: ${L.fillers}.
+- Friendly and realistic for daily life in ${L.cityNative}. If the scenario is written in another language, interpret it and write the dialogue in ${L.english}.
+- "text" is the line in ${L.english}. ${L.reading ? `"reading" is the full ${L.readingName} reading of the line.` : '"reading" is an empty string.'}
+- "translation" is the line translated into ${fb}.
+- Vocabulary notes, pronunciation tips and the cultural tip are written in ${fb}.${L.reading ? ` Vocabulary terms include the ${L.vocabReading} reading in brackets.` : ''}
+- "title" is a very short name for the scenario (2 to 8 words), in Simplified Chinese ("zh") and in English ("en").
+
+Reply with ONLY valid JSON of this exact shape:
+{"npc":"<character id>",
+ "title":{"zh":"","en":""},
+ "dialogue":[{"role":"NPC","text":"","reading":"","translation":""}],
+ "vocabulary":[{"term":"","translation":"","info":""}],
+ "pronunciation":[{"term":"","explanation":""}],
+ "culturalTip":""}
+Give 4-6 vocabulary items and 2-3 pronunciation points.`, { cache: false });
+    closeSheet(); showWhere(false);
+    lesson._style = opts.style;
+    if (st.custom && lesson.title) { saveTitles(st.custom, lesson.title); st.title = titleOf(st.custom); }
+    const card = addPostcard(st, lesson);
+    renderLesson(lesson, st);
+    if (st.custom) { rememberMine(st.custom); $('#custom-input').value = ''; $('#custom-go').disabled = true; }
+    progress[st.id] = (progress[st.id] || 0) + 1; store.set('sk-progress2', progress); renderPresets(); renderMine();
+    if (scenePromise) scenePromise.then((svg) => {
+      if (!svg) return; saveScene(st.custom, svg); st.svg = svg; card.svg = svg; saveDiary(); renderMine(); renderCalendar(); if (cardKey === todayKey()) showCard(cardKey);
+      if (lastLesson && lastLesson.st === st) { const ban = $('#lesson-art'); if (ban) { ban.innerHTML = svg; ban.classList.add('fresh'); } }
+    });
+    calMonth = monthKey(todayKey()); renderCalendar(); justArrived = todayKey();
+    showLesson(true);
+  } catch (err) { closeSheet(); showError(errText(err)); }
+}
+
+function renderLesson(l, st) {
+  lastLesson = { l, st };
+  const npcId = CHARS[l.npc] ? l.npc : (CHARS[st.npc] ? st.npc : 'neighbor');
+  lastLesson.style = l._style || 'normal';
+  const npc = CHARS[npcId];
+  const lines = l.dialogue || [];
+  const isMe = (x) => ['me', 'du', 'you'].includes(String(x.role || '').trim().toLowerCase());
+  const hasMe = lines.some(isMe);
+  $('#lesson-title').textContent = st.custom ? titleOf(st.custom) : st.title;
+  const chat = lines.map((x, i) => {
+    const me = hasMe ? isMe(x) : i % 2 === 1, who = me ? PLAYER : npc, text = x.text || '';
+    return `<li class="msg ${me ? 'me' : ''}">${avatar(who)}<div class="bubble"><div class="brow"><p class="sv-line">${esc(text)}</p>${speakBtn('l' + i, text, who.voice)}</div>
+      ${x.reading ? `<p class="reading">${esc(x.reading)}</p>` : ''}<p class="zh">${esc(x.translation || x.chinese || '')}</p></div></li>`;
+  }).join('');
+  const voc = (l.vocabulary || []).map((v, i) => `<li>${speakBtn('v' + i, String(v.term).replace(/[（(].*?[)）]/g, ''), npc.voice)}<div><p><span class="term">${esc(v.term)}</span> <span class="muted">· ${esc(v.translation)}</span></p><p class="small muted">${esc(v.info)}</p></div></li>`).join('');
+  const pro = (l.pronunciation || []).map((p) => `<li><span class="term">${esc(p.term)}</span> <span class="small">${esc(p.explanation)}</span></li>`).join('');
+  $('#lesson').innerHTML = `<div class="stack rise" id="lesson-body"><div class="lesson-main">
+    <div class="banner"><div class="banner-art" id="lesson-art">${artFor(st)}</div><div class="who">${avatar(npc)}<span>${esc(npcName(npcId))} · ${esc(loc(npc.title))} · ${esc(loc(styleOf(lastLesson.style).label))}</span></div></div>
+    <div class="card"><div class="card-head"><span class="label">${esc(t('dialogue'))}</span><label class="switch"><input type="checkbox" id="hide-zh" /><span>${esc(t('hideTr'))}</span></label></div><ol class="chat">${chat}</ol></div>
+    <div class="card fu-card"><span class="label">${esc(t('followTitle'))}</span><ol class="chat fu-list" id="fu-list">${followHTML(l, npc)}</ol>
+      <div class="fu-input"><textarea id="fu-text" class="field" rows="2" placeholder="${esc(t('followPh', loc(L.name)))}"></textarea>
+      <div class="fu-tools"><button type="button" class="mic hidden" id="fu-mic" data-compact="1"></button><button type="button" class="primary" id="fu-send" disabled>${esc(t('send'))}</button></div></div></div>
+    </div><div class="lesson-side">
+    ${voc ? `<div class="card"><span class="label">${esc(t('vocab'))}</span><ul class="vocab">${voc}</ul></div>` : ''}
+    ${pro ? `<div class="card"><span class="label">${esc(t('pron'))}</span><ul class="plain">${pro}</ul></div>` : ''}
+    <div class="tip"><span class="label">${esc(t('tip'))}</span><p>${esc(l.culturalTip)}</p></div></div></div>`;
+  $('#hide-zh').onchange = (e) => $('#lesson-body').classList.toggle('hide-zh', e.target.checked);
+  lastLesson.npcId = npcId;
+  $('#fu-text').oninput = () => { $('#fu-send').disabled = !$('#fu-text').value.trim(); };
+  $('#fu-text').onkeydown = (e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); if (!$('#fu-send').disabled) $('#fu-send').click(); } };
+  $('#fu-send').onclick = () => sendFollow(l, st);
+  bindMic($('#fu-mic'), $('#fu-text'));
+}
+function followHTML(l, npc) {
+  return (l.follow || []).map((f, i) => {
+    let h = `<li class="msg me">${avatar(PLAYER)}<div class="bubble"><p class="sv-line">${esc(f.me)}</p>${f.corrected ? `<p class="fu-fix">${esc(t('moreNatural'))}<b>${esc(f.corrected)}</b></p>` : ''}${f.feedback ? `<p class="zh">${esc(f.feedback)}</p>` : ''}</div></li>`;
+    if (f.mode === 'answer') h += `<li class="msg coach"><span class="av coach-av">💡</span><div class="bubble"><p class="small muted"><b>${esc(t('coach'))}</b></p><p class="coach-t">${esc(f.answer)}</p></div></li>`;
+    else if (f.reply && f.reply.text) h += `<li class="msg">${avatar(npc)}<div class="bubble"><div class="brow"><p class="sv-line">${esc(f.reply.text)}</p>${speakBtn('f' + i, f.reply.text, npc.voice)}</div>${f.reply.reading ? `<p class="reading">${esc(f.reply.reading)}</p>` : ''}<p class="zh">${esc(f.reply.translation || '')}</p></div></li>`;
+    return h;
+  }).join('');
+}
+async function sendFollow(l, st) {
+  const text = $('#fu-text').value.trim(); if (!text) return;
+  clearError();
+  const npcId = lastLesson.npcId, npc = CHARS[npcId], fb = feedbackLang(), style = styleOf(l._style || 'normal');
+  const btn = $('#fu-send'); btn.disabled = true; btn.innerHTML = '<span class="spin">◌</span>';
+  $('#fu-list').insertAdjacentHTML('beforeend', `<li class="msg me pending">${avatar(PLAYER)}<div class="bubble"><p class="sv-line">${esc(text)}</p></div></li><li class="msg pending">${avatar(npc)}<div class="bubble"><p class="typing"><i></i><i></i><i></i></p></div></li>`);
+  $('#fu-list').lastElementChild.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  const isMe = (x) => ['me', 'du', 'you'].includes(String(x.role || '').trim().toLowerCase());
+  const hist = (l.dialogue || []).map((x) => `${isMe(x) ? 'ME' : 'NPC'}: ${x.text}`)
+    .concat((l.follow || []).flatMap((f) => [`ME: ${f.me}`].concat(f.mode === 'reply' && f.reply ? [`NPC: ${f.reply.text}`] : [`(the learner asked a question; the teacher answered: ${f.answer})`]))).join('\n');
+  try {
+    if (!sample) throw new Error('no sample');
+    const r = await sample.json(
+`You are helping someone practise ${L.english} through role-play, and you are also their friendly teacher.
+Scenario: ${st.prompt || st.title} (everyday life in ${L.cityNative})
+The other speaker (NPC) is ${npcName(npcId)}: ${CHARS[npcId].hint}. Speaking style: ${style.prompt}
+
+Conversation so far (the learner is ME):
+${hist}
+
+The learner now wrote: """${text}"""
+
+Decide what the learner is doing:
+- If they continue the conversation in ${L.english} (even with mistakes): set "mode" to "reply". Write the NPC's next line in ${L.english}, in character, one or two short sentences that keep the conversation going. Put a more natural version of the learner's line in "corrected" (empty string if it is already natural) and one short sentence about the main mistake in "feedback", written in ${fb} (empty if none).
+- If they ask a question about the language, this dialogue or the culture (in any language): set "mode" to "answer" and answer briefly and clearly in ${fb} in "answer", with short ${L.english} examples where useful. Leave "reply" empty.
+"reply.reading" is ${L.reading ? `the full ${L.readingName} reading` : 'an empty string'}; "reply.translation" is the line in ${fb}.
+Reply with ONLY valid JSON: {"mode":"reply","corrected":"","feedback":"","reply":{"text":"","reading":"","translation":""},"answer":""}`, { cache: false });
+    const f = { me: text, mode: r && r.mode === 'answer' ? 'answer' : 'reply', corrected: (r && r.corrected) || '', feedback: (r && r.feedback) || '', reply: (r && r.reply) || null, answer: (r && r.answer) || '' };
+    if (f.mode === 'reply' && !(f.reply && f.reply.text)) { if (f.answer) f.mode = 'answer'; else throw { code: 'bad_output' }; }
+    (l.follow = l.follow || []).push(f); saveDiary();
+    $('#fu-text').value = '';
+  } catch (err) { showError(errText(err)); }
+  $('#fu-list').innerHTML = followHTML(l, npc);
+  const last = $('#fu-list').lastElementChild; if (last) last.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  btn.textContent = t('send'); btn.disabled = !$('#fu-text').value.trim();
+}
+
+/* ================= 口语 ================= */
+let askerId = null;
+let myTopics = store.get('sk-topics', {});
+const isMine = (tp) => !!tp && (myTopics[langId] || []).some((x) => x[0] === tp[0]);
+function renderOwnList() {
+  const list = myTopics[langId] || [];
+  $('#own-list').innerHTML = list.map((x, i) => `<button type="button" class="chip${topic && topic[0] === x[0] ? ' on' : ''}" data-own="${i}">${esc(x[0])}</button>`).join('');
+}
+function showTopic(keepAsker) {
+  if (!topic || (!L.topics.includes(topic) && !isMine(topic))) topic = L.topics[Math.floor(Math.random() * L.topics.length)];
+  $('#own-text').placeholder = t('ownPh'); renderOwnList();
+  if (!keepAsker || !askerId) { const ids = Object.keys(CHARS); askerId = ids[Math.floor(Math.random() * ids.length)]; }
+  $('#asker').innerHTML = `${avatar(CHARS[askerId])}<p class="name">${esc(t('asks', npcName(askerId)))}</p>`;
+  $('#topic-q').textContent = topic[0];
+  const tr = SPEAK === 'zh' ? topic[1] : (langId === 'en' ? '' : topic[2] || '');
+  $('#topic-tr').textContent = tr; $('#topic-tr').classList.toggle('hidden', !tr);
+  $('#lab-title').textContent = t('labTitle', loc(L.name));
+  $('#answer').placeholder = L.answerPh;
+}
+$('#shuffle').onclick = () => { const pool = L.topics.filter((x) => x !== topic); topic = pool[Math.floor(Math.random() * pool.length)]; showTopic(); lastEval = null; resetEval(); };
+$('#answer').oninput = () => { $('#evaluate').disabled = !$('#answer').value.trim(); };
+$('#own-topic').onclick = () => { const box = $('#own-box'); box.classList.toggle('hidden'); if (!box.classList.contains('hidden')) { renderOwnList(); $('#own-text').focus(); } };
+$('#own-text').oninput = () => { $('#own-go').disabled = !$('#own-text').value.trim(); };
+$('#own-text').onkeydown = (e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); if (!$('#own-go').disabled) $('#own-go').click(); } };
+$('#own-list').onclick = (e) => { const b = e.target.closest('[data-own]'); if (!b) return; topic = (myTopics[langId] || [])[+b.dataset.own]; showTopic(true); lastEval = null; resetEval(); };
+$('#own-go').onclick = async () => {
+  const text = $('#own-text').value.trim(); if (!text) return;
+  clearError(); const btn = $('#own-go'); btn.disabled = true; btn.innerHTML = `<span class="spin">◌</span> ${esc(t('makingQ'))}`;
+  try {
+    if (!sample) throw new Error('no sample');
+    const r = await sample.json(
+`A ${L.english} learner wants to practise speaking about this topic: """${text}""" (it may be written in any language).
+Write ONE friendly, open question in ${L.english} that someone would ask them about this topic in an everyday conversation, at this level: ${L.levelBasic}. Keep it to one short sentence.
+Also give "translation": the question in ${feedbackLang()}.
+Reply with ONLY valid JSON: {"question":"","translation":""}`, { cache: false });
+    if (!r || !r.question) throw { code: 'bad_output' };
+    const tp = [String(r.question), String(r.translation || ''), String(r.translation || '')];
+    const list = (myTopics[langId] || []).filter((x) => x[0] !== tp[0]); list.unshift(tp); myTopics[langId] = list.slice(0, 10); store.set('sk-topics', myTopics);
+    topic = tp; $('#own-text').value = ''; $('#own-box').classList.add('hidden'); showTopic(true); lastEval = null; resetEval(); $('#answer').focus();
+  } catch (err) { showError(errText(err)); }
+  btn.textContent = t('ownGo'); btn.disabled = !$('#own-text').value.trim();
+};
+function resetEval() {
+  $('#evaluation').innerHTML = `<div class="card empty-eval desk-only">${avatar(PLAYER)}<p><b>${esc(t('emptyEval1'))}</b></p></div>`;
+}
+
+let micT = null;
+function micLabel(btn) { const on = btn.classList.contains('on'); btn.innerHTML = (on ? ICON.stop : ICON.mic) + (btn.dataset.compact ? '' : ' ' + esc(t(on ? 'stop' : 'dictate'))); btn.setAttribute('aria-label', t(on ? 'stop' : 'dictate')); }
+function setupDictationLabel() { document.querySelectorAll('.mic').forEach((b) => { if (!b.classList.contains('hidden')) micLabel(b); }); }
+function bindMic(btn, area) {
+  if (!btn) return;
+  if (!dict) { btn.classList.add('hidden'); return; }
+  btn.classList.remove('hidden'); micLabel(btn);
+  btn.onclick = () => {
+    if (btn.classList.contains('on')) { dict.stop().catch(() => {}); return; }
+    micT = { btn, area, base: area.value };
+    dict.start(WEB ? undefined : { language: L.tts }).catch((e) => { if (e && e.code === 'not_granted') { document.querySelectorAll('.mic').forEach((x) => x.classList.add('hidden')); showError(t('errMicGrant')); } else if (e && e.code === 'unavailable') showError(t('errMicLang', loc(L.name))); });
+  };
+}
+function setupDictation() {
+  if (!dict) return;
+  const join = (a, b) => (a && b ? a.replace(/\s+$/, '') + ' ' + b.replace(/^\s+/, '') : (a + b).trim());
+  dict.onPartial(({ text }) => { if (micT) micT.area.value = join(micT.base, text); });
+  dict.onFinal(({ text }) => { if (!micT) return; micT.base = join(micT.base, text); micT.area.value = micT.base; micT.area.dispatchEvent(new Event('input')); });
+  dict.onState(({ state }) => {
+    document.querySelectorAll('.mic.on').forEach((b) => { if (state === 'idle' || !micT || b !== micT.btn) { b.classList.remove('on'); micLabel(b); } });
+    if (state === 'listening' && micT) { micT.btn.classList.add('on'); micLabel(micT.btn); }
+    if (state === 'idle') micT = null;
+  });
+  bindMic($('#mic'), $('#answer'));
+  bindMic($('#fu-mic'), $('#fu-text'));
+}
+
+$('#evaluate').onclick = async () => {
+  const text = $('#answer').value.trim(); if (!text) return;
+  clearError();
+  const btn = $('#evaluate'); btn.disabled = true; btn.innerHTML = `<span class="spin">◌</span> ${esc(t('reading'))}`;
+  try {
+    if (!sample) throw new Error('no sample');
+    const r = await sample.json(
+`You are a strict but encouraging ${L.english} teacher. A learner answered a speaking prompt; below is the text of their answer (it may come from speech-to-text, so ignore capitalisation and punctuation, and don't judge likely recognition errors harshly).
+
+Prompt: ${topic[0]}
+Learner's answer: """${text}"""
+
+Reply with ONLY valid JSON of this exact shape:
+{"grammarScore":0-100,"idiomScore":0-100,
+ "strengths":["2-3 specific things done well"],
+ "improvements":["2-3 specific corrections"],
+ "corrected":"a corrected, more natural ${L.english} version of the answer",
+ "grammarNotes":"concise explanation of grammar and word choice",
+ "pronunciationNotes":"tips for pronouncing the trickiest words in THIS answer"}
+grammarScore = grammar accuracy and relevance; idiomScore = how natural and native-like it sounds.
+All feedback except "corrected" is written in ${feedbackLang()}.`, { cache: false });
+    renderEval(r);
+    $('#evaluation').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  } catch (err) { showError(errText(err)); }
+  btn.textContent = t('getFeedback'); btn.disabled = !$('#answer').value.trim();
+};
+function scoreBar(label, v, cls) {
+  const n = Math.max(0, Math.min(100, Math.round(+v || 0)));
+  return `<div class="score"><div class="score-top"><span>${esc(label)}</span><span>${n}</span></div><div class="bar ${cls}"><i style="width:0" data-w="${n}"></i></div></div>`;
+}
+function renderEval(r) {
+  lastEval = r;
+  const li = (a) => (a || []).map((s) => `<li>${esc(s)}</li>`).join('');
+  $('#evaluation').innerHTML = `<div class="stack rise">
+    <div class="card stack">${scoreBar(t('grammar'), r.grammarScore, '')}${scoreBar(t('natural'), r.idiomScore, 'b2')}</div>
+    <div class="card"><span class="label">${esc(t('good'))}</span><ul class="plain good">${li(r.strengths)}</ul></div>
+    <div class="card"><span class="label">${esc(t('improve'))}</span><ul class="plain warn">${li(r.improvements)}</ul></div>
+    <div class="card"><span class="label">${esc(t('better'))}</span><div class="brow"><p class="quote">${esc(r.corrected)}</p>${speakBtn('fix', r.corrected)}</div></div>
+    <div class="card"><span class="label">${esc(t('grammarNotes'))}</span><p style="font-weight:500">${esc(r.grammarNotes)}</p>
+      <div style="height:14px"></div><span class="label">${esc(t('pronTips'))}</span><p style="font-weight:500">${esc(r.pronunciationNotes)}</p></div></div>`;
+  requestAnimationFrame(() => document.querySelectorAll('.bar i').forEach((i) => { i.style.width = i.dataset.w + '%'; }));
+}
+
+/* ================= 设置 ================= */
+function renderSettings() {
+  $('#lang-list-settings').innerHTML = langButtons();
+  $('#speak-list-settings').innerHTML = speakButtons();
+  const done = Object.entries(progress).filter(([k]) => k.startsWith(langId + ':'));
+  const total = done.reduce((a, [, v]) => a + v, 0);
+  $('#stats').textContent = total ? t('stats', L, total, done.length) : t('noStats', L);
+}
+$('#lang-list-settings').onclick = (e) => { const b = e.target.closest('[data-lang]'); if (b) setLang(b.dataset.lang); };
+$('#speak-list-settings').onclick = (e) => { const b = e.target.closest('[data-speak]'); if (b) setSpeak(b.dataset.speak); };
+$('#reset').onclick = () => { Object.keys(progress).forEach((k) => { if (k.startsWith(langId + ':')) delete progress[k]; }); store.set('sk-progress2', progress); delete mine[langId]; store.set('sk-mine', mine); delete diary[langId]; saveDiary(); renderHome(); renderSettings(); };
+function renderCaps() {
+  $('#caps').innerHTML = [
+    [t('capAI'), sample ? (WEB ? (getCfg().key ? t('viaKey') : t('needKey')) : t('ok')) : t('needClaude')],
+    [t('capTTS'), tts ? t('ttsClaude') : ('speechSynthesis' in window ? t('ttsSys') : t('na'))],
+    [t('capMic'), dict ? (WEB ? t('micWeb') : t('ok')) : t('micNa')],
+  ].map(([k, v]) => `<li><b>${esc(k)}</b>：${esc(v)}</li>`).join('').replace(/：/g, UI === 'en' ? ': ' : '：');
+  document.body.classList.toggle('no-voice', !tts && !('speechSynthesis' in window));
+}
+
+/* ================= Web 版适配层 =================
+   在 claude.ai 里打开时用 Claude 的内置能力；独立部署时：
+   AI → the browser calls Claude or OpenAI directly with the visitor's own key; read aloud → speechSynthesis; dictation → SpeechRecognition */
+function parseJSONLoose(text) {
+  const s = String(text || '').replace(/^\s*```(?:json)?/i, '').replace(/```\s*$/, '');
+  try { return JSON.parse(s); } catch {}
+  const i = s.indexOf('{'), j = s.lastIndexOf('}');
+  if (i >= 0 && j > i) { try { return JSON.parse(s.slice(i, j + 1)); } catch {} }
+  throw { code: 'bad_output' };
+}
+/* Bring your own key: the browser calls Claude or OpenAI directly. The key decides the provider. */
+const SYSTEM = 'You are the language-coach engine of a learning app. Always reply with only valid JSON, no markdown fences, no extra text.';
+const MODELS = [['claude-haiku-5-5', 'mHaiku'], ['claude-sonnet-5-5', 'mSonnet'], ['claude-opus-5-5', 'mOpus'], ['gpt-6-luna', 'mLuna'], ['gpt-6.2-sol', 'mSol'], ['gpt-6.2-astra', 'mAstra']];
+const keyProvider = (k) => (/^sk-ant-/.test(k || '') ? 'anthropic' : 'openai');
+const modelProvider = (m) => (/^gpt-|^o\d/.test(m || '') ? 'openai' : 'anthropic');
+function getCfg() { const c = store.get('sk-api', {}) || {}; return { key: c.key || '', model: c.model || 'claude-sonnet-5-5' }; }
+function setCfg(c) { store.set('sk-api', c); }
+function renderModels() {
+  const sel = $('#api-model'); if (!sel) return; const cur = getCfg().model;
+  sel.innerHTML = MODELS.map(([v, k]) => `<option value="${v}"${v === cur ? ' selected' : ''}>${esc(t(k))}</option>`).join('');
+}
+/* no key yet: close whatever is open and take the visitor straight to the key field */
+function goKey() {
+  $('#sheet-root').innerHTML = '';
+  if (!$('#lesson-screen').classList.contains('hidden')) showLesson(false);
+  if (!$('#card-screen').classList.contains('hidden')) hideCard();
+  if (!$('#where-screen').classList.contains('hidden')) showWhere(false);
+  switchTab('settings');
+  setTimeout(() => { $('#key-card').scrollIntoView({ block: 'center' }); $('#key-msg').textContent = t('errNoKey'); $('#api-key').focus(); }, 50);
+}
+async function callAI(prompt, maxTokens = 3000) {
+  const cfg = getCfg(); if (!cfg.key) { goKey(); throw { code: 'no_key' }; }
+  const openai = keyProvider(cfg.key) === 'openai';
+  const model = modelProvider(cfg.model) === (openai ? 'openai' : 'anthropic') ? cfg.model : (openai ? 'gpt-6-luna' : 'claude-haiku-5-5');
+  let r;
+  try {
+    r = openai
+      ? await fetch('https://api.openai.com/v1/chat/completions', { method: 'POST', headers: { 'content-type': 'application/json', authorization: 'Bearer ' + cfg.key },
+          body: JSON.stringify({ model, max_completion_tokens: maxTokens + 2048, reasoning_effort: 'low', messages: [{ role: 'system', content: SYSTEM }, { role: 'user', content: prompt }] }) })
+      : await fetch('https://api.anthropic.com/v1/messages', { method: 'POST', headers: { 'content-type': 'application/json', 'x-api-key': cfg.key, 'anthropic-version': '2023-06-01', 'anthropic-dangerous-direct-browser-access': 'true' },
+          body: JSON.stringify({ model, max_tokens: maxTokens, system: SYSTEM, messages: [{ role: 'user', content: prompt }] }) });
+  } catch { throw { code: 'offline' }; }
+  let body = null; try { body = await r.json(); } catch {}
+  if (!r.ok) {
+    const er = (body && body.error) || {}, m = er.message || '';
+    if (r.status === 401 || r.status === 403) throw { code: 'bad_key' };
+    if (er.code === 'insufficient_quota' || er.type === 'insufficient_quota' || /credit balance|billing|quota/i.test(m)) throw { code: 'no_credit' };
+    if (r.status === 429) throw { code: 'rate_limited' };
+    throw { code: 'server', message: m };
+  }
+  if (openai) { const c = body && body.choices && body.choices[0]; return String((c && c.message && c.message.content) || ''); }
+  return ((body && body.content) || []).filter((x) => x.type === 'text').map((x) => x.text).join('');
+}
+const webSample = { async json(prompt) { return parseJSONLoose(await callAI(prompt)); } };
+function webDictation() {
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!SR) return null;
+  let rec = null, fPartial = () => {}, fFinal = () => {}, fState = () => {};
+  return {
+    onPartial(f) { fPartial = f; }, onFinal(f) { fFinal = f; }, onState(f) { fState = f; },
+    start() {
+      return new Promise((resolve, reject) => {
+        rec = new SR(); rec.lang = L.locale; rec.interimResults = true; rec.continuous = true;
+        rec.onstart = () => { fState({ state: 'listening' }); resolve(); };
+        rec.onresult = (e) => {
+          let interim = '';
+          for (let i = e.resultIndex; i < e.results.length; i++) {
+            const s = e.results[i][0].transcript;
+            if (e.results[i].isFinal) fFinal({ text: s.trim() }); else interim += s;
+          }
+          if (interim) fPartial({ text: interim.trim() });
+        };
+        rec.onerror = (e) => {
+          if (e.error === 'not-allowed' || e.error === 'service-not-allowed') reject({ code: 'not_granted' });
+          else if (e.error !== 'no-speech' && e.error !== 'aborted') showError(t('errMic'));
+        };
+        rec.onend = () => { fState({ state: 'idle', reason: 'stopped' }); rec = null; };
+        try { rec.start(); } catch (err) { reject(err); }
+      });
+    },
+    stop() { return new Promise((resolve) => { if (!rec) return resolve(); const r = rec; r.addEventListener('end', () => resolve(), { once: true }); r.stop(); }); },
+  };
+}
+if (WEB) {
+  [['manifest', 'manifest.webmanifest'], ['icon', 'icons/favicon.png'], ['apple-touch-icon', 'icons/apple-touch-icon.png']].forEach(([rel, href]) => {
+    const l = document.createElement('link'); l.rel = rel; l.href = href; document.head.appendChild(l);
+  });
+  $('#key-card').classList.remove('hidden');
+  const keyMsg = (m) => { $('#key-msg').textContent = m || ''; };
+  const saveKey = () => { const k = $('#api-key').value.trim(), c = getCfg(); setCfg({ key: k || c.key, model: $('#api-model').value }); $('#api-key').value = ''; applyUI(); renderCaps(); };
+  $('#api-key').onchange = () => { saveKey(); keyMsg(''); };
+  $('#api-model').onchange = saveKey;
+  $('#key-test').onclick = async () => {
+    saveKey(); if (!getCfg().key) return keyMsg(t('keyNone'));
+    keyMsg(t('keyTesting'));
+    try { await callAI('Reply with {"ok":true}', 20); keyMsg(t('keyOk')); } catch (e) { keyMsg(errText(e)); }
+  };
+  $('#key-clear').onclick = () => { setCfg({ key: '', model: getCfg().model }); applyUI(); renderCaps(); keyMsg(t('keyCleared')); };
+  if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) {
+    window.addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(() => {}));
+  }
+  if ('speechSynthesis' in window) speechSynthesis.getVoices();
+}
+
+/* ================= 首次引导 ================= */
+function showOnboard(on) {
+  $('#view-onboard').classList.toggle('hidden', !on);
+  document.body.classList.toggle('onboarding', on);
+  if (on) { VIEWS.forEach((x) => $('#view-' + x).classList.add('hidden')); obStep(1); }
+  else switchTab('dialogue');
+}
+function obStep(n) {
+  $('#ob-1').classList.toggle('hidden', n !== 1); $('#ob-2').classList.toggle('hidden', n !== 2);
+  if (n === 1) $('#ob-speak').innerHTML = Object.entries(SPEAKS).map(([id, l]) => `<button type="button" data-ob-speak="${id}" class="${id === SPEAK ? 'on' : ''}"><span class="flag">${l.flag}</span><b>${esc(l.native)}</b></button>`).join('');
+  if (n === 2) {
+    $('#ob-back').textContent = t('obBack');
+    $('#ob-learn-title').textContent = t('learnQ');
+    $('#ob-langs').innerHTML = Object.entries(LANGS).filter(([id]) => id !== SPEAK).map(([id, l]) => `<button type="button" data-ob-lang="${id}">
+      <span class="flag">${l.flag}</span><b>${esc(loc(l.name))}</b><span class="nat">${esc(l.native)}</span></button>`).join('');
+  }
+  window.scrollTo(0, 0);
+}
+$('#ob-speak').onclick = (e) => { const b = e.target.closest('[data-ob-speak]'); if (!b) return; setSpeak(b.dataset.obSpeak); obStep(2); };
+$('#ob-back').onclick = () => obStep(1);
+$('#ob-langs').onclick = (e) => {
+  const b = e.target.closest('[data-ob-lang]'); if (!b) return;
+  setLang(b.dataset.obLang); store.set('sk-onboarded', true); showOnboard(false);
+};
+
+/* ================= 启动 ================= */
+applyUI(); renderHome(); showTopic(); resetEval(); renderCaps();
+if (!store.get('sk-onboarded', false) || !store.get('sk-speak', null)) showOnboard(true);
+(async () => {
+  if (!WEB) {
+    try { sample = await claude.use('sample'); } catch {}
+    try { tts = await claude.use('tts'); } catch {}
+    try { dict = await claude.use('dictation'); } catch {}
+    if (tts) tts.onState(({ state }) => { if (state === 'idle') setPlaying(null); });
+  } else {
+    sample = webSample;
+    dict = webDictation();
+  }
+  setupDictation();
+  renderCaps();
+})();
+</script>
+</body>
+</html>
