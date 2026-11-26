@@ -28,7 +28,7 @@ I've always loved advent calendars, with a tiny surprise behind every door. Ship
 | 07 | Nov 20 | [Collie on the Wall](#day-07--collie-on-the-wall) | ✅ Shipped |
 | 08 | Nov 22 | [Stockholm T Pendant](#day-08--stockholm-t-pendant) | ✅ Shipped |
 | 09 | Nov 24 | [SmallTalk](#day-09--smalltalk) | ✅ Shipped |
-| 10 | Nov 26 | — | 🔒 |
+| 10 | Nov 26 | [Podcast Desk](#day-10--podcast-desk) | ✅ Shipped |
 | 11 | Nov 28 | — | 🔒 |
 | 12 | Nov 30 | — | 🔒 |
 | 13 | Dec 2 | — | 🔒 |
@@ -165,3 +165,16 @@ I can read Swedish far better than I can speak it. SmallTalk is a pocket speakin
 - **Stack:** plain HTML/CSS/JS, Claude API (Sonnet 5.5 by default) or OpenAI API, Web Speech API, service worker, localStorage, GitHub Pages.
 
 ![Day 09](docs/screenshots/day-09.png)
+
+## Day 10 · Podcast Desk
+
+**Shipped Nov 26** · [See the demo and download](https://lesley-qing-gu.github.io/ChristmasChallenge/days/10/) · Source: [`days/10/podcast-desk/`](days/10/podcast-desk)
+
+Edit a podcast by editing its transcript. I built it to edit my own podcast and turned it into something anyone can run.
+
+- **What it does:** upload a recording and it's transcribed, split by speaker and rough-cut automatically (ums, false starts, coughs, cross-talk, breaths, long gaps). Then delete or move words like tracked changes in Word and the audio follows; play back the edit with word highlighting; remove filler words in one go; even out pauses; change one speaker's speed; export a clean mp3 with optional loudness levelling and noise removal; optionally write show notes with Claude Code. English and Chinese interface.
+- **How it's built:** a small Python web server on your own computer and a single-page editor in the browser. Whisper transcribes (MLX on Apple Silicon, faster-whisper elsewhere, CUDA when available), pyannote finds speakers and cross-talk, and numpy + ffmpeg handle silence detection, cutting with crossfades, tempo changes and loudness. Every word keeps its timestamps, so the edited text maps straight back to time ranges in the original audio.
+- **What I learned:** Whisper's word timestamps often include the silence after a word, so before cutting I tighten each word to where the sound actually is. And Whisper quietly drops "um" unless the prompt shows it some.
+- **Stack:** Python, numpy, ffmpeg, Whisper (mlx-whisper / faster-whisper), pyannote.audio, plain HTML/CSS/JS. No API key.
+
+![Day 10](docs/screenshots/day-10.png)

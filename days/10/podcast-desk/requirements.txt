@@ -1,0 +1,11 @@
+# Podcast Desk: everything runs on your own computer. No API key needed.
+numpy
+faster-whisper>=1.0     # transcription on any computer (CPU, or NVIDIA GPU via CUDA)
+pyannote.audio>=3.1     # who speaks when + cross-talk (free; first download needs a Hugging Face token)
+torch
+opencc-python-reimplemented   # optional: shows Chinese transcripts in Simplified characters
+send2trash              # deleting a project moves it to the system trash
+# On an Apple Silicon Mac, also install the much faster transcriber:
+#   pip install mlx-whisper
+# Optional AI voice isolation on export:
+#   pip install demucs

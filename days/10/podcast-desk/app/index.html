@@ -1,0 +1,1367 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Podcast Desk</title>
+<link rel="icon" href="/assets/logo.svg">
+<style>
+:root{
+  /* 离岸 OutSea 配色：宝蓝 #143FDC · 绿 #01C366 · 橙 #C86B39 · 米 #D3CA9F */
+  --sea:#143FDC; --sea2:#0f33b8; --green:#01C366; --orange:#C86B39; --sand:#D3CA9F;
+  --bg:#e8e9ec; --paper:#ffffff; --chrome:#143FDC; --ink:#14181f; --ink2:#454b57; --muted:#8a90a0;
+  --line:#e4e6ee; --hover:#f1f3fa; --press:#e6e9f5;
+  --accent:#143FDC; --accent-ink:#ffffff; --accent-soft:#e3e9fd;
+  --strike:#c25a26; --move:#00a557; --play:#efe8c6; --pend:#dce5ff;
+  --shadow:0 1px 3px rgba(0,0,0,.12),0 4px 14px rgba(0,0,0,.06);
+  --radius:10px;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#1b1c1f; --paper:#26272b; --chrome:#0e2585; --ink:#eef0f6; --ink2:#c2c8d8; --muted:#8890aa;
+    --line:#26304f; --hover:#1a2444; --press:#202b50;
+    --accent:#7d98ff; --accent-ink:#0b1440; --accent-soft:#1f2c5c;
+    --strike:#f08a55; --move:#2fe08a; --play:#4a4426; --pend:#24356b;
+    --shadow:0 2px 0 rgba(0,0,0,.3),0 12px 40px rgba(0,0,0,.45);
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#1b1c1f; --paper:#26272b; --chrome:#0e2585; --ink:#eef0f6; --ink2:#c2c8d8; --muted:#8890aa;
+  --line:#26304f; --hover:#1a2444; --press:#202b50;
+  --accent:#7d98ff; --accent-ink:#0b1440; --accent-soft:#1f2c5c;
+  --strike:#f08a55; --move:#2fe08a; --play:#4a4426; --pend:#24356b;
+  --shadow:0 2px 0 rgba(0,0,0,.3),0 12px 40px rgba(0,0,0,.45);
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg);color:var(--ink);
+  font:15px/1.5 -apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB","Noto Sans CJK SC","Microsoft YaHei",sans-serif;
+  -webkit-font-smoothing:antialiased}
+@font-face{font-family:'DotSong';src:url('/assets/dotsong.otf') format('opentype')}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+kbd{font:11.5px/1 ui-monospace,SFMono-Regular,Menlo,monospace;padding:3px 5px;border:1px solid var(--line);
+  border-bottom-width:2px;border-radius:5px;background:var(--paper);color:var(--ink2);white-space:nowrap}
+
+/* ---------- 顶栏 ---------- */
+.top{position:sticky;top:0;z-index:20;background:var(--chrome);color:#fff}
+.titlebar{display:flex;align-items:center;gap:12px;padding:10px 20px 6px}
+.logo{width:34px;height:34px;flex:none;image-rendering:pixelated;display:block;box-shadow:0 0 0 2px rgba(255,255,255,.9)}
+.title{display:flex;flex-direction:column;min-width:0;margin-right:auto}
+.title b{font-family:'DotSong',monospace;font-size:21px;font-weight:400;letter-spacing:.12em;line-height:1.1}
+.title b em{font-style:normal;color:var(--green)}
+/* the dot-matrix font only covers the Chinese title; English uses a plain monospace */
+html[lang="en"] .title b{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:18px;font-weight:700;letter-spacing:.06em}
+html[lang="en"] .card .step{font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
+.title span{font-size:12px;color:rgba(255,255,255,.7);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.iconbtn{width:32px;height:32px;border-radius:8px;display:grid;place-items:center;color:rgba(255,255,255,.85);font-weight:600}
+.iconbtn:hover{background:rgba(255,255,255,.12);color:#fff}
+.primary{background:var(--green);color:#04210f;border-radius:8px;padding:7px 14px;font-weight:600;font-size:13.5px}
+.primary:hover{filter:brightness(1.07)}
+.primary:disabled{opacity:.5;cursor:default}
+
+/* 功能区（像 Word 的 Ribbon） */
+.ribbon{display:flex;align-items:stretch;gap:2px;padding:6px 14px 6px;overflow-x:auto;background:var(--paper);color:var(--ink);border-bottom:3px solid var(--sand)}
+.group{display:flex;flex-direction:column;align-items:center;padding:0 8px;border-right:1px solid var(--line)}
+.group:last-child{border-right:0}
+.group .btns{display:flex;gap:2px}
+.group .gl{font-size:11px;color:var(--muted);margin-top:2px;letter-spacing:.05em}
+.rb{display:flex;flex-direction:column;align-items:center;gap:2px;min-width:58px;padding:5px 6px 4px;border-radius:8px;color:var(--ink)}
+.rb:hover{background:var(--hover)} .rb:active{background:var(--press)}
+.rb:disabled{opacity:.35;cursor:default;background:none}
+.rb .ic{height:22px;display:grid;place-items:center;font-size:16px}
+.rb .lb{font-size:12px;white-space:nowrap}
+.rb.on{background:var(--accent-soft);color:var(--accent)}
+.spacer{flex:1}
+.rb.danger:hover{color:var(--strike)}
+.ic-del{font-weight:600;text-decoration:line-through;text-decoration-color:var(--strike);text-decoration-thickness:2px}
+.ic-move{font-weight:600;color:var(--move);text-decoration:underline double;text-decoration-color:var(--move)}
+
+/* 移动模式提示条 */
+#banner{display:none;align-items:center;gap:12px;justify-content:center;padding:8px 16px;background:var(--pend);
+  font-size:13.5px;border-top:1px solid var(--line)}
+#banner.show{display:flex}
+#banner button{border:1px solid currentColor;border-radius:6px;padding:2px 10px;font-size:12.5px;opacity:.8}
+
+/* ---------- 纸张 ---------- */
+main{padding:28px 16px 140px}
+.paper{max-width:860px;margin:0 auto;background:var(--paper);border-radius:0;box-shadow:var(--shadow);
+  padding:48px 56px 64px;min-height:70vh}
+.docname{font-size:22px;font-weight:650;color:var(--accent);margin:0 0 4px;letter-spacing:.01em}
+.docsub{color:var(--muted);font-size:13px;margin-bottom:28px;padding-bottom:16px;border-bottom:2px dashed var(--line)}
+#doc{font-size:16.5px;line-height:2.05}
+.line{display:flex;gap:18px;border-radius:6px;margin:0 -10px;padding:1px 10px}
+.line:hover{background:var(--hover)}
+.ts{flex:0 0 52px;text-align:right;color:var(--muted);font:11.5px/2.95 ui-monospace,SFMono-Regular,Menlo,monospace;
+  cursor:pointer;user-select:none;opacity:.75}
+.line:hover .ts{opacity:1}
+.ts:hover{color:var(--accent)}
+.txt{flex:1;min-width:0;overflow-wrap:anywhere}
+.txt span{border-radius:2px}
+.p{color:var(--muted);font-size:11px;padding:0 1px;user-select:none;vertical-align:1px}
+/* 修订样式（像 Word）：删除 = 红色删除线，移动 = 绿色双下划线 */
+.del{color:var(--strike);text-decoration:line-through;text-decoration-color:var(--strike);text-decoration-thickness:1.5px}
+.moved{text-decoration:underline double;text-decoration-color:var(--move);text-underline-offset:4px;color:var(--move)}
+.moved.del{text-decoration:line-through;color:var(--strike)}
+.playing{background:var(--play)}
+.pend{background:var(--pend)}
+@keyframes blink{50%{box-shadow:none}}
+.cur{box-shadow:inset 2px 0 0 var(--accent);animation:blink 1s step-end infinite}
+.cur-end{box-shadow:inset -2px 0 0 var(--accent);animation:blink 1s step-end infinite}
+body.hide-del .del{display:none}
+body.hide-del .empty-line{display:none}
+::selection{background:var(--accent-soft)}
+
+/* ---------- 底部播放条 ---------- */
+.player{position:fixed;left:0;right:0;bottom:0;z-index:20;background:var(--chrome);color:#fff;border-top:3px solid var(--sand);
+  display:flex;align-items:center;gap:14px;padding:10px 20px}
+.playbtn{width:38px;height:38px;border-radius:50%;background:#fff;color:var(--sea);display:grid;place-items:center;flex:none}
+.playbtn svg{width:16px;height:16px}
+.time{font:12.5px ui-monospace,SFMono-Regular,Menlo,monospace;color:rgba(255,255,255,.9);white-space:nowrap;min-width:110px}
+.bar{flex:1;height:6px;border-radius:3px;background:rgba(255,255,255,.22);position:relative;cursor:pointer}
+.bar:hover{height:8px}
+.bar i{position:absolute;left:0;top:0;bottom:0;border-radius:3px;background:var(--green);width:0}
+.stats{font-size:12px;color:rgba(255,255,255,.72);white-space:nowrap;display:flex;gap:12px}
+.stats b{color:#fff;font-weight:600}
+.dot{display:inline-block;width:7px;height:7px;border-radius:0;background:var(--green);margin-right:5px;vertical-align:1px}
+.dot.busy{background:var(--sand)}
+
+/* 提示 */
+#toast{position:fixed;left:50%;bottom:76px;transform:translateX(-50%) translateY(10px);opacity:0;pointer-events:none;
+  background:var(--ink);color:var(--paper);padding:8px 14px;border-radius:8px;font-size:13px;transition:.2s;z-index:30;
+  max-width:min(90vw,640px);text-align:center}
+#toast.show{opacity:1;transform:translateX(-50%)}
+
+/* ---------- 教程 ---------- */
+#tour{position:fixed;inset:0;z-index:50;display:none}
+#tour.show{display:block}
+#tour .shade{position:absolute;inset:0;background:rgba(6,16,70,.62)}
+#tour .spot{position:absolute;border-radius:6px;box-shadow:0 0 0 9999px rgba(6,16,70,.62),0 0 0 3px var(--green);
+  transition:all .25s ease;pointer-events:none}
+.card{position:absolute;width:min(380px,calc(100vw - 32px));background:var(--paper);color:var(--ink);border-radius:14px;
+  box-shadow:0 20px 50px rgba(0,0,0,.3);padding:20px 22px 16px;transition:top .25s,left .25s}
+.card .step{font-family:'DotSong',monospace;font-size:13px;color:var(--accent);font-weight:600;letter-spacing:.04em}
+.card h3{margin:4px 0 8px;font-size:17px}
+.card p{margin:0 0 10px;color:var(--ink2);font-size:14px;line-height:1.7}
+.demo{background:var(--bg);border-radius:8px;padding:10px 12px;font-size:15px;line-height:1.9;margin:4px 0 12px}
+.demo .del{color:var(--strike)}
+.keys{display:grid;grid-template-columns:auto 1fr;gap:6px 12px;font-size:13px;color:var(--ink2);margin:6px 0 12px;align-items:center}
+.card .nav{display:flex;align-items:center;gap:8px;margin-top:6px}
+.card .skip{color:var(--muted);font-size:13px;margin-right:auto}
+.card .skip:hover{color:var(--ink)}
+.card .prev{font-size:13.5px;padding:7px 12px;border-radius:8px;color:var(--ink2)}
+.card .prev:hover{background:var(--hover)}
+.dots{display:flex;gap:4px;margin-right:6px}
+.dots i{width:6px;height:6px;border-radius:50%;background:var(--line)}
+.dots i.on{background:var(--accent)}
+
+/* 说话人 */
+.spk{flex:none;width:9px;height:9px;border-radius:50%;margin:13px -8px 0 -6px;cursor:default}
+.spk.same{}
+.legend{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.chip{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;padding:3px 10px;border:1px solid var(--line);border-radius:999px;cursor:pointer;color:var(--ink2)}
+.chip:hover{border-color:var(--accent);color:var(--ink)}
+.chip i{width:9px;height:9px;border-radius:50%}
+/* 功能区里的输入框 */
+.gapbox{display:flex;flex-direction:column;align-items:center;gap:3px;padding:3px 6px 0}
+.gapbox .row{display:flex;align-items:center;gap:4px;font-size:12px;color:var(--ink2)}
+.gapbox input{width:66px;padding:3px 6px;border:1px solid var(--line);border-radius:6px;font:13px ui-monospace,Menlo,monospace;background:var(--paper);color:var(--ink);text-align:right}
+.gapbox input:focus{outline:2px solid var(--accent-soft);border-color:var(--accent)}
+.gapbox .lb{font-size:12px}
+#gTools{display:flex}
+/* 弹窗 */
+#modal{position:fixed;inset:0;z-index:45;display:none;background:rgba(6,16,70,.45);place-items:center}
+#modal.show{display:grid}
+.mcard{width:min(680px,94vw);max-height:86vh;overflow:auto;background:var(--paper);color:var(--ink);border-radius:14px;
+  box-shadow:0 20px 60px rgba(0,0,0,.3);padding:22px 24px 18px}
+.mcard h3{margin:0 0 4px;font-size:18px}
+.mcard .sub{color:var(--muted);font-size:13px;margin-bottom:14px}
+.mcard .acts{display:flex;justify-content:flex-end;gap:8px;margin-top:16px;align-items:center}
+.mcard .acts .ghost{padding:7px 12px;border-radius:8px;color:var(--ink2)}
+.mcard .acts .ghost:hover{background:var(--hover)}
+.ftable{width:100%;border-collapse:collapse;font-size:14px}
+.ftable td{padding:7px 6px;border-bottom:1px solid var(--line);vertical-align:top}
+.ftable td.n{text-align:right;font-variant-numeric:tabular-nums;color:var(--ink2);white-space:nowrap}
+.ftable td.ex{color:var(--muted);font-size:12.5px}
+.ftable td.ex b{color:var(--strike);font-weight:600}
+.ftable label{display:flex;gap:8px;align-items:center;cursor:pointer;font-weight:600}
+.addrow{display:flex;gap:8px;margin-top:10px}
+.addrow input,.field input,.field select{flex:1;padding:7px 10px;border:1px solid var(--line);border-radius:8px;font:inherit;background:var(--paper);color:var(--ink)}
+.addrow button,.btn2{padding:7px 12px;border:1px solid var(--line);border-radius:8px}
+.addrow button:hover,.btn2:hover{border-color:var(--accent)}
+.mdtext{width:100%;min-height:52vh;font:13.5px/1.7 ui-monospace,SFMono-Regular,Menlo,monospace;padding:12px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--ink);resize:vertical}
+.spin{display:inline-block;width:14px;height:14px;border:2px solid var(--line);border-top-color:var(--accent);border-radius:50%;animation:rot 1s linear infinite;vertical-align:-2px;margin-right:8px}
+@keyframes rot{to{transform:rotate(360deg)}}
+/* 音质分组 + A/B 对比条 */
+.qbox{display:flex;flex-direction:column;gap:3px;padding:2px 4px 0;font-size:12px;color:var(--ink2)}
+.qbox label{display:flex;align-items:center;gap:4px;justify-content:space-between}
+.qbox select{font-family:inherit;font-size:12px;padding:2px 4px;border:1px solid var(--line);border-radius:6px;background:var(--paper);color:var(--ink)}
+#ab{position:fixed;left:50%;bottom:74px;transform:translateX(-50%);z-index:25;display:none;align-items:center;gap:12px;
+  background:var(--paper);color:var(--ink);border-radius:12px;box-shadow:0 10px 36px rgba(0,0,0,.22);padding:10px 14px;
+  border:2px solid var(--accent);max-width:calc(100vw - 24px);flex-wrap:wrap}
+#ab.show{display:flex}
+#ab .ttl{font-size:12.5px;color:var(--muted);white-space:nowrap}
+.seg2{display:flex;border:1px solid var(--line);border-radius:8px;overflow:hidden}
+.seg2 button{padding:6px 12px;font-size:13px;white-space:nowrap}
+.seg2 button.on{background:var(--accent);color:#fff}
+#ab .abplay{width:32px;height:32px;border-radius:50%;background:var(--accent);color:#fff;display:grid;place-items:center}
+#ab .abplay svg{width:13px;height:13px}
+#ab .abbar{width:140px;height:5px;border-radius:3px;background:var(--line);overflow:hidden}
+#ab .abbar i{display:block;height:100%;width:0;background:var(--green)}
+#ab .x{color:var(--muted);font-size:18px;padding:0 4px}
+/* 首页 */
+body.home .editor-only{display:none!important}
+body:not(.home) .home-only{display:none!important}
+.home-wrap{max-width:900px;margin:0 auto;padding:32px 16px 80px}
+.home-wrap h2{font-size:15px;color:var(--ink2);margin:28px 0 12px;font-weight:600}
+.uploader{background:var(--paper);border-radius:12px;box-shadow:var(--shadow);padding:22px 24px}
+.drop{border:2px dashed var(--line);border-radius:10px;padding:26px;text-align:center;color:var(--muted);cursor:pointer;margin-bottom:14px}
+.drop:hover,.drop.over{border-color:var(--accent);color:var(--accent);background:var(--accent-soft)}
+.drop b{color:var(--ink)}
+.fields{display:grid;grid-template-columns:1fr 130px 90px;gap:12px;margin-bottom:12px}
+.field{display:flex;flex-direction:column;gap:4px;font-size:12.5px;color:var(--ink2)}
+.check{display:flex;gap:8px;align-items:center;font-size:13.5px;color:var(--ink2);margin-bottom:14px}
+.prog{height:8px;border-radius:4px;background:var(--line);overflow:hidden;margin:10px 0 6px}
+.prog i{display:block;height:100%;background:var(--green);width:0;transition:width .3s}
+.plist{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px}
+.pcard{background:var(--paper);border-radius:10px;box-shadow:var(--shadow);padding:14px 16px;cursor:pointer;border:2px solid transparent;text-align:left}
+.pwrap{position:relative;display:flex}
+.pwrap .pcard{flex:1;min-width:0}
+.pdel{position:absolute;top:8px;right:8px;border:0;background:transparent;color:var(--muted);font-size:13px;cursor:pointer;padding:2px 8px;border-radius:6px;opacity:0;transition:opacity .15s}
+.pwrap:hover .pdel,.pdel:focus{opacity:1}
+.pdel:hover{background:var(--strike);color:#fff}
+.pcard:hover{border-color:var(--accent)}
+.pcard b{display:block;font-size:14.5px;margin-bottom:4px;word-break:break-all}
+.pcard span{font-size:12px;color:var(--muted)}
+.pcard .prog{margin:8px 0 2px}
+@media (max-width:700px){
+  .paper{padding:28px 18px 40px}
+  .ts{flex-basis:40px}
+  .stats{display:none}
+  .group .gl{display:none}
+}
+</style>
+</head>
+<body>
+
+<div class="top">
+  <div class="titlebar">
+    <img class="logo" src="/assets/logo.svg" alt="">
+    <div class="title"><b data-i="brand"></b><span id="meta"></span></div>
+    <button class="iconbtn" id="bLang" title="中文 / English" style="font-size:12.5px;width:auto;padding:0 8px"></button>
+    <button class="iconbtn" id="bTheme" data-t="tTheme"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg></button>
+    <button class="iconbtn" id="bHelp" data-t="tHelp">?</button>
+    <button class="btn2 editor-only" id="bHome" data-t="tHome" data-i="projects" style="color:#fff;border-color:rgba(255,255,255,.4)"></button>
+    <button class="primary editor-only" id="bExport" data-i="export"></button>
+  </div>
+  <div class="ribbon editor-only">
+    <div class="group" id="gEdit">
+      <div class="btns">
+        <button class="rb" id="bDel" data-t="tDel"><span class="ic ic-del" data-i="icText"></span><span class="lb" data-i="del"></span></button>
+        <button class="rb" id="bRes" data-t="tRes"><span class="ic"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/></svg></span><span class="lb" data-i="restore"></span></button>
+      </div>
+      <div class="gl" data-i="gEdit"></div>
+    </div>
+    <div class="group" id="gMove">
+      <div class="btns">
+        <button class="rb" id="bCut" data-t="tCut"><span class="ic ic-move" data-i="icText"></span><span class="lb" data-i="cut"></span></button>
+        <button class="rb" id="bPaste" data-t="tPaste" disabled><span class="ic"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15 10l5 5-5 5"/><path d="M4 4v7a4 4 0 0 0 4 4h12"/></svg></span><span class="lb" data-i="paste"></span></button>
+      </div>
+      <div class="gl" data-i="gMove"></div>
+    </div>
+    <div class="group" id="gHist">
+      <div class="btns">
+        <button class="rb" id="bUndo" data-t="tUndo"><span class="ic"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 14L4 9l5-5"/><path d="M4 9h10.5a5.5 5.5 0 0 1 0 11H11"/></svg></span><span class="lb" data-i="undo"></span></button>
+        <button class="rb" id="bRedo" data-t="tRedo"><span class="ic"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15 14l5-5-5-5"/><path d="M20 9H9.5a5.5 5.5 0 0 0 0 11H13"/></svg></span><span class="lb" data-i="redo"></span></button>
+      </div>
+      <div class="gl" data-i="gHist"></div>
+    </div>
+    <div class="group" id="gView">
+      <div class="btns">
+        <button class="rb" id="bHide" data-t="tHide"><span class="ic"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg></span><span class="lb" data-i="hideDel"></span></button>
+      </div>
+      <div class="gl" data-i="gView"></div>
+    </div>
+    <div id="gTools">
+      <div class="group">
+        <div class="btns">
+          <button class="rb" id="bClean" data-t="tClean"><span class="ic"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15 4l5 5L9 20H4v-5z"/><path d="M12 7l5 5"/></svg></span><span class="lb" data-i="clean"></span></button>
+        </div>
+        <div class="gl" data-i="gClean"></div>
+      </div>
+      <div class="group">
+        <div class="btns">
+          <button class="rb" id="bSpk" data-t="tSpk"><span class="ic"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.5"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6"/><path d="M17 8l3 3-3 3"/></svg></span><span class="lb" data-i="spk"></span></button>
+        </div>
+        <div class="gl" data-i="gSpk"></div>
+      </div>
+      <div class="group">
+        <div class="gapbox" data-t="tGap">
+          <div class="row"><input id="gapMs" type="number" min="0" max="3000" step="10" data-ph="asIs">ms</div>
+          <span class="lb" data-i="gap"></span>
+        </div>
+        <div class="gl" data-i="gPace"></div>
+      </div>
+      <div class="group" id="gAudio">
+        <div style="display:flex;gap:6px;align-items:center">
+          <div class="qbox">
+            <label><span data-i="denoise"></span> <select id="qDen"><option value="off" data-i="denOff"></option><option value="light" data-i="denLight"></option><option value="strong" data-i="denStrong"></option><option value="ai" data-i="denAI"></option></select></label>
+            <label><span data-i="volume"></span> <select id="qLev"><option value="none" data-i="levNone"></option><option value="loudnorm" data-i="levLoud"></option><option value="full" data-i="levFull"></option></select></label>
+          </div>
+          <button class="rb" id="bAB" data-t="tAB"><span class="ic"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10v4M7 7v10M11 4v16M15 8v8M19 11v2"/></svg></span><span class="lb" data-i="ab"></span></button>
+        </div>
+        <div class="gl" data-i="gSound"></div>
+      </div>
+      <div class="group">
+        <div class="btns">
+          <button class="rb" id="bShow" data-t="tShow"><span class="ic"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h9l4 4v14H6z"/><path d="M9 12h7M9 16h5M9 8h3"/></svg></span><span class="lb" data-i="shownote"></span></button>
+        </div>
+        <div class="gl">AI</div>
+      </div>
+    </div>
+    <div class="spacer"></div>
+    <div class="group">
+      <div class="btns">
+        <button class="rb danger" id="bReset" data-t="tReset"><span class="ic"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M8 6V4h8v2"/><path d="M6 6l1 14h10l1-14"/></svg></span><span class="lb" data-i="reset"></span></button>
+      </div>
+      <div class="gl">&nbsp;</div>
+    </div>
+  </div>
+  <div id="banner" class="editor-only"><span id="bannerText"></span><button id="bCancelMove" data-i="cancelMove"></button></div>
+</div>
+
+<div class="home-only home-wrap">
+  <div class="uploader">
+    <h3 style="margin:0 0 4px" data-i="newProject"></h3>
+    <div style="color:var(--muted);font-size:13px;margin-bottom:14px" data-i="newHint"></div>
+    <div class="drop" id="drop"></div>
+    <input type="file" id="file" accept="audio/*,video/*" hidden>
+    <div class="fields">
+      <label class="field"><span data-i="pname"></span><input id="pname" data-ph="pnamePh"></label>
+      <label class="field"><span data-i="plang"></span><select id="plang"><option value="" data-i="autoLang"></option><option value="en">English</option><option value="zh">中文</option><option value="sv">Svenska</option><option value="de">Deutsch</option><option value="fr">Français</option><option value="es">Español</option><option value="ja">日本語</option></select></label>
+      <label class="field"><span data-i="pspk"></span><select id="pspk"><option>1</option><option selected>2</option><option>3</option><option>4</option><option>5</option></select></label>
+    </div>
+    <label class="check"><input type="checkbox" id="pcut" checked><span data-i="pcut"></span></label>
+    <button class="primary" id="bUpload" disabled data-i="upload"></button>
+    <div id="upStatus" style="display:none"><div class="prog"><i id="upBar"></i></div><div id="upText" style="font-size:13px;color:var(--ink2)"></div></div>
+  </div>
+  <h2 data-i="myProjects"></h2>
+  <div class="plist" id="plist"></div>
+</div>
+
+<main class="editor-only">
+  <div class="paper" id="paper">
+    <h1 class="docname" id="docname"></h1>
+    <div class="docsub" id="docsub">&nbsp;</div>
+    <div id="doc"></div>
+  </div>
+</main>
+
+<div class="player editor-only" id="player">
+  <button class="playbtn" id="bPlay" data-t="tPlay"></button>
+  <div class="time"><span id="tCur">0:00</span> / <span id="tTot">0:00</span></div>
+  <div class="bar" id="bar" data-t="tBar"><i id="barFill"></i></div>
+  <div class="stats"><span><span data-i="sDel1"></span> <b id="sDel">0</b> <span data-i="sDel2"></span></span><span><span data-i="sMove1"></span> <b id="sMove">0</b> <span data-i="sDel2"></span></span><span><i class="dot" id="saveDot"></i><span id="saveText"></span></span></div>
+</div>
+
+<div id="toast"></div>
+<div id="ab" class="editor-only"></div>
+
+<div id="modal"><div class="mcard" id="mcard"></div></div>
+
+<div id="tour">
+  <div class="shade" id="tourShade"></div>
+  <div class="spot" id="tourSpot"></div>
+  <div class="card" id="tourCard"></div>
+</div>
+
+<audio id="au" preload="auto"></audio>
+
+<script>
+/* ---------- 界面语言 / interface language ---------- */
+const I18N = {
+en: {
+  brand: 'Podcast <em>Desk</em>', loading: 'Loading…', allProjects: 'All projects', projects: 'Projects', export: 'Export audio', exporting: 'Exporting…',
+  tTheme: 'Dark / light', tHelp: 'Show the tutorial again', tHome: 'Back to the project list',
+  icText: 'Ab', del: 'Delete', restore: 'Restore', gEdit: 'Edits', cut: 'Cut', paste: 'Paste', gMove: 'Move', undo: 'Undo', redo: 'Redo', gHist: 'History',
+  hideDel: 'Hide deleted', showDel: 'Show deleted', gView: 'View', clean: 'Remove fillers', gClean: 'Clean up', spk: 'Speakers', gSpk: 'Speakers',
+  gap: 'Pause', gPace: 'Pacing', asIs: 'as is', denoise: 'Noise', volume: 'Volume', ab: 'A/B listen', gSound: 'Sound', shownote: 'Show notes', reset: 'Discard all edits',
+  denOff: 'Off', denLight: 'Light', denStrong: 'Strong', denAI: 'AI voice isolation', levNone: 'Original', levLoud: 'Even loudness', levFull: 'Level speakers',
+  tDel: 'Delete (Backspace deletes before the cursor, Delete after it, or select and press Delete)', tRes: 'Restore (R): put the cursor next to struck-out words, or select them',
+  tCut: 'Cut the words to move (Ctrl+X / ⌘X)', tPaste: 'Paste at the cursor (Ctrl+V / ⌘V)', tUndo: 'Undo (⌘Z)', tRedo: 'Redo (⇧⌘Z)', tHide: 'Hide deleted words and read only what stays',
+  tClean: 'Delete every um, uh… in one go (pick each word)', tSpk: 'Rename speakers and set each one\'s speed', tGap: 'Make every pause between sentences this long; empty = as recorded',
+  tAB: 'Take 20 s from the cursor and flip between original and processed', tShow: 'Write show notes from the edited transcript', tReset: 'Clear every edit and go back to the first draft',
+  tPlay: 'Play / pause (space)', tBar: 'Click to jump', tLine: 'Play from this line', cancelMove: 'Cancel move (Esc)',
+  newProject: 'New project', newHint: 'Upload a recording. It gets transcribed, split by speaker and rough-cut for you (ums and uhs, restarts, coughs, cross-talk, breaths, long gaps).',
+  dropHtml: '<b>Choose audio</b> or drop it here<br><span style="font-size:12px">mp3 / m4a / wav / mp4 all work</span>', dropPicked: '{size} MB · click to pick another',
+  pname: 'Project name', pnamePh: 'e.g. Episode 12', plang: 'Language', autoLang: 'Detect', pspk: 'Speakers', pcut: 'Rough cut automatically (untick to only transcribe and keep the full audio)',
+  upload: 'Upload and process', myProjects: 'My projects', uploading: 'Uploading {pct}%', upFailed: 'Upload failed', upLost: 'Upload failed. Is Podcast Desk still running?',
+  upDone: 'Uploaded. Processing “{id}”: transcribing, finding speakers, rough cut. Follow along in the list below and open it when it\'s ready.',
+  noProjects: 'No projects yet. Upload an episode to start.', edited: 'Edited', notEdited: 'Not edited yet', processing: 'Processing', failed: 'Processing failed', delete: 'Delete',
+  confirmDelete: 'Delete “{id}”?\nThe whole folder goes to the trash, so you can get it back.', deleteFailed: 'Delete failed',
+  transcript: 'Transcript', sDel1: 'Deleted', sMove1: 'Moved', sDel2: 'words', saved: 'Saved', saving: 'Saving…', saveFailed: 'Save failed',
+  docsub: 'Edited length about {len} · draft {base}', chipTitle: 'Click to rename or change speed', speaker: 'Speaker {n}', pause: 'Pause {s}s',
+  noDelNear: 'No deleted words next to the cursor. Put it beside red struck-out words, or select what to restore.', restored: 'Restored {n} words',
+  placeCursor: 'Click between words to place the cursor, or select some text', allDeleted: 'Everything selected is already deleted', noneDeleted: 'Nothing selected is deleted',
+  didDel: 'Deleted {n} words', didRes: 'Restored {n} words', selectToMove: 'Select (or use ⇧← ⇧→) the words to move first',
+  cutBanner: 'Cut {n} words. Put the cursor where they should go (click or use ← →), then press Ctrl+V / ⌘V', cutFirst: 'Select the words to move and press Ctrl+X / ⌘X first',
+  cursorFirst: 'Put the cursor where the words should go first', cursorInside: 'The cursor is inside or right next to the cut words. Pick another spot',
+  moved: 'Moved {n} words (green double underline)', noUndo: 'Nothing left to undo', undone: 'Undone', noRedo: 'Nothing to redo', redone: 'Redone',
+  confirmReset: 'Discard every edit and go back to the first draft?\n(If you click this by mistake, ⌘Z brings it all back.)', didReset: 'Back to the first draft (⌘Z to undo)',
+  exTitle: 'Export audio', exSub: 'Every cut gets a 60 ms crossfade, with a fade in and fade out. It makes a new file and never overwrites the original.',
+  exVol: 'Volume', exLevNone: 'Original', exLevNoneH: 'no volume processing (default)', exLevLoud: 'Even loudness', exLevLoudH: 'the whole episode at the podcast standard −16 LUFS, keeping the difference between voices',
+  exLevFull: 'Level speakers + even loudness', exLevFullH: 'quiet voices come up automatically; good when one person is much quieter', exDen: 'Noise',
+  exDenOff: 'Off', exDenOffH: '(default)', exDenLight: 'Light', exDenLightH: 'removes low hum and faint hiss', exDenStrong: 'Strong', exDenStrongH: 'for obvious background noise; voices may sound a little duller',
+  exDenAI: 'AI voice isolation', exDenAIH: 'keeps only voices, even removing sound behind speech; adds about 6 min per hour', cancel: 'Cancel', exGo: 'Export',
+  tourWelcome: 'Welcome to Podcast Desk',
+  tour0: '<p>Every word here is a piece of the audio. <b>Edit the text and you edit the audio</b>: deleted words leave the episode and moved passages play in their new order.</p><p>It works like tracked changes in Word. Here\'s a one-minute tour; skip it if you already know your way around.</p>',
+  tour1t: 'This is the transcript', tour1: '<p>The grey time on the left is <b>the time in the edited episode</b>. Click it to play from that line.</p><p><b>Click</b> between words for a blinking cursor; <kbd>←</kbd> <kbd>→</kbd> move word by word and <kbd>⌥←</kbd> <kbd>⌥→</kbd> jump a sentence.</p>',
+  tour2t: 'Delete = red strike-through', tour2: '<div class="demo">So <span class="del">um </span>today we\'re <span class="del">like </span>talking films</div><p>With the cursor in place, <kbd>Backspace</kbd> deletes the word before and <kbd>Delete</kbd> the word after; or <b>select a passage</b> and press <kbd>Delete</kbd>.</p><p>Deleted words stay visible as red strike-through so you can check them. To bring them back, put the cursor beside them and press <kbd>R</kbd>.</p>',
+  tour3t: 'Move = green double underline', tour3: '<p>Cut and paste, just like Word:<br>① Select the words and press <kbd>Ctrl+X</kbd> (or <kbd>⌘X</kbd> on a Mac)<br>② Put the cursor where they should go (click, or use <kbd>←</kbd> <kbd>→</kbd>)<br>③ Press <kbd>Ctrl+V</kbd> / <kbd>⌘V</kbd></p><p>Moved words get a <span class="moved">green double underline</span>. <kbd>Esc</kbd> cancels.</p>',
+  tour4t: 'Undo anytime', tour4: '<p><kbd>⌘Z</kbd> undoes and <kbd>⇧⌘Z</kbd> redoes. The last 50 steps are saved with your edits, so they survive a reload.</p><p>Everything <b>saves automatically</b>; the bottom bar says "Saved".</p>',
+  tour5t: 'Clean up, set the pace, write show notes', tour5: '<p><b>Remove fillers</b>: delete every "um", "uh", "you know"… in one go. Tick each word, or add your own.</p><p><b>Pause</b>: type a length in ms (say 400) and every pause between sentences becomes that long; leave it empty to keep them as recorded.</p><p><b>Show notes</b>: written from the edited transcript, with timestamps that match the finished episode (needs Claude Code).</p><p><b>Sound</b>: pick noise removal and volume, then click "A/B listen" for 20 s from the cursor; press <kbd>B</kbd> to flip between original and processed.</p><p>The <b>coloured dot</b> before each line is the speaker. "Speakers" lets you rename them and change how fast each one talks.</p>',
+  tour6t: 'Edit while you listen', tour6: '<p><kbd>Space</kbd> plays from the cursor and pauses again; click the progress bar to jump.</p><p>You hear <b>the edited episode</b>: deleted words are skipped, moved passages play in their new order, and the current word lights up.</p>',
+  tour7t: 'Happy? Export', tour7: '<p>"Export audio" writes a new mp3 (named _edit_v1, v2…, never overwriting the original), with smooth cuts and balanced volume.</p><div class="keys"><kbd>Space</kbd><span>Play / pause</span><kbd>← →</kbd><span>Move the cursor (⇧ selects, ⌥ jumps a sentence)</span><kbd>⌫ / Delete</kbd><span>Delete</span><kbd>R</kbd><span>Restore</span><kbd>Ctrl+X → Ctrl+V</kbd><span>Cut → paste (move)</span><kbd>⌘Z</kbd><span>Undo</span></div><p>To see this tour again, click <b>?</b> at the top right.</p>',
+  tourLabel: 'Tutorial', tourStep: 'Step {i} / {n}', skipTour: 'Skip tutorial', prev: 'Back', startTour: 'Start', next: 'Next', startUsing: 'Start editing',
+  noSpk: 'This episode has no speaker information', spkTitle: 'Speakers', spkSub: 'Names show up in the transcript and the show notes. Drag a slider to change how fast someone talks (1.00× is the original; pitch stays the same). Press space to hear it right away; export uses a higher-quality method.',
+  spkReset: 'Reset all speeds to 1.00×', doneBtn: 'Done', gapAsIs: 'Pauses between sentences: as recorded', gapSet: 'Every pause between sentences is now {ms} ms',
+  denOffN: 'No noise removal', denLightN: 'Light noise removal', denStrongN: 'Strong noise removal', levNoneN: 'Original volume', levLoudN: 'Even loudness', levFullN: 'Levelled speakers',
+  abTitle: 'A/B listen · 20 s from {t}', abA: 'A Original', abHint: 'Press B to switch · export uses this setting', abClose: 'Close (Esc)',
+  abMaking: 'Making 20 s of original and processed audio from {t}{ai}…', abAI: ' (AI takes about 10 s)',
+  cleanTitle: 'Remove fillers', cleanSub: 'Tick the words to delete. On the right are examples from the transcript (the red part goes). They become red strike-through, so ⌘Z or Restore brings them back.',
+  places: '{n}', addWordPh: 'Add a word, e.g. basically', add: 'Add', cleanGo: 'Delete {n} ticked', cleaned: 'Deleted {n} fillers (⌘Z to undo)',
+  snTitle: 'Show notes', snWriting: 'Claude is reading the edited transcript and writing show notes (1–3 min)…', snBg: 'Keep going in the background', snCheck: 'Timestamps match the current edit; check names and titles before publishing',
+  again: 'Generate again', close: 'Close', copyAll: 'Copy all', copied: 'Copied', gotIt: 'OK', generating: 'Generating…',
+},
+zh: {
+  brand: '播客<em>剪辑</em>台', loading: '载入中…', allProjects: '所有项目', projects: '项目', export: '导出音频', exporting: '导出中…',
+  tTheme: '切换深色/浅色', tHelp: '重新看教程', tHome: '回到项目列表',
+  icText: '文', del: '删除', restore: '取消删除', gEdit: '修订', cut: '剪切', paste: '粘贴', gMove: '移动', undo: '撤销', redo: '重做', gHist: '历史',
+  hideDel: '隐藏删除', showDel: '显示删除', gView: '视图', clean: '清理口头词', gClean: '清理', spk: '说话人·语速', gSpk: '说话人',
+  gap: '句间停顿', gPace: '节奏', asIs: '原样', denoise: '降噪', volume: '音量', ab: '试听对比', gSound: '音质', shownote: '生成 Shownote', reset: '放弃全部修改',
+  denOff: '不降噪', denLight: '轻度', denStrong: '强力', denAI: 'AI 人声分离', levNone: '原声', levLoud: '统一响度', levFull: '拉平音量差',
+  tDel: '删除（Backspace 删光标前 / Delete 删光标后 / 拖选后 Delete）', tRes: '取消删除（R）：光标放在删除线旁边，或拖选',
+  tCut: '剪切要移动的文字（Ctrl+X / ⌘X）', tPaste: '粘贴到光标处（Ctrl+V / ⌘V）', tUndo: '撤销（⌘Z）', tRedo: '重做（⇧⌘Z）：撤销多了再前进一步', tHide: '隐藏删掉的字，只看保留的文本',
+  tClean: '一键删除嗯、然后、对的……（每个词可以单独勾选）', tSpk: '给说话人改名字、单独调每个人的语速', tGap: '每句话之前的停顿统一成这个长度；留空 = 保持原样',
+  tAB: '从光标处截 20 秒，原声 / 处理后来回切换对比', tShow: '根据剪辑后的文本，按以往 shownote 的格式自动写一份', tReset: '清空所有修改，回到最初的底稿',
+  tPlay: '播放/暂停（空格）', tBar: '点击跳转', tLine: '从这一行开始播放', cancelMove: '取消移动（Esc）',
+  newProject: '新建项目', newHint: '上传一期录音，自动转写、区分说话人，并按剪辑原则做好初剪（删嗯啊、然后、咳嗽、叠音、吸气、长空档）。',
+  dropHtml: '<b>点击选择音频</b> 或拖到这里<br><span style="font-size:12px">mp3 / m4a / wav / mp4 都可以</span>', dropPicked: '{size} MB · 点击可以换一个',
+  pname: '项目名称', pnamePh: '例如 第 12 期', plang: '语言', autoLang: '自动识别', pspk: '说话人数', pcut: '自动初剪（不勾就只转写，保留完整音频）',
+  upload: '上传并开始处理', myProjects: '我的项目', uploading: '上传中 {pct}%', upFailed: '上传失败', upLost: '上传失败，请检查剪辑台是否还在运行',
+  upDone: '上传完成，正在处理「{id}」：转写、区分说话人、初剪。可以在下面的项目列表里看进度，完成后点开就能编辑。',
+  noProjects: '还没有项目，先上传一期吧。', edited: '已有修改', notEdited: '还没开始编辑', processing: '处理中', failed: '处理失败', delete: '删除',
+  confirmDelete: '删除「{id}」？\n整个文件夹会被移到废纸篓，可以从废纸篓找回。', deleteFailed: '删除失败',
+  transcript: '转写稿', sDel1: '已删', sMove1: '挪动', sDel2: '字', saved: '已保存', saving: '保存中…', saveFailed: '保存失败',
+  docsub: '成品约 {len} · 底稿 {base}', chipTitle: '点击改名字、调语速', speaker: '说话人 {n}', pause: '停顿 {s}s',
+  noDelNear: '光标旁边没有删掉的字。把光标放在红色删除线旁边，或拖选要恢复的文字', restored: '已取消删除 {n} 个字',
+  placeCursor: '先在字之间点一下放光标，或拖选一段文字', allDeleted: '选中的字已经都删掉了', noneDeleted: '选中的字里没有删掉的',
+  didDel: '已删除 {n} 个字', didRes: '已取消删除 {n} 个字', selectToMove: '先拖选（或用 ⇧← ⇧→ 选中）要移动的文字',
+  cutBanner: '已剪切 {n} 个字 —— 把光标放到要插入的位置（点一下或用 ← →），按 Ctrl+V / ⌘V 粘贴', cutFirst: '先选中要移动的文字，按 Ctrl+X / ⌘X 剪切',
+  cursorFirst: '先把光标放到要插入的位置', cursorInside: '光标在剪切的内容里面或紧挨着，换个位置',
+  moved: '已移动 {n} 个字（绿色双下划线）', noUndo: '没有可以撤销的操作了', undone: '已撤销一步', noRedo: '没有可以重做的操作', redone: '已重做一步',
+  confirmReset: '放弃所有修改，回到最初的底稿？\n（误点了也没关系，按 ⌘Z 可以撤回）', didReset: '已回到底稿（⌘Z 可撤回）',
+  exTitle: '导出音频', exSub: '剪点会自动做 60ms 交叉淡化，开头淡入、结尾淡出。生成新文件，不会覆盖原文件。',
+  exVol: '音量', exLevNone: '原声', exLevNoneH: '不做任何音量处理（默认）', exLevLoud: '统一整体响度', exLevLoudH: '整体调到播客标准 -16 LUFS，不改变两人之间的差别',
+  exLevFull: '拉平音量差 + 统一响度', exLevFullH: '声音小的人自动抬高，适合两人音量差很多的录音', exDen: '降噪',
+  exDenOff: '不降噪', exDenOffH: '（默认）', exDenLight: '轻度', exDenLightH: '去低频嗡嗡声和轻微底噪', exDenStrong: '强力', exDenStrongH: '底噪明显时用，人声可能略发闷',
+  exDenAI: 'AI 人声分离', exDenAIH: '只保留人声，能去掉说话时的背景声；一小时约多花 6 分钟', cancel: '取消', exGo: '开始导出',
+  tourWelcome: '欢迎使用播客剪辑台',
+  tour0: '<p>这里的每个字都对应音频里的一段声音。<b>改文字就是剪音频</b>：删掉的字不会出现在成品里，挪动的段落会按新顺序播放。</p><p>用法和 Word 的"修订"很像，1 分钟带你走一遍。已经会了可以直接跳过。</p>',
+  tour1t: '这是转写稿', tour1: '<p>左边灰色的是<b>成品里的时间</b>，点它就从那一行开始播放。</p><p>在字之间<b>点一下</b>会出现闪烁的光标，用 <kbd>←</kbd> <kbd>→</kbd> 逐词移动，<kbd>⌥←</kbd> <kbd>⌥→</kbd> 跳到上/下一句。</p>',
+  tour2t: '删除 = 红色删除线', tour2: '<div class="demo">我们<span class="del">嗯</span>今天<span class="del">然后</span>来聊电影</div><p>光标放好后按 <kbd>Backspace</kbd> 删前一个字、<kbd>Delete</kbd> 删后一个字；或者<b>拖选一段</b>再按 <kbd>Delete</kbd>。</p><p>删掉的字原地显示成红色删除线，方便检查。想找回来：光标放在删除线旁按 <kbd>R</kbd>（取消删除）。</p>',
+  tour3t: '移动段落 = 绿色双下划线', tour3: '<p>和 Word 一样剪切、粘贴：<br>① 拖选要挪的文字，按 <kbd>Ctrl+X</kbd>（Mac 上 <kbd>⌘X</kbd> 也行）<br>② 把光标放到要插入的位置（点一下，或用 <kbd>←</kbd> <kbd>→</kbd>）<br>③ 按 <kbd>Ctrl+V</kbd> / <kbd>⌘V</kbd> 粘贴</p><p>挪过的内容显示成<span class="moved">绿色双下划线</span>。按 <kbd>Esc</kbd> 可以取消。</p>',
+  tour4t: '随时撤销', tour4: '<p><kbd>⌘Z</kbd> 撤销，<kbd>⇧⌘Z</kbd> 重做。最近 50 步会和修改一起保存，刷新页面也还在。</p><p>所有修改都<b>自动保存</b>，底部会显示"已保存"。</p>',
+  tour5t: '一键清理、调节奏、写 Shownote', tour5: '<p><b>清理口头词</b>：一键删掉所有"嗯""然后""对的"……每个词可以单独勾选，还能自己加词。</p><p><b>句间停顿</b>：输入毫秒数（比如 400），每句话前的停顿就统一成这个长度；留空保持原样。</p><p><b>生成 Shownote</b>：根据剪辑后的文稿自动写，时间轴对应成品（需要 Claude Code）。</p><p><b>音质</b>：选好降噪和音量方式，点"试听对比"，从光标处截 20 秒，按 <kbd>B</kbd> 在原声和处理后之间来回切换。默认是原声。</p><p>每句话前的<b>彩色圆点</b>代表说话人。点"说话人·语速"可以改名字，还能单独调每个人说话的快慢。</p>',
+  tour6t: '边听边改', tour6: '<p>按 <kbd>空格</kbd> 从光标处开始播放，再按一次暂停；点进度条可以跳转。</p><p>播放的是<b>剪辑后的效果</b>：删掉的会被跳过，挪动的按新顺序放，正在读的字会高亮。</p>',
+  tour7t: '满意了就导出', tour7: '<p>点"导出音频"会生成新的 mp3（文件名带 _文本剪辑_v1、v2…，不会覆盖原文件），自动做好剪点淡化和音量平衡。</p><div class="keys"><kbd>空格</kbd><span>播放 / 暂停</span><kbd>← →</kbd><span>移动光标（加 ⇧ 选择，加 ⌥ 按句跳）</span><kbd>⌫ / Delete</kbd><span>删除</span><kbd>R</kbd><span>取消删除</span><kbd>Ctrl+X → Ctrl+V</kbd><span>剪切 → 粘贴（移动）</span><kbd>⌘Z</kbd><span>撤销</span></div><p>以后想再看这个教程，点右上角的 <b>?</b></p>',
+  tourLabel: '新手教程', tourStep: '第 {i} / {n} 步', skipTour: '跳过教程', prev: '上一步', startTour: '开始教程', next: '下一步', startUsing: '开始使用',
+  noSpk: '这一期没有说话人信息', spkTitle: '说话人', spkSub: '改名字会显示在稿子和 Shownote 里。拖动滑杆调每个人的语速（1.00× 是原速，变速不变调），调完直接按空格就能听；导出时会用更好的算法处理。',
+  spkReset: '语速全部恢复 1.00×', doneBtn: '完成', gapAsIs: '句间停顿：保持原样', gapSet: '每句话前的停顿统一为 {ms} ms',
+  denOffN: '不降噪', denLightN: '轻度降噪', denStrongN: '强力降噪', levNoneN: '原声音量', levLoudN: '统一响度', levFullN: '拉平音量差',
+  abTitle: '试听对比 · 从 {t} 起 20 秒', abA: 'A 原声', abHint: '按 B 切换 · 导出时会用这个设置', abClose: '关闭（Esc）',
+  abMaking: '正在生成 {t} 起 20 秒的原声和处理后版本{ai}…', abAI: '（AI 约 10 秒）',
+  cleanTitle: '一键清理口头词', cleanSub: '勾选要删掉的词，右边是在稿子里的例子（红字是会被删的部分）。删完是红色删除线，可以 ⌘Z 撤销，也可以单独取消删除。',
+  places: '{n} 处', addWordPh: '再加一个词，比如：反正、怎么说', add: '添加', cleanGo: '删除勾选的 {n} 处', cleaned: '已删除 {n} 处口头词（⌘Z 可撤销）',
+  snTitle: '生成 Shownote', snWriting: 'Claude 正在通读剪辑后的文稿，写 shownote（1–3 分钟）…', snBg: '在后台继续，先关掉', snCheck: '时间轴对应当前剪辑后的成品，人名片名请核对后再发布',
+  again: '重新生成', close: '关闭', copyAll: '复制全文', copied: '已复制', gotIt: '知道了', generating: '生成中…',
+}};
+const store = {get(k){ try { return localStorage.getItem(k); } catch(e){ return null; } },
+               set(k, v){ try { localStorage.setItem(k, v); } catch(e){} }};
+const UILANG = (store.get('te_ui') || (/^zh/i.test(navigator.language) ? 'zh' : 'en')) === 'zh' ? 'zh' : 'en';
+document.cookie = 'ui=' + UILANG + ';path=/;SameSite=Lax';   // the server answers in the same language
+document.documentElement.lang = UILANG;
+function t(k, v = {}){ let s = (I18N[UILANG][k] ?? I18N.en[k] ?? k); for (const n in v) s = s.split('{' + n + '}').join(v[n]); return s; }
+function applyStatic(){
+  document.querySelectorAll('[data-i]').forEach(el => { el.innerHTML = t(el.dataset.i); });
+  document.querySelectorAll('[data-t]').forEach(el => { el.title = t(el.dataset.t); });
+  document.querySelectorAll('[data-ph]').forEach(el => { el.placeholder = t(el.dataset.ph); });
+  document.querySelector('#bLang').textContent = UILANG === 'zh' ? 'EN' : '中文';
+  document.querySelector('#meta').textContent = t('loading');
+  document.querySelector('#saveText').textContent = t('saved');
+  document.querySelector('#docname').textContent = t('transcript');
+  document.querySelector('#drop').innerHTML = t('dropHtml');
+  document.title = t('brand').replace(/<[^>]+>/g, '');
+}
+
+const XF = 0.06;                 // 导出时每个剪辑点的交叉淡化，用来估算成品时间
+const $ = s => document.querySelector(s);
+const au = $('#au'), doc = $('#doc');
+const ICON_PLAY = '<svg viewBox="0 0 16 16" fill="currentColor"><path d="M4 2.5v11l9-5.5z"/></svg>';
+const ICON_PAUSE = '<svg viewBox="0 0 16 16" fill="currentColor"><path d="M3.5 2h3v12h-3zM9.5 2h3v12h-3z"/></svg>';
+let tokens = [], byId = new Map(), undo = [], redo = [];
+let ranges = [], total = 0, pending = null, saveT = null;
+let playing = false, curRange = -1, rafId = 0, lastHi = null;
+let cursor = null, selAnchor = null;
+const PID = new URLSearchParams(location.search).get('p');
+const api = (path, extra = '') => `${path}?p=${encodeURIComponent(PID)}${extra}`;
+let settings = {gapMs: null, speed: {}}, quiet = [], SPK = {labels: [], names: {}};
+const SPK_COLORS = ['#143FDC', '#C86B39', '#01C366', '#8E5CD9', '#D9A400', '#E0457B'];
+
+/* ---------- 数据 ---------- */
+/* 一步的快照：顺序 + 删掉的字 + 挪过的字（都用 id 记，体积小，能和项目一起存盘） */
+function snap(){
+  return {o: tokens.map(t => t.id), d: tokens.filter(t => t.d).map(t => t.id), m: tokens.filter(t => t.m).map(t => t.id)};
+}
+function restore(s){
+  const d = new Set(s.d), m = new Set(s.m);
+  tokens = s.o.map(id => { const t = byId.get(id); t.d = d.has(id); t.m = m.has(id); return t; });
+}
+const KEEP_STEPS = 50;
+function commit(){ undo.push(snap()); if (undo.length > KEEP_STEPS) undo.shift(); redo = []; }
+function save(){
+  setSaved(false);
+  clearTimeout(saveT);
+  saveT = setTimeout(async () => {
+    try { await fetch(api('/api/save'), {method:'POST', body: JSON.stringify({tokens, undo, redo, settings})}); setSaved(true); }
+    catch(e){ $('#saveText').textContent = t('saveFailed'); }
+  }, 400);
+}
+function setSaved(ok){ $('#saveDot').classList.toggle('busy', !ok); $('#saveText').textContent = ok ? t('saved') : t('saving'); }
+
+/* 根据保留的字算出播放/导出用的原始时间区间；时间上首尾相接的字合成一段。
+   设了"句间停顿"时：每句话开头前的空白统一成这个长度——原来停得长就剪短，
+   原来太短（或接口处没有空白）就从原音频里借一段真正安静的声音补上。 */
+function layout(){
+  ranges = [];
+  const G = settings.gapMs == null ? null : settings.gapMs / 1000;
+  const half = G == null ? 0 : (G + XF) / 2;    // 前一句尾、后一句头各留多少（剪辑点的交叉淡化会吃掉 XF）
+  const rateOf = t => (t.k === 'w' && t.sp && settings.speed && settings.speed[t.sp]) || 1;   // 说话人语速
+  const push = (s, t, p) => { ranges.push({s, e: t.e, toks: [p], rate: rateOf(t)}); t._r = ranges.length - 1; };
+  const addQuiet = len => {
+    if (len < 0.02) return;
+    const q = quiet.find(([a, b]) => b - a >= len);
+    if (q) ranges.push({s: q[0], e: q[0] + len, toks: [], quiet: true, rate: 1});
+  };
+  let prev = null;
+  for (let p = 0; p < tokens.length; p++){
+    const t = tokens[p];
+    t._r = -1;
+    if (t.d || (G != null && t.k === 'p')) continue;   // 统一句间停顿时，原来补的停顿片段不用了
+    const last = ranges[ranges.length - 1];
+    const contig = last && Math.abs(last.e - t.s) < 1e-3 && last.rate === rateOf(t);
+    if (G != null && prev && prev.k === 'w' && t.k === 'w' && prev.seg !== t.seg) {
+      const pe = prev.we ?? prev.e, ts = t.ws ?? t.s;
+      if (contig) {
+        const g = ts - pe;
+        if (g > G + XF) { last.e = pe + half; push(ts - half, t, p); }
+        else if (g < G - 0.02) { const m = (pe + ts) / 2; last.e = m; addQuiet(G - g + 2 * XF); push(m, t, p); }
+        else { last.e = t.e; last.toks.push(p); t._r = ranges.length - 1; }
+      } else {
+        const endPrev = Math.min(pe + half, prev.e), startNext = Math.max(ts - half, t.s);
+        last.e = Math.max(last.s, endPrev);
+        const gap0 = (endPrev - pe) + (ts - startNext) - XF;
+        if (gap0 < G - 0.02) addQuiet(G - gap0 + XF);
+        push(startNext, t, p);
+      }
+    } else if (contig) { last.e = t.e; last.toks.push(p); t._r = ranges.length - 1; }
+    else push(t.s, t, p);
+    prev = t;
+  }
+  let out = 0;
+  ranges.forEach((r, i) => { r.out = out; out += (r.e - r.s) / r.rate - (i < ranges.length - 1 ? XF : 0); });
+  for (const t of tokens) t._o = t._r >= 0 ? ranges[t._r].out + Math.max(0, t.s - ranges[t._r].s) / ranges[t._r].rate : null;
+  total = out;
+  return out;
+}
+
+function fmt(sec){
+  sec = Math.max(0, sec || 0); const m = Math.floor(sec / 60), s = Math.floor(sec % 60);
+  return (m >= 60 ? Math.floor(m/60) + ':' + String(m%60).padStart(2,'0') : m) + ':' + String(s).padStart(2,'0');
+}
+
+/* ---------- 显示 ---------- */
+function render(){
+  layout();
+  const scrollY = window.scrollY;
+  doc.textContent = '';
+  let line = null, txt = null, prevSeg = null, lineHasKept = false, lineSp = null, prevLineSp = null;
+  const closeLine = () => {
+    if (!line) return;
+    if (!lineHasKept) line.classList.add('empty-line');
+    // 这一行谁在说：按字数多数决定
+    const cnt = {}; let best = null;
+    for (const el of txt.children) { const t = tokens[+el.dataset.p]; if (t.sp) cnt[t.sp] = (cnt[t.sp] || 0) + 1; }
+    for (const k in cnt) if (best == null || cnt[k] > cnt[best]) best = k;
+    const dot = line.children[1];
+    if (best != null) {
+      dot.style.background = spColor(best); dot.title = spName(best);
+      if (best === prevLineSp && lineHasKept) dot.classList.add('same');
+      if (lineHasKept) prevLineSp = best;
+    } else dot.style.visibility = 'hidden';
+  };
+  const newLine = () => {
+    closeLine();
+    line = document.createElement('div'); line.className = 'line';
+    const ts = document.createElement('div'); ts.className = 'ts'; ts.title = t('tLine');
+    const dot = document.createElement('i'); dot.className = 'spk';
+    txt = document.createElement('div'); txt.className = 'txt';
+    line.append(ts, dot, txt); doc.append(line); lineHasKept = false;
+  };
+  tokens.forEach((t, p) => {
+    if (t.k === 'w' && t.seg !== prevSeg) { newLine(); prevSeg = t.seg; }
+    if (!line) newLine();
+    const sp = document.createElement('span');
+    sp.className = (t.k === 'w' ? 'w' : 'p') + (t.d ? ' del' : '') + (t.m ? ' moved' : '');
+    sp.textContent = t.k === 'w' ? t.t + (spaceAfter(p) ? ' ' : '') : '·';
+    if (t.k === 'p') sp.title = window.t('pause', {s: (t.e - t.s).toFixed(2)});
+    sp.dataset.p = p;
+    txt.append(sp);
+    if (!t.d) {
+      if (!lineHasKept) { const ts = line.firstChild; ts.textContent = fmt(t._o); ts.dataset.p = p; }
+      lineHasKept = true;
+    }
+  });
+  closeLine();
+  if (pending) markPending();
+  $('#sDel').textContent = tokens.filter(t => t.d && t.k === 'w').length;
+  $('#sMove').textContent = tokens.filter(t => t.m && t.k === 'w').length;
+  $('#tTot').textContent = fmt(total);
+  $('#docsub').innerHTML = t('docsub', {len: fmt(total), base: esc(window.META.base)}) +
+    (SPK.labels.length ? `<div class="legend">${SPK.labels.map(l =>
+      `<span class="chip" data-sp="${l}" title="${t('chipTitle')}"><i style="background:${spColor(l)}"></i>${esc(spName(l))}${spRate(l) !== 1 ? ` · ${spRate(l).toFixed(2)}×` : ''}</span>`).join('')}</div>` : '');
+  window.scrollTo(0, scrollY);
+  lastHi = null;
+  drawCursor();
+  updatePlayhead();
+}
+const spanAt = p => p == null ? null : doc.querySelector(`.txt [data-p="${p}"]`);
+const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const spColor = l => SPK_COLORS[Math.max(0, SPK.labels.indexOf(l)) % SPK_COLORS.length];
+const spName = l => SPK.names[l] || t('speaker', {n: SPK.labels.indexOf(l) + 1});
+/* Latin-script words need a space between them; Chinese / Japanese characters don't */
+const LAT_END = /[A-Za-z0-9\u00C0-\u024F,.!?;:%)\]"'’-]$/, LAT_START = /^[A-Za-z0-9\u00C0-\u024F("'‘\[]/;
+function spaceAfter(p){
+  const a = tokens[p], b = tokens[p + 1];
+  return !!(a && b && a.k === 'w' && b.k === 'w' && LAT_END.test(a.t) && LAT_START.test(b.t));
+}
+function joinWords(list){ return list.map((x, i) => x + (i < list.length - 1 && LAT_END.test(x) && LAT_START.test(list[i + 1]) ? ' ' : '')).join(''); }
+const spRate = l => (settings.speed && settings.speed[l]) || 1;
+
+/* 当前拖选的字（位置区间） */
+function selection(){
+  const sel = window.getSelection();
+  if (!sel.rangeCount || sel.isCollapsed) return null;
+  const r = sel.getRangeAt(0); let lo = Infinity, hi = -1;
+  for (const sp of doc.querySelectorAll('.txt span')) {
+    if (r.intersectsNode(sp)) { const p = +sp.dataset.p; if (p < lo) lo = p; if (p > hi) hi = p; }
+  }
+  return hi >= 0 ? [lo, hi] : null;
+}
+
+/* ---------- 光标 ---------- */
+/* cursor = 光标后面那个字的位置（等于 tokens.length 表示在最后） */
+function caretPos(){
+  const sel = window.getSelection();
+  if (sel.rangeCount && !sel.isCollapsed) return null;
+  return cursor;
+}
+function drawCursor(){
+  doc.querySelectorAll('.cur,.cur-end').forEach(el => el.classList.remove('cur', 'cur-end'));
+  if (cursor == null) return;
+  const sp = cursor < tokens.length ? spanAt(cursor) : spanAt(tokens.length - 1);
+  if (!sp) return;
+  sp.classList.add(cursor < tokens.length ? 'cur' : 'cur-end');
+  const y = sp.getBoundingClientRect().top;
+  if (y < 170 || y > innerHeight - 90) sp.scrollIntoView({block: 'center'});
+}
+/* 从鼠标点下的位置读出光标在哪两个字之间 */
+function domCaretPos(){
+  const sel = window.getSelection();
+  if (!sel.rangeCount || !sel.isCollapsed) return null;
+  const node = sel.anchorNode;
+  if (node.nodeType === 1 && node.classList.contains('txt')) {
+    const sp = node.childNodes[sel.anchorOffset];
+    return sp ? +sp.dataset.p : +node.lastChild.dataset.p + 1;
+  }
+  const el = (node.nodeType === 3 ? node.parentElement : node)?.closest?.('.txt [data-p]');
+  if (!el) return null;
+  const p = +el.dataset.p;
+  return sel.anchorOffset === 0 ? p : p + 1;
+}
+function setCaret(p){
+  cursor = Math.max(0, Math.min(p, tokens.length)); selAnchor = null;
+  window.getSelection().removeAllRanges();
+  drawCursor();
+}
+const visible = p => !(tokens[p].d && document.body.classList.contains('hide-del'));
+function stepCursor(from, dir){
+  let p = from + dir;
+  while (p > 0 && p < tokens.length && !visible(dir > 0 ? p - 1 : p)) p += dir;
+  return Math.max(0, Math.min(p, tokens.length));
+}
+function jumpLine(from, dir){
+  const seg = p => tokens[p]?.seg;
+  let p = from;
+  if (dir < 0) {
+    if (p > 0) p--;
+    while (p > 0 && (seg(p - 1) === seg(p) || tokens[p].k === 'p')) p--;
+  } else {
+    const s = seg(p);
+    while (p < tokens.length && (seg(p) === s || tokens[p].k === 'p')) p++;
+  }
+  return p;
+}
+function moveCursor(dir, line, extend){
+  if (cursor == null) cursor = 0;
+  const next = line ? jumpLine(cursor, dir) : stepCursor(cursor, dir);
+  if (extend) {
+    if (selAnchor == null) selAnchor = cursor;
+    cursor = next;
+    const lo = Math.min(selAnchor, cursor), hi = Math.max(selAnchor, cursor) - 1;
+    const sel = window.getSelection(); sel.removeAllRanges();
+    if (hi >= lo) { const r = document.createRange(); r.setStartBefore(spanAt(lo)); r.setEndAfter(spanAt(hi)); sel.addRange(r); }
+    drawCursor();
+  } else setCaret(next);
+}
+
+/* ---------- 编辑 ---------- */
+function caretDelete(back){
+  const c = caretPos(); if (c == null) return false;
+  let p = back ? c - 1 : c;
+  while (p >= 0 && p < tokens.length && tokens[p].d) p += back ? -1 : 1;
+  if (p < 0 || p >= tokens.length) return true;
+  commit(); tokens[p].d = true; render(); save();
+  setCaret(back ? p : p + 1);
+  return true;
+}
+/* 像 Word"拒绝修订"：光标紧挨着一段删除线时，恢复这一整段 */
+function caretRestore(){
+  const c = caretPos(); if (c == null) return false;
+  const p = c - 1 >= 0 && tokens[c - 1].d ? c - 1 : (c < tokens.length && tokens[c].d ? c : -1);
+  if (p < 0) { toast(t('noDelNear')); return true; }
+  let a = p, b = p;
+  while (a > 0 && tokens[a - 1].d) a--;
+  while (b < tokens.length - 1 && tokens[b + 1].d) b++;
+  commit(); for (let q = a; q <= b; q++) tokens[q].d = false;
+  render(); save(); setCaret(b + 1);
+  toast(t('restored', {n: b - a + 1}));
+  return true;
+}
+function setDel(flag, back = true){
+  const s = selection();
+  if (!s) {
+    if (flag && caretDelete(back)) return;
+    if (!flag && caretRestore()) return;
+    return toast(t('placeCursor'));
+  }
+  const n = tokens.slice(s[0], s[1] + 1).filter(t => t.d !== flag).length;
+  if (!n) return toast(flag ? t('allDeleted') : t('noneDeleted'));
+  commit(); for (let p = s[0]; p <= s[1]; p++) tokens[p].d = flag;
+  cursor = s[0]; selAnchor = null;
+  window.getSelection().removeAllRanges(); render(); save();
+  toast(t(flag ? 'didDel' : 'didRes', {n}));
+}
+function startMove(){
+  const s = selection(); if (!s) return toast(t('selectToMove'));
+  pending = s.map(p => tokens[p].id);
+  window.getSelection().removeAllRanges(); render();
+  $('#bannerText').textContent = t('cutBanner', {n: s[1]-s[0]+1});
+  $('#banner').classList.add('show');
+  $('#bPaste').disabled = false;
+}
+function markPending(){
+  const a = tokens.findIndex(t => t.id === pending[0]), b = tokens.findIndex(t => t.id === pending[1]);
+  for (let p = a; p <= b; p++) spanAt(p)?.classList.add('pend');
+}
+function doPaste(){
+  if (!pending) return toast(t('cutFirst'));
+  // 像 Word：粘贴到光标处（光标在哪个字前面，就插到它前面）
+  const target = caretPos();
+  if (target == null) return toast(t('cursorFirst'));
+  const a = tokens.findIndex(t => t.id === pending[0]), b = tokens.findIndex(t => t.id === pending[1]);
+  if (target >= a && target <= b + 1) return toast(t('cursorInside'));
+  commit();
+  const block = tokens.splice(a, b - a + 1);
+  block.forEach(t => t.m = true);
+  const at = target > b ? target - block.length : target;
+  tokens.splice(at, 0, ...block);
+  pending = null; $('#banner').classList.remove('show'); $('#bPaste').disabled = true;
+  render(); save(); setCaret(at + block.length);
+  toast(t('moved', {n: block.length}));
+}
+function cancelMove(){ pending = null; $('#banner').classList.remove('show'); $('#bPaste').disabled = true; render(); }
+
+let toastT;
+function toast(s){ const t = $('#toast'); t.textContent = s; t.classList.add('show'); clearTimeout(toastT); toastT = setTimeout(() => t.classList.remove('show'), 3200); }
+
+function doUndo(){
+  if (!undo.length) return toast(t('noUndo'));
+  redo.push(snap()); restore(undo.pop()); render(); save(); toast(t('undone'));
+}
+function doRedo(){
+  if (!redo.length) return toast(t('noRedo'));
+  undo.push(snap()); restore(redo.pop()); render(); save(); toast(t('redone'));
+}
+
+/* ---------- 播放（按剪辑后的顺序跳着放原音频） ---------- */
+function setPlayIcon(){ $('#bPlay').innerHTML = playing ? ICON_PAUSE : ICON_PLAY; }
+function playFromToken(p){
+  let q = p;
+  while (q < tokens.length && tokens[q].d) q++;
+  if (q >= tokens.length) return;
+  curRange = tokens[q]._r; au.currentTime = tokens[q].s; au.playbackRate = ranges[curRange].rate; startPlay();
+}
+function seekOutput(T){
+  if (!ranges.length) return;
+  let i = ranges.findIndex((r, k) => k === ranges.length - 1 || ranges[k + 1].out > T);
+  const r = ranges[i];
+  curRange = i; au.currentTime = Math.min(r.e - 0.02, r.s + Math.max(0, T - r.out) * r.rate); au.playbackRate = r.rate;
+  updatePlayhead();
+}
+function startPlay(){
+  if (!ranges.length) return;
+  if (curRange < 0 || curRange >= ranges.length) { curRange = 0; au.currentTime = ranges[0].s; }
+  au.preservesPitch = true; au.playbackRate = ranges[curRange].rate;
+  au.play(); playing = true; setPlayIcon();
+  cancelAnimationFrame(rafId); rafId = requestAnimationFrame(tick);
+}
+function stopPlay(){ au.pause(); playing = false; setPlayIcon(); cancelAnimationFrame(rafId); }
+function togglePlay(){
+  if (playing) return stopPlay();
+  const c = caretPos();
+  if (c != null && c < tokens.length) playFromToken(c); else startPlay();
+}
+function outNow(){ const r = ranges[curRange]; return r ? r.out + (au.currentTime - r.s) / r.rate : 0; }
+function updatePlayhead(){
+  const t = curRange >= 0 ? outNow() : 0;
+  $('#tCur').textContent = fmt(t);
+  $('#barFill').style.width = (total ? Math.min(100, t / total * 100) : 0) + '%';
+}
+let lastHud = 0;
+function tick(ts){
+  if (!playing) return;
+  const r = ranges[curRange], ct = au.currentTime;
+  if (!r) return stopPlay();
+  if (ct >= r.e - 0.015 || ct < r.s - 0.5) {
+    curRange++;
+    if (curRange >= ranges.length) { stopPlay(); curRange = -1; return; }
+    au.currentTime = ranges[curRange].s; au.playbackRate = ranges[curRange].rate;
+  } else {
+    let hp = null;
+    for (const p of r.toks) { const t = tokens[p]; if (t.s <= ct && ct < t.e) { hp = p; break; } }
+    if (hp != null && hp !== lastHi) {
+      spanAt(lastHi)?.classList.remove('playing');
+      const sp = spanAt(hp); sp?.classList.add('playing'); lastHi = hp;
+      if (sp) { const y = sp.getBoundingClientRect().top; if (y < 170 || y > innerHeight - 90) sp.scrollIntoView({block:'center'}); }
+    }
+  }
+  if (ts - lastHud > 200) { updatePlayhead(); lastHud = ts; }
+  rafId = requestAnimationFrame(tick);
+}
+
+/* ---------- 事件 ---------- */
+// 点按钮时不要让浏览器（尤其 Safari）清掉文字选区/光标
+document.querySelectorAll('.top button, .player button').forEach(b => b.addEventListener('mousedown', e => e.preventDefault()));
+doc.addEventListener('mouseup', () => setTimeout(() => {
+  const sel = window.getSelection();
+  if (sel.isCollapsed) { const p = domCaretPos(); if (p != null) { cursor = p; selAnchor = null; drawCursor(); } }
+  else { const s = selection(); if (s) { selAnchor = s[0]; cursor = s[1] + 1; drawCursor(); } }
+}, 0));
+doc.addEventListener('click', e => {
+  if (!window.getSelection().isCollapsed) return;
+  const el = e.target.closest('[data-p]'); if (!el) return;
+  const p = +el.dataset.p;
+  if (el.classList.contains('ts')) return playFromToken(p);   // 点时间戳：播放这一行
+});
+$('#bar').addEventListener('click', e => {
+  const r = e.currentTarget.getBoundingClientRect();
+  seekOutput((e.clientX - r.left) / r.width * total);
+  if (!playing) startPlay();
+});
+$('#bPlay').onclick = togglePlay;
+$('#bDel').onclick = () => setDel(true);
+$('#bRes').onclick = () => setDel(false);
+$('#bCut').onclick = startMove;
+$('#bPaste').onclick = doPaste;
+$('#bCancelMove').onclick = cancelMove;
+$('#bUndo').onclick = doUndo;
+$('#bRedo').onclick = doRedo;
+$('#bHide').onclick = () => {
+  const on = document.body.classList.toggle('hide-del');
+  $('#bHide').classList.toggle('on', on);
+  $('#bHide .lb').textContent = on ? t('showDel') : t('hideDel');
+};
+$('#bTheme').onclick = () => {
+  const dark = matchMedia('(prefers-color-scheme: dark)').matches;
+  const cur = document.documentElement.dataset.theme || (dark ? 'dark' : 'light');
+  const next = cur === 'dark' ? 'light' : 'dark';
+  document.documentElement.dataset.theme = next; store.set('te_theme', next);
+};
+$('#bReset').onclick = async () => {
+  if (!confirm(t('confirmReset'))) return;
+  // 记成一步操作：所有字回到原始顺序、清掉删除/挪动标记，⌘Z 能撤回
+  commit();
+  tokens = [...byId.values()].sort((a, b) => a.id - b.id);
+  tokens.forEach(t => { t.d = false; t.m = false; });
+  cursor = null; render(); save(); toast(t('didReset'));
+};
+/* 导出：默认原声不处理；需要时可以临时选统一响度 / 降噪（会记住上次的选择） */
+$('#bExport').onclick = () => {
+  const opt = exportOpt();
+  const radio = (name, v, label, hint) => `<label class="check" style="margin:0 0 6px"><input type="radio" name="${name}" value="${v}" ${opt[name] === v ? 'checked' : ''}>
+    <span><b style="color:var(--ink)">${label}</b>　<span style="color:var(--muted);font-size:12.5px">${hint}</span></span></label>`;
+  openModal(`<h3>${t('exTitle')}</h3><div class="sub">${t('exSub')}</div>
+    <div style="font-weight:600;margin:6px 0 8px">${t('exVol')}</div>
+    ${radio('level', 'none', t('exLevNone'), t('exLevNoneH'))}
+    ${radio('level', 'loudnorm', t('exLevLoud'), t('exLevLoudH'))}
+    ${radio('level', 'full', t('exLevFull'), t('exLevFullH'))}
+    <div style="font-weight:600;margin:14px 0 8px">${t('exDen')}</div>
+    ${radio('denoise', 'off', t('exDenOff'), t('exDenOffH'))}
+    ${radio('denoise', 'light', t('exDenLight'), t('exDenLightH'))}
+    ${radio('denoise', 'strong', t('exDenStrong'), t('exDenStrongH'))}
+    ${radio('denoise', 'ai', t('exDenAI'), t('exDenAIH'))}
+    <div class="acts"><button class="ghost" id="eCancel">${t('cancel')}</button><button class="primary" id="eGo">${t('exGo')}</button></div>`);
+  $('#eCancel').onclick = closeModal;
+  $('#eGo').onclick = async () => {
+    const pick = n => $('#mcard').querySelector(`input[name=${n}]:checked`).value;
+    const o = {level: pick('level'), denoise: pick('denoise')};
+    store.set('te_export', JSON.stringify(o)); syncQuality();
+    closeModal(); layout();
+    const body = {ranges: ranges.filter(r => r.e - r.s > 0.02).map(r => r.rate !== 1 ? [r.s, r.e, r.rate] : [r.s, r.e]), ...o};
+    const res = await fetch(api('/api/export'), {method:'POST', body: JSON.stringify(body)});
+    if (!res.ok) return toast((await res.json()).error);
+    $('#bExport').disabled = true; $('#bExport').textContent = t('exporting'); poll();
+  };
+};
+async function poll(){
+  const j = await (await fetch(api('/api/job', '&kind=export'))).json();
+  if (j.state === 'running') return setTimeout(poll, 1500);
+  $('#bExport').disabled = false; $('#bExport').textContent = t('export');
+  $('#bannerText').textContent = j.msg; $('#banner').classList.add('show');
+  $('#bCancelMove').style.display = 'none';
+  setTimeout(() => { if (!pending) { $('#banner').classList.remove('show'); $('#bCancelMove').style.display = ''; } }, 12000);
+}
+// 用 e.code（物理按键）判断：开着中文输入法时 e.key 会变成 "Process"，快捷键就失灵了
+window.addEventListener('keydown', e => {
+  if ($('#tour').classList.contains('show')) {
+    if (e.code === 'Escape') endTour(); else if (e.code === 'ArrowRight' || e.code === 'Enter') tourGo(1);
+    else if (e.code === 'ArrowLeft') tourGo(-1);
+    e.preventDefault(); return;
+  }
+  if ($('#modal').classList.contains('show')) { if (e.code === 'Escape') closeModal(); return; }
+  if (!PID || ['INPUT', 'SELECT', 'TEXTAREA'].includes(e.target.tagName)) return;
+  if (AB && $('#ab').classList.contains('show')) {
+    if (e.code === 'KeyB' || e.code === 'KeyA') { e.preventDefault(); abSwitch(e.code === 'KeyA' ? 'a' : (AB.cur === 'a' ? 'b' : 'a')); return; }
+    if (e.code === 'Space') { e.preventDefault(); abToggle(); return; }
+    if (e.code === 'Escape') { closeAB(); return; }
+  }
+  const c = e.code, mod = e.metaKey || e.ctrlKey;
+  if (mod && c === 'KeyZ') { e.preventDefault(); e.stopPropagation(); e.shiftKey ? doRedo() : doUndo(); return; }
+  if (mod && c === 'KeyY') { e.preventDefault(); doRedo(); return; }
+  if (mod && c === 'KeyX') { e.preventDefault(); startMove(); return; }   // 剪切（移动）
+  if (mod && c === 'KeyV') { e.preventDefault(); doPaste(); return; }     // 粘贴到光标处
+  if (mod) return;
+  if (c === 'Space') { e.preventDefault(); togglePlay(); }
+  else if (c === 'Delete' || c === 'Backspace') { e.preventDefault(); setDel(true, c === 'Backspace'); }
+  else if (c === 'KeyR') { e.preventDefault(); setDel(false); }
+  else if (c === 'KeyX') { e.preventDefault(); startMove(); }
+  else if (c === 'KeyV') { e.preventDefault(); doPaste(); }
+  else if (c === 'ArrowLeft' || c === 'ArrowRight') { e.preventDefault(); moveCursor(c === 'ArrowLeft' ? -1 : 1, e.altKey, e.shiftKey); }
+  else if (c === 'Escape' && pending) cancelMove();
+}, true);
+
+/* ---------- 教程 ---------- */
+const TOUR = [
+  {el: null, title: 'tourWelcome', html: 'tour0'},
+  {el: '#paper', title: 'tour1t', html: 'tour1', place: 'inside'},
+  {el: '#gEdit', title: 'tour2t', html: 'tour2'},
+  {el: '#gMove', title: 'tour3t', html: 'tour3'},
+  {el: '#gHist', title: 'tour4t', html: 'tour4'},
+  {el: '#gTools', title: 'tour5t', html: 'tour5'},
+  {el: '#player', title: 'tour6t', html: 'tour6', place: 'above'},
+  {el: '#bExport', title: 'tour7t', html: 'tour7'},
+];
+let tourI = 0;
+function showTour(){ tourI = 0; $('#tour').classList.add('show'); stopPlay(); tourDraw(); }
+function endTour(){ $('#tour').classList.remove('show'); store.set('te_tour_done', '1'); }
+function tourGo(d){ const n = tourI + d; if (n < 0) return; if (n >= TOUR.length) return endTour(); tourI = n; tourDraw(); }
+function tourDraw(){
+  const st = TOUR[tourI], card = $('#tourCard'), spot = $('#tourSpot'), last = tourI === TOUR.length - 1;
+  card.innerHTML = `<div class="step">${tourI === 0 ? t('tourLabel') : t('tourStep', {i: tourI, n: TOUR.length - 1})}</div>
+    <h3>${t(st.title)}</h3>${t(st.html)}
+    <div class="nav"><button class="skip" id="tSkip">${last ? '' : t('skipTour')}</button>
+      <div class="dots">${TOUR.map((_, i) => `<i class="${i === tourI ? 'on' : ''}"></i>`).join('')}</div>
+      ${tourI ? `<button class="prev" id="tPrev">${t('prev')}</button>` : ''}
+      <button class="primary" id="tNext">${last ? t('startUsing') : tourI === 0 ? t('startTour') : t('next')}</button></div>`;
+  $('#tSkip').onclick = endTour; $('#tNext').onclick = () => tourGo(1); if ($('#tPrev')) $('#tPrev').onclick = () => tourGo(-1);
+  const el = st.el && $(st.el);
+  $('#tourShade').style.display = el ? 'none' : 'block';
+  const W = card.offsetWidth, H = card.offsetHeight, pad = 6;
+  if (!el) {
+    spot.style.cssText = 'opacity:0;left:50%;top:50%;width:0;height:0';
+    card.style.left = (innerWidth - W) / 2 + 'px'; card.style.top = Math.max(40, (innerHeight - H) / 2) + 'px';
+    return;
+  }
+  let r = el.getBoundingClientRect();
+  if (st.place === 'inside') r = {left: r.left, right: r.right, top: Math.max(r.top, 150), bottom: Math.min(r.bottom, innerHeight - 70)};
+  spot.style.cssText = `opacity:1;left:${r.left - pad}px;top:${r.top - pad}px;width:${r.right - r.left + 2*pad}px;height:${r.bottom - r.top + 2*pad}px`;
+  let top = st.place === 'above' ? r.top - H - 18 : st.place === 'inside' ? r.top + 30 : r.bottom + 16;
+  if (top + H > innerHeight - 10) top = Math.max(10, r.top - H - 16);
+  let left = st.place === 'inside' ? r.left + 40 : r.left;
+  left = Math.max(16, Math.min(left, innerWidth - W - 16));
+  card.style.left = left + 'px'; card.style.top = top + 'px';
+}
+$('#bHelp').onclick = showTour;
+addEventListener('resize', () => { if ($('#tour').classList.contains('show')) tourDraw(); });
+
+/* ---------- 弹窗 ---------- */
+function openModal(html){ $('#mcard').innerHTML = html; $('#modal').classList.add('show'); }
+function closeModal(){ $('#modal').classList.remove('show'); }
+$('#modal').addEventListener('mousedown', e => { if (e.target.id === 'modal') closeModal(); });
+
+/* ---------- 说话人：改名字、调语速 ---------- */
+function openSpeakers(){
+  if (!SPK.labels.length) return toast(t('noSpk'));
+  const rows = SPK.labels.map(l => `<tr>
+      <td style="width:22px"><i style="display:inline-block;width:11px;height:11px;border-radius:50%;background:${spColor(l)}"></i></td>
+      <td style="width:150px"><input class="spname" data-sp="${l}" value="${esc(SPK.names[l] || '')}" placeholder="${esc(spName(l))}"
+        style="width:100%;padding:6px 8px;border:1px solid var(--line);border-radius:7px;font:inherit;background:var(--paper);color:var(--ink)"></td>
+      <td><input type="range" class="sprate" data-sp="${l}" min="0.7" max="1.3" step="0.05" value="${spRate(l)}" style="width:100%"></td>
+      <td class="n" style="width:56px"><b id="rv_${l}">${spRate(l).toFixed(2)}×</b></td></tr>`).join('');
+  openModal(`<h3>${t('spkTitle')}</h3>
+    <div class="sub">${t('spkSub')}</div>
+    <table class="ftable">${rows}</table>
+    <div class="acts"><button class="ghost" id="spReset">${t('spkReset')}</button><button class="primary" id="spDone">${t('doneBtn')}</button></div>`);
+  const saveNames = async () => {
+    $('#mcard').querySelectorAll('.spname').forEach(inp => { const v = inp.value.trim(); if (v) SPK.names[inp.dataset.sp] = v; else delete SPK.names[inp.dataset.sp]; });
+    await fetch(api('/api/speakers'), {method: 'POST', body: JSON.stringify(SPK.names)});
+  };
+  $('#mcard').querySelectorAll('.spname').forEach(inp => inp.onchange = async () => { await saveNames(); render(); });
+  $('#mcard').querySelectorAll('.sprate').forEach(sl => sl.oninput = () => {
+    const v = Math.round(+sl.value * 100) / 100;
+    settings.speed = settings.speed || {};
+    if (v === 1) delete settings.speed[sl.dataset.sp]; else settings.speed[sl.dataset.sp] = v;
+    $('#rv_' + sl.dataset.sp).textContent = v.toFixed(2) + '×';
+    stopPlay(); curRange = -1; render(); save();
+  });
+  $('#spReset').onclick = () => { settings.speed = {}; stopPlay(); curRange = -1; render(); save(); openSpeakers(); };
+  $('#spDone').onclick = async () => { await saveNames(); closeModal(); render(); };
+}
+$('#docsub').addEventListener('click', e => { if (e.target.closest('.chip')) openSpeakers(); });
+
+/* ---------- 句间停顿 ---------- */
+$('#gapMs').addEventListener('change', e => {
+  const v = e.target.value.trim();
+  settings.gapMs = v === '' ? null : Math.max(0, Math.min(3000, Math.round(+v)));
+  e.target.value = settings.gapMs ?? '';
+  render(); save();
+  toast(settings.gapMs == null ? t('gapAsIs') : t('gapSet', {ms: settings.gapMs}));
+  e.target.blur();
+});
+
+/* ---------- 音质：降噪 / 音量，A/B 试听对比 ---------- */
+const DEN_NAMES = {off: t('denOffN'), light: t('denLightN'), strong: t('denStrongN'), ai: t('denAI')};
+const LEV_NAMES = {none: t('levNoneN'), loudnorm: t('levLoudN'), full: t('levFullN')};
+const exportOpt = () => Object.assign({level: 'none', denoise: 'off'}, JSON.parse(store.get('te_export') || '{}'));
+function syncQuality(){ const o = exportOpt(); $('#qDen').value = o.denoise; $('#qLev').value = o.level; }
+['#qDen', '#qLev'].forEach(id => $(id).addEventListener('change', e => {
+  store.set('te_export', JSON.stringify({denoise: $('#qDen').value, level: $('#qLev').value}));
+  e.target.blur();
+  if ($('#ab').classList.contains('show')) startAB();   // 对比条开着就按新设置重新生成
+}));
+/* 成品时间 T0 起 dur 秒，对应原音频的哪些片段 */
+function sliceOut(T0, dur){
+  layout();
+  const out = [];
+  for (const r of ranges) {
+    const a = r.out, len = (r.e - r.s) / r.rate;   // len：在成品里占多长
+    if (a + len <= T0) continue;
+    if (a >= T0 + dur) break;
+    const s = r.s + Math.max(0, T0 - a) * r.rate, e = r.s + Math.min(len, T0 + dur - a) * r.rate;
+    if (e - s > 0.02) out.push(r.rate !== 1 ? [s, e, r.rate] : [s, e]);
+  }
+  return out;
+}
+let AB = null;   // {a: Audio, b: Audio, cur: 'a'|'b', raf}
+function abStop(){ if (!AB) return; AB.a.pause(); AB.b.pause(); cancelAnimationFrame(AB.raf); }
+function closeAB(){ abStop(); AB = null; $('#ab').classList.remove('show'); }
+function abDraw(){
+  const o = exportOpt(), playingAB = AB && !AB.a.paused;
+  $('#ab').innerHTML = `<span class="ttl">${t('abTitle', {t: fmt(AB.t0)})}</span>
+    <div class="seg2"><button id="abA" class="${AB.cur === 'a' ? 'on' : ''}">${t('abA')}</button>
+      <button id="abB" class="${AB.cur === 'b' ? 'on' : ''}">B ${DEN_NAMES[o.denoise]} · ${LEV_NAMES[o.level]}</button></div>
+    <button class="abplay" id="abP">${playingAB ? ICON_PAUSE : ICON_PLAY}</button>
+    <div class="abbar"><i id="abFill"></i></div>
+    <span class="ttl">${t('abHint')}</span>
+    <button class="x" id="abX" title="${t('abClose')}">×</button>`;
+  $('#abA').onclick = () => abSwitch('a'); $('#abB').onclick = () => abSwitch('b');
+  $('#abP').onclick = abToggle; $('#abX').onclick = closeAB;
+}
+function abSwitch(which){
+  if (!AB) return;
+  const from = AB[AB.cur], to = AB[which];
+  to.currentTime = from.currentTime;
+  AB.cur = which; AB.a.muted = which !== 'a'; AB.b.muted = which !== 'b';
+  abDraw();
+}
+function abToggle(){
+  if (!AB) return;
+  if (AB.a.paused) {
+    if (AB.a.ended || AB.a.currentTime >= AB.a.duration - 0.05) { AB.a.currentTime = 0; AB.b.currentTime = 0; }
+    AB.b.currentTime = AB.a.currentTime;
+    AB.a.play(); AB.b.play();
+    const loop = () => {
+      if (!AB) return;
+      const d = AB.a.duration || 20;
+      $('#abFill') && ($('#abFill').style.width = (AB.a.currentTime / d * 100) + '%');
+      if (Math.abs(AB.a.currentTime - AB.b.currentTime) > 0.08) AB[AB.cur === 'a' ? 'b' : 'a'].currentTime = AB[AB.cur].currentTime;
+      if (AB.a.paused) return abDraw();
+      AB.raf = requestAnimationFrame(loop);
+    };
+    AB.raf = requestAnimationFrame(loop);
+  } else abStop();
+  abDraw();
+}
+async function startAB(){
+  stopPlay(); abStop();
+  // 从光标处开始；没放光标就从当前播放位置 / 开头
+  let t0 = 0;
+  if (cursor != null) { let q = cursor; while (q < tokens.length && tokens[q].d) q++; if (q < tokens.length) { layout(); t0 = tokens[q]._o || 0; } }
+  else if (curRange >= 0) t0 = outNow();
+  const o = exportOpt();
+  $('#ab').innerHTML = `<span class="ttl"><span class="spin"></span>${t('abMaking', {t: fmt(t0), ai: o.denoise === 'ai' ? t('abAI') : ''})}</span><button class="x" id="abX">×</button>`;
+  $('#ab').classList.add('show'); $('#abX').onclick = closeAB;
+  const res = await fetch(api('/api/preview'), {method: 'POST', body: JSON.stringify({ranges: sliceOut(t0, 20), ...o})});
+  const j = await res.json();
+  if (!res.ok) { $('#ab').innerHTML = `<span class="ttl">${esc(j.error)}</span><button class="x" id="abX">×</button>`; $('#abX').onclick = closeAB; return; }
+  const a = new Audio(api('/preview', '&f=' + encodeURIComponent(j.a))), b = new Audio(api('/preview', '&f=' + encodeURIComponent(j.b)));
+  const keep = AB ? AB.cur : 'b';
+  AB = {a, b, cur: keep, t0};
+  a.muted = keep !== 'a'; b.muted = keep !== 'b';
+  await Promise.all([a, b].map(x => new Promise(r => { x.oncanplaythrough = r; x.onerror = r; x.load(); })));
+  abDraw(); abToggle();
+}
+$('#bAB').onclick = startAB;
+$('#bSpk').onclick = openSpeakers;
+
+/* ---------- 一键清理口头词 ---------- */
+/* filler words per transcript language: [word, ticked by default] */
+const FILLERS = {
+  zh: [['嗯', 1], ['啊', 1], ['呃', 1], ['额', 1], ['然后', 1], ['哦', 0], ['就是', 0], ['对的', 0], ['对对对', 0], ['那个', 0], ['其实', 0]],
+  en: [['um', 1], ['uh', 1], ['erm', 1], ['hmm', 1], ['you know', 0], ['I mean', 0], ['like', 0], ['so', 0], ['actually', 0], ['basically', 0], ['kind of', 0]],
+  sv: [['eh', 1], ['öh', 1], ['hmm', 1], ['liksom', 0], ['typ', 0], ['alltså', 0], ['asså', 0], ['ba', 0]],
+  de: [['äh', 1], ['ähm', 1], ['hm', 1], ['also', 0], ['halt', 0], ['quasi', 0], ['sozusagen', 0]],
+  fr: [['euh', 1], ['hum', 1], ['bah', 0], ['genre', 0], ['en fait', 0], ['du coup', 0], ['voilà', 0]],
+  es: [['eh', 1], ['em', 1], ['mmm', 1], ['o sea', 0], ['este', 0], ['bueno', 0], ['pues', 0]],
+  ja: [['えー', 1], ['あの', 1], ['えっと', 1], ['まあ', 0], ['なんか', 0]],
+  other: [['um', 1], ['uh', 1], ['eh', 1], ['hmm', 1]],
+};
+let fillerList = null;
+const norm = s => s.toLowerCase().replace(/[\s，。、！？,.!?…~～:：;；"“”'‘’（）()\-]/g, '');
+/* hesitation sounds come in many spellings: umm = um, hmmm = hm, uhh = uh */
+const HES = /^(u+m+|u+h+|e+r+m*|h+m+|m+|e+h+|ö+h+|ä+h+m*|e+u+h+|a+h+)$/;
+const squash = s => s.replace(/(.)\1+/g, '$1');
+const sameWord = (x, w) => x === w || (HES.test(w) && HES.test(x) && squash(x) === squash(w));
+/* 在保留的文字里找某个词：必须正好落在字的边界上；单字（嗯/啊…）也匹配"嗯嗯"这种叠字 */
+function findPhrase(word){
+  const w = norm(word); if (!w) return [];
+  const K = []; tokens.forEach((t, p) => { if (!t.d && t.k === 'w') K.push(p); });
+  const hits = [];
+  for (let i = 0; i < K.length; i++) {
+    const t0 = tokens[K[i]], x0 = norm(t0.t);
+    if (w.length === 1) { if (x0 && [...x0].every(c => c === w)) hits.push([K[i]]); continue; }
+    if (sameWord(x0, w)) { hits.push([K[i]]); continue; }
+    let acc = '', j = i; const ps = [];
+    while (j < K.length && acc.length < w.length && tokens[K[j]].seg === t0.seg) { acc += norm(tokens[K[j]].t); ps.push(K[j]); j++; }
+    if (acc === w) { hits.push(ps); i = j - 1; }
+  }
+  return hits;
+}
+function example(ps){
+  const a = ps[0], b = ps[ps.length - 1], ctx = (lo, hi) => joinWords(tokens.slice(lo, hi).filter(t => !t.d && t.k === 'w').map(t => t.t));
+  const sp = LAT_START.test(tokens[a].t) ? ' ' : '';
+  return esc(ctx(Math.max(0, a - 6), a)) + sp + '<b>' + esc(joinWords(ps.map(p => tokens[p].t))) + '</b>' + sp + esc(ctx(b + 1, b + 7));
+}
+function drawClean(){
+  const rows = fillerList.map((f, i) => {
+    const hits = findPhrase(f.w); f.n = hits.length;
+    return `<tr><td><label><input type="checkbox" data-i="${i}" ${f.on ? 'checked' : ''}>${esc(f.w)}</label></td>
+      <td class="n">${t('places', {n: hits.length})}</td><td class="ex">${hits.slice(0, 2).map(example).join('<br>') || '—'}</td></tr>`;
+  }).join('');
+  const total = fillerList.filter(f => f.on).reduce((a, f) => a + f.n, 0);
+  openModal(`<h3>${t('cleanTitle')}</h3>
+    <div class="sub">${t('cleanSub')}</div>
+    <table class="ftable">${rows}</table>
+    <div class="addrow"><input id="fAdd" placeholder="${esc(t('addWordPh'))}"><button id="fAddBtn">${t('add')}</button></div>
+    <div class="acts"><button class="ghost" id="fCancel">${t('cancel')}</button><button class="primary" id="fGo" ${total ? '' : 'disabled'}>${t('cleanGo', {n: total})}</button></div>`);
+  $('#mcard').querySelectorAll('input[type=checkbox]').forEach(cb => cb.onchange = () => { fillerList[+cb.dataset.i].on = cb.checked; drawClean(); });
+  const add = () => { const v = $('#fAdd').value.trim(); if (norm(v) && !fillerList.some(f => norm(f.w) === norm(v))) fillerList.push({w: v, on: true}); drawClean(); };
+  $('#fAddBtn').onclick = add;
+  $('#fAdd').onkeydown = e => { if (e.key === 'Enter') add(); };
+  $('#fCancel').onclick = closeModal;
+  $('#fGo').onclick = () => {
+    const all = fillerList.filter(f => f.on).flatMap(f => findPhrase(f.w));
+    if (!all.length) return;
+    commit(); all.flat().forEach(p => tokens[p].d = true);
+    closeModal(); render(); save();
+    toast(t('cleaned', {n: all.length}));
+  };
+}
+$('#bClean').onclick = () => {
+  const lang = ((window.META && window.META.lang) || '').split('-')[0];
+  if (!fillerList) fillerList = (FILLERS[lang] || FILLERS.other).map(([w, on]) => ({w, on: !!on}));
+  drawClean();
+};
+
+/* ---------- 生成 Shownote ---------- */
+function transcriptForAI(){
+  layout();
+  const lines = []; let cur = null;
+  for (const t of tokens) {
+    if (t.d || t.k !== 'w') continue;
+    if (!cur || cur.seg !== t.seg) { cur = {seg: t.seg, o: t._o, sp: {}, text: ''}; lines.push(cur); }
+    cur.text += (cur.text && LAT_END.test(cur.text) && LAT_START.test(t.t) ? ' ' : '') + t.t; if (t.sp) cur.sp[t.sp] = (cur.sp[t.sp] || 0) + 1;
+  }
+  return lines.map(l => {
+    const sp = Object.keys(l.sp).sort((a, b) => l.sp[b] - l.sp[a])[0];
+    return `${fmt(l.o)} [${sp ? spName(sp) : '?'}] ${l.text}`;
+  }).join('\n');
+}
+async function startShownote(){
+  openModal(`<h3>${t('snTitle')}</h3><div class="sub"><span class="spin"></span>${t('snWriting')}</div>
+    <div class="acts"><button class="ghost" id="sClose">${t('snBg')}</button></div>`);
+  $('#sClose').onclick = closeModal;
+  const res = await fetch(api('/api/shownote'), {method: 'POST', body: JSON.stringify({transcript: transcriptForAI()})});
+  if (!res.ok && res.status !== 409) return openModal(`<h3>${t('snTitle')}</h3><div class="sub">${esc((await res.json()).error)}</div>`);
+  pollShownote();
+}
+async function pollShownote(){
+  const j = await (await fetch(api('/api/job', '&kind=shownote'))).json();
+  if (j.state === 'running') return setTimeout(pollShownote, 2000);
+  $('#bShow .lb').textContent = t('shownote');
+  if (j.state === 'error') return openModal(`<h3>${t('snTitle')}</h3><div class="sub">${esc(j.msg)}</div><div class="acts"><button class="primary" id="sClose">${t('gotIt')}</button></div>`), ($('#sClose').onclick = closeModal);
+  if (j.state !== 'done') return;
+  openModal(`<h3>${UILANG === 'zh' ? 'Shownote' : 'Show notes'}</h3><div class="sub">${esc(j.msg)} · ${t('snCheck')}</div>
+    <textarea class="mdtext" id="sText">${esc(j.text)}</textarea>
+    <div class="acts"><button class="ghost" id="sAgain">${t('again')}</button><button class="ghost" id="sClose">${t('close')}</button><button class="primary" id="sCopy">${t('copyAll')}</button></div>`);
+  $('#sClose').onclick = closeModal;
+  $('#sAgain').onclick = startShownote;
+  $('#sCopy').onclick = async () => {
+    try { await navigator.clipboard.writeText($('#sText').value); } catch (e) { $('#sText').select(); document.execCommand('copy'); }
+    toast(t('copied'));
+  };
+}
+$('#bShow').onclick = async () => {
+  const j = await (await fetch(api('/api/job', '&kind=shownote'))).json();
+  if (j.state === 'running') { $('#bShow .lb').textContent = t('generating'); return startShownote(); }
+  startShownote();
+};
+$('#bHome').onclick = () => { location.href = '/'; };
+
+/* ---------- 首页：项目列表 + 上传 ---------- */
+let upFile = null;
+function showHome(){
+  document.body.classList.add('home');
+  document.title = t('brand').replace(/<[^>]+>/g, '');
+  $('#meta').textContent = t('allProjects');
+  refreshProjects();
+}
+async function refreshProjects(){
+  const list = await (await fetch('/api/projects')).json();
+  $('#plist').innerHTML = list.map(p => {
+    const j = p.job, run = j && j.state === 'running', err = j && j.state === 'error';
+    return `<div class="pwrap"><button class="pcard" data-id="${esc(p.id)}" ${run ? 'disabled' : ''}><b>${esc(p.id)}</b>
+      ${run ? `<div class="prog"><i style="width:${Math.round((j.pct || 0) * 100)}%"></i></div><span>${esc(j.step || t('processing'))}</span>`
+            : err ? `<span style="color:var(--strike)">${esc(j.msg || t('failed'))}</span>`
+            : `<span>${p.edited ? t('edited') : t('notEdited')}${j && j.warn ? ' · ' + esc(j.warn) : ''} · ${new Date(p.mtime * 1000).toLocaleString(UILANG === 'zh' ? 'zh-CN' : 'en-GB', {month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit'})}</span>`}</button><button class="pdel" data-id="${esc(p.id)}" ${run ? 'disabled style="display:none"' : ''}>删除</button></div>`;
+  }).join('') || `<div style="color:var(--muted)">${t('noProjects')}</div>`;
+  $('#plist').querySelectorAll('.pcard').forEach(c => c.onclick = () => { location.href = '/?p=' + encodeURIComponent(c.dataset.id); });
+  $('#plist').querySelectorAll('.pdel').forEach(b => b.onclick = async e => {
+    e.stopPropagation();
+    const id = b.dataset.id;
+    if (!confirm(t('confirmDelete', {id}))) return;
+    const r = await fetch('/api/delete?p=' + encodeURIComponent(id), {method: 'POST'});
+    if (!r.ok) alert((await r.json()).error || t('deleteFailed'));
+    refreshProjects();
+  });
+  if (list.some(p => p.job && p.job.state === 'running')) setTimeout(refreshProjects, 2000);
+}
+function pickFile(f){
+  if (!f) return;
+  upFile = f;
+  $('#drop').innerHTML = `<b>${esc(f.name)}</b><br><span style="font-size:12px">${t('dropPicked', {size: (f.size / 1048576).toFixed(1)})}</span>`;
+  if (!$('#pname').value) $('#pname').value = f.name.replace(/\.[^.]+$/, '').replace(/[-_\s]+\d{6,}.*$/, '');
+  $('#bUpload').disabled = false;
+}
+$('#drop').onclick = () => $('#file').click();
+$('#file').onchange = e => pickFile(e.target.files[0]);
+$('#drop').ondragover = e => { e.preventDefault(); $('#drop').classList.add('over'); };
+$('#drop').ondragleave = () => $('#drop').classList.remove('over');
+$('#drop').ondrop = e => { e.preventDefault(); $('#drop').classList.remove('over'); pickFile(e.dataTransfer.files[0]); };
+$('#bUpload').onclick = () => {
+  if (!upFile) return;
+  store.set('te_plang', $('#plang').value);
+  const q = new URLSearchParams({name: $('#pname').value.trim(), filename: upFile.name, speakers: $('#pspk').value, lang: $('#plang').value, cut: $('#pcut').checked ? '1' : '0'});
+  const xhr = new XMLHttpRequest();
+  xhr.open('POST', '/api/upload?' + q);
+  $('#bUpload').disabled = true; $('#upStatus').style.display = 'block';
+  xhr.upload.onprogress = e => { if (e.lengthComputable) { $('#upBar').style.width = (e.loaded / e.total * 100) + '%'; $('#upText').textContent = t('uploading', {pct: Math.round(e.loaded / e.total * 100)}); } };
+  xhr.onload = () => {
+    if (xhr.status !== 200) { $('#upText').textContent = t('upFailed'); $('#bUpload').disabled = false; return; }
+    const id = JSON.parse(xhr.responseText).id;
+    $('#upText').textContent = t('upDone', {id});
+    upFile = null; $('#drop').innerHTML = t('dropHtml'); $('#pname').value = '';
+    refreshProjects();
+  };
+  xhr.onerror = () => { $('#upText').textContent = t('upLost'); $('#bUpload').disabled = false; };
+  xhr.send(upFile);
+};
+
+/* ---------- 启动 ---------- */
+function load(ts, u = [], r = []){
+  tokens = ts; byId = new Map(tokens.map(t => [t.id, t]));
+  undo = (u || []).filter(s => s && s.o); redo = (r || []).filter(s => s && s.o);
+  render();
+}
+(() => { const th = store.get('te_theme'); if (th) document.documentElement.dataset.theme = th; })();
+// 截图检查用：地址加 #notrans 关掉动画
+if (location.hash.includes('notrans')) document.head.insertAdjacentHTML('beforeend', '<style>*{transition:none!important;animation:none!important}</style>');
+applyStatic();
+{ const pl = store.get('te_plang'); $('#plang').value = pl != null ? pl : (UILANG === 'zh' ? 'zh' : 'en'); }
+$('#bLang').onclick = () => { store.set('te_ui', UILANG === 'zh' ? 'en' : 'zh'); location.reload(); };
+setPlayIcon();
+if (!PID) showHome();
+else {
+  au.src = api('/audio');
+  fetch(api('/api/quiet')).then(r => r.json()).then(q => { quiet = q; if (settings.gapMs != null && tokens.length) render(); });
+  fetch(api('/api/doc')).then(r => r.json()).then(d => {
+    if (d.error) { toast(d.error); return showHome(); }
+    window.META = d.meta;
+    SPK = d.speakers || SPK;
+    settings = Object.assign({gapMs: null, speed: {}}, d.settings || {});
+    $('#gapMs').value = settings.gapMs ?? '';
+    syncQuality();
+    $('#meta').textContent = d.meta.id;
+    $('#docname').textContent = d.meta.name;
+    document.title = d.meta.name + ' · ' + t('brand').replace(/<[^>]+>/g, '');
+    load(d.tokens, d.undo, d.redo);
+    const m = location.hash.match(/tour=(\d+)/);
+    if (m) setTimeout(() => { showTour(); tourI = +m[1]; tourDraw(); }, 300);
+    else if (!store.get('te_tour_done') && !location.hash.includes('notour')) setTimeout(showTour, 300);
+    if (location.hash.includes('open=clean')) setTimeout(() => $('#bClean').click(), 300);   // 截图检查用
+    if (location.hash.includes('open=spk')) setTimeout(() => $('#bSpk').click(), 300);
+  });
+}
+</script>
+</body>
+</html>

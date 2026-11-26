@@ -1,0 +1,184 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Podcast Desk</title>
+<meta name="description" content="Edit a podcast by editing its transcript. A free editor that runs on your own computer: automatic rough cut, filler removal, clean export. No API key.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --sea:#143FDC;--sea2:#0e2ea8;--green:#01C366;--orange:#C86B39;--sand:#D3CA9F;
+  --bg:#eceef3;--paper:#ffffff;--ink:#14181f;--ink2:#454b57;--muted:#7b8192;--line:#dfe2ea;--strike:#c25a26;--move:#00a557;
+  --f:Inter,system-ui,-apple-system,"Segoe UI",sans-serif;--m:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#111318;--paper:#1b1e25;--ink:#eef0f6;--ink2:#c2c8d8;--muted:#8890aa;--line:#2a3040;--strike:#f08a55;--move:#2fe08a;
+}}
+:root[data-theme="dark"]{--bg:#111318;--paper:#1b1e25;--ink:#eef0f6;--ink2:#c2c8d8;--muted:#8890aa;--line:#2a3040;--strike:#f08a55;--move:#2fe08a}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font:400 17px/1.6 var(--f);-webkit-font-smoothing:antialiased;-webkit-text-size-adjust:100%}
+a{color:inherit}
+.wrap{max-width:1040px;margin:0 auto;padding:0 16px}
+
+/* hero */
+.hero{background:var(--sea);color:#fff;border-bottom:4px solid var(--sand);padding-bottom:64px}
+.top{display:flex;justify-content:space-between;align-items:center;padding:18px 0;font-size:14px;color:#ffffffbb}
+.top a{text-decoration:none}.top a:hover{color:#fff}
+.kicker{font:700 13px/1 var(--m);letter-spacing:.14em;text-transform:uppercase;color:var(--green);margin:48px 0 16px}
+h1{font:700 clamp(48px,9vw,96px)/1 var(--m);letter-spacing:-.02em;margin:0}
+h1 em{font-style:normal;color:var(--green)}
+.lead{font-size:clamp(20px,2.6vw,26px);font-weight:600;margin:20px 0 0;max-width:720px}
+.line{margin:30px 0 0;font:500 clamp(17px,2.2vw,22px)/1.9 var(--f);background:#ffffff14;border:1px solid #ffffff2a;border-radius:12px;padding:14px 18px;max-width:720px}
+.line .t{font:500 12px var(--m);color:#ffffffaa;margin-right:12px}
+.line s{color:#ffb38a;text-decoration-color:#ffb38a;text-decoration-thickness:2px;transition:opacity .4s}
+.cta{display:flex;flex-wrap:wrap;gap:12px;margin-top:32px}
+.btn{display:inline-flex;align-items:center;gap:10px;padding:13px 22px;border-radius:10px;font-weight:700;font-size:16px;text-decoration:none;transition:transform .15s,filter .15s}
+.btn:hover{transform:translateY(-1px);filter:brightness(1.06)}
+.btn.main{background:var(--green);color:#04210f}
+.btn.ghost{border:1.5px solid #ffffff66;color:#fff}
+.btn small{font-weight:500;opacity:.75;white-space:nowrap}
+
+/* video */
+.video{margin-top:-40px}
+video{display:block;width:100%;border-radius:14px;background:#000;box-shadow:0 20px 50px #0003;aspect-ratio:16/9}
+.cap{font-size:14px;color:var(--muted);text-align:center;margin:12px 0 0}
+
+section{padding:64px 0 0}
+h2{font-size:clamp(26px,3.4vw,34px);letter-spacing:-.01em;margin:0 0 8px}
+.sub{color:var(--ink2);margin:0 0 28px;max-width:720px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:14px}
+.card{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:22px 22px 20px}
+.card h3{margin:0 0 6px;font-size:18px;display:flex;align-items:center;gap:10px}
+.card p{margin:0;color:var(--ink2);font-size:15.5px}
+.ic{width:30px;height:30px;border-radius:8px;display:grid;place-items:center;background:var(--sea);color:#fff;font:700 13px var(--m);flex:none}
+.del{color:var(--strike);text-decoration:line-through;text-decoration-thickness:1.5px}
+.mv{color:var(--move);text-decoration:underline double;text-underline-offset:4px}
+
+/* run it */
+.tabs{display:flex;gap:6px;margin-bottom:14px;flex-wrap:wrap}
+.tabs button{font:600 14px var(--f);padding:8px 16px;border-radius:99px;border:1.5px solid var(--line);background:var(--paper);color:var(--ink2);cursor:pointer}
+.tabs button[aria-selected="true"]{background:var(--sea);border-color:var(--sea);color:#fff}
+.steps{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:6px 22px;counter-reset:s}
+.step{display:grid;grid-template-columns:34px 1fr;gap:14px;padding:18px 0;border-bottom:1px dashed var(--line)}
+.step:last-child{border-bottom:0}
+.step::before{counter-increment:s;content:counter(s);width:30px;height:30px;border-radius:50%;background:var(--green);color:#04210f;display:grid;place-items:center;font:700 14px var(--m)}
+.step b{display:block;margin-bottom:4px}
+.step p{margin:0;color:var(--ink2);font-size:15.5px}
+code{font:500 14px var(--m);background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:2px 7px;white-space:nowrap}
+pre{font:500 14px/1.6 var(--m);background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:10px 14px;margin:8px 0 0;overflow-x:auto}
+[hidden]{display:none!important}
+
+/* api table */
+table{width:100%;border-collapse:collapse;background:var(--paper);border:1px solid var(--line);border-radius:14px;overflow:hidden;font-size:15.5px}
+th,td{text-align:left;padding:13px 16px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-size:13px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.06em}
+tr:last-child td{border-bottom:0}
+.yes{color:var(--move);font-weight:700;white-space:nowrap}.opt{color:var(--orange);font-weight:700;white-space:nowrap}
+.tw{overflow-x:auto;border-radius:14px}
+
+footer{margin:72px 0 0;padding:28px 0 40px;border-top:1px solid var(--line);color:var(--muted);font-size:14px;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
+footer a{text-decoration:none}footer a:hover{color:var(--ink)}
+@media (max-width:600px){.hero{padding-bottom:56px}.step{grid-template-columns:30px 1fr;gap:10px}th,td{padding:11px 12px}}
+@media (prefers-reduced-motion: reduce){.line s,.btn{transition:none}}
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="wrap">
+    <nav class="top"><a href="../../">← Shipmas calendar</a><span>Day 10 · Nov 26</span></nav>
+    <p class="kicker">Shipmas · Day 10</p>
+    <h1>Podcast <em>Desk</em></h1>
+    <p class="lead">Edit a podcast like a document. Delete the words and the audio goes with them.</p>
+    <p class="line" aria-label="Example of an edited transcript line"><span class="t">0:32</span>For me it's <s>my neighbour's,</s> <s>um,</s> my neighbour's dog. It barks at the moon.</p>
+    <div class="cta">
+      <a class="btn main" href="podcast-desk.zip" download>Download for Mac, Windows, Linux <small>76 KB</small></a>
+      <a class="btn ghost" href="https://github.com/Lesley-Qing-Gu/ChristmasChallenge/tree/main/days/10/podcast-desk">View the source</a>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+  <div class="video">
+    <video controls preload="metadata" poster="demo.jpg" playsinline>
+      <source src="demo.mp4" type="video/mp4">
+    </video>
+    <p class="cap">A one-minute demo, sound on. The episode in it is made up and voiced by a speech model; the music is synthesized too.</p>
+  </div>
+
+  <section>
+    <h2>What it does</h2>
+    <p class="sub">I built it to edit my own podcast, because scrubbing through waveforms for every “um” took longer than recording the episode.</p>
+    <div class="grid">
+      <div class="card"><h3><span class="ic">01</span>Rough cut, automatically</h3><p>Upload a recording. It's transcribed, split by speaker, and the ums, uhs, false starts, coughs, cross-talk and long gaps are cut before you even open it.</p></div>
+      <div class="card"><h3><span class="ic">02</span>Edit text, edit audio</h3><p>Deleted words turn into <span class="del">red strike-through</span>, and moved passages get a <span class="mv">green double underline</span>, like tracked changes in Word. Undo always works.</p></div>
+      <div class="card"><h3><span class="ic">03</span>Hear the edit</h3><p>Press space and you hear the edited episode, not the original. Every word lights up as it's spoken.</p></div>
+      <div class="card"><h3><span class="ic">04</span>Fillers in one go</h3><p>Tick “um”, “you know”, “I mean” or anything you add. You see every hit in context before it goes.</p></div>
+      <div class="card"><h3><span class="ic">05</span>Pace and sound</h3><p>Make every pause between sentences the same length, slow down one speaker without changing their pitch, level the volume or remove noise, then A/B the result.</p></div>
+      <div class="card"><h3><span class="ic">06</span>Export, and show notes</h3><p>A clean mp3 with smooth cuts. If Claude Code is installed, it also writes show notes with timestamps that match the edit.</p></div>
+    </div>
+  </section>
+
+  <section id="run">
+    <h2>Run it on your computer</h2>
+    <p class="sub">It's a small local web app: a Python server on your computer and an editor in your browser. Your recordings never leave the machine. Takes about ten minutes the first time.</p>
+    <div class="tabs" role="tablist">
+      <button role="tab" data-os="mac" aria-selected="true">macOS</button>
+      <button role="tab" data-os="win" aria-selected="false">Windows</button>
+      <button role="tab" data-os="linux" aria-selected="false">Linux</button>
+    </div>
+    <div class="steps">
+      <div class="step"><div><b>Install Python and ffmpeg</b>
+        <p data-os="mac">Python 3.10 or newer from python.org, then <code>brew install ffmpeg</code>.</p>
+        <p data-os="win" hidden>Python 3.10 or newer from python.org (tick “Add to PATH”), then <code>winget install ffmpeg</code>.</p>
+        <p data-os="linux" hidden><code>sudo apt install python3 python3-venv ffmpeg</code> or your distro's equivalent.</p></div></div>
+      <div class="step"><div><b>Download and set it up</b>
+        <p>Unzip <a href="podcast-desk.zip" download>podcast-desk.zip</a>, then:</p>
+        <p data-os="mac">Open Terminal in the folder and run <code>./setup.sh</code>. On an M-series Mac it also installs the fast GPU transcriber.</p>
+        <p data-os="win" hidden>Double-click <code>setup.bat</code>.</p>
+        <p data-os="linux" hidden>Run <code>./setup.sh</code>. With an NVIDIA GPU, transcription uses CUDA automatically.</p></div></div>
+      <div class="step"><div><b>Start it</b>
+        <p data-os="mac">Double-click <code>start.command</code>. It opens in your browser at localhost:8765.</p>
+        <p data-os="win" hidden>Double-click <code>start.bat</code>. It opens in your browser at localhost:8765.</p>
+        <p data-os="linux" hidden>Run <code>./start.sh</code>. It opens in your browser at localhost:8765.</p></div></div>
+      <div class="step"><div><b>Drop in an episode</b>
+        <p>Pick the language and the number of speakers. The first run downloads the Whisper model (about 1.5 GB); after that everything works offline.</p></div></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Does it need an AI API key?</h2>
+    <p class="sub">No. The models run on your own computer, for free.</p>
+    <div class="tw"><table>
+      <thead><tr><th>Step</th><th>Runs on</th><th>Account needed</th></tr></thead>
+      <tbody>
+        <tr><td>Transcription</td><td>Whisper on your computer: MLX on Apple Silicon, faster-whisper on anything else</td><td class="yes">None</td></tr>
+        <tr><td>Rough cut, editing, export</td><td>Python, numpy and ffmpeg on your computer</td><td class="yes">None</td></tr>
+        <tr><td>Telling speakers apart</td><td>pyannote on your computer</td><td class="opt">Free Hugging Face token, once</td></tr>
+        <tr><td>Show notes</td><td>Claude Code on your computer</td><td class="opt">Optional: Claude account</td></tr>
+      </tbody>
+    </table></div>
+    <p class="sub" style="margin-top:14px;font-size:15px">Skip the Hugging Face token and everything else still works, with one speaker. Without Claude Code, only the show-notes button is unavailable. The interface is in English and Chinese.</p>
+  </section>
+
+  <footer>
+    <span>Shipmas Day 10 · by <a href="https://www.linkedin.com/in/qing-gu-072167322">Lesley Qing Gu</a></span>
+    <a href="../../">One tiny product every two days →</a>
+  </footer>
+</main>
+
+<script>
+document.querySelectorAll('.tabs button').forEach(b => b.onclick = () => {
+  document.querySelectorAll('.tabs button').forEach(x => x.setAttribute('aria-selected', x === b));
+  document.querySelectorAll('.step p[data-os]').forEach(p => p.hidden = p.dataset.os !== b.dataset.os);
+});
+// start on the visitor's own system
+const os = /Win/.test(navigator.platform) ? 'win' : /Linux/.test(navigator.platform) && !/Android/.test(navigator.userAgent) ? 'linux' : 'mac';
+document.querySelector(`.tabs button[data-os="${os}"]`).click();
+</script>
+</body>
+</html>
